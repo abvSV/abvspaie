@@ -56,7 +56,26 @@ h1{font-size:clamp(44px,7.4vw,98px);line-height:.96;letter-spacing:-.05em;font-w
 h1 em{font-family:Georgia,serif;font-weight:400;font-style:italic;color:var(--pri);letter-spacing:-.03em}
 .sub{color:var(--mute);font-size:clamp(16px,1.5vw,20px);margin:0 0 30px}
 .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.audit{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:18px;color:var(--mute);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.audit span{background:rgba(255,255,255,.28);border:1px solid var(--line);padding:7px 10px;border-radius:999px}
 .mobhint{display:none}
+.feature-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;max-width:1100px;margin:220px auto 0;padding:0 26px;position:relative;z-index:2}
+.feature-card,.step-card,.price-card{background:color-mix(in srgb,var(--solid) 90%,transparent);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:0 20px 45px var(--sh)}
+.feature-card h3,.step-card h3,.price-card h3{margin:0 0 10px;font-size:20px;letter-spacing:-.02em}
+.feature-card p,.step-card p,.price-card p{margin:0;color:var(--mute);line-height:1.6}
+.kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--pri);font-weight:700;margin-bottom:14px;display:block}
+.section-head{text-align:center;max-width:760px;margin:120px auto 28px;position:relative;z-index:2}
+.section-head h2{margin:0 0 12px;font-size:clamp(28px,4vw,48px);letter-spacing:-.04em}
+.section-head p{margin:0;color:var(--mute);font-size:18px;line-height:1.6}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:1100px;margin:0 auto;padding:0 26px;position:relative;z-index:2}
+.step-number{width:42px;height:42px;border-radius:12px;background:var(--grad);color:#fff;display:grid;place-items:center;font-weight:800;margin-bottom:18px}
+.pricing{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:1100px;margin:0 auto;padding:0 26px 80px;position:relative;z-index:2}
+.price-card.featured{border-color:rgba(74,98,131,.5);background:linear-gradient(180deg,rgba(74,98,131,.08),rgba(255,255,255,.05))}
+.price-tag{font-size:34px;letter-spacing:-.05em;font-weight:800;margin:12px 0 8px}
+.price-tag small{font-size:14px;color:var(--mute);font-weight:600}
+.price-card ul{margin:16px 0 0;padding-left:18px;color:var(--mute);line-height:1.9}
+@media(max-width:900px){.feature-grid,.steps,.pricing{grid-template-columns:1fr 1fr;margin-top:18px;padding:0 20px}.section-head{margin-top:64px}.hero{top:40%}.feature-grid{margin-top:120px} }
+@media(max-width:700px){.feature-grid,.steps,.pricing{grid-template-columns:1fr}.section-head{padding:0 18px}.feature-card,.step-card,.price-card{padding:20px}}
 
 /* ── Modules ── */
 .mod{position:absolute;z-index:3;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -162,10 +181,18 @@ small{display:block;color:var(--mute);font-size:12px}
 
 <main class="stage" id="stage">
   <div class="hero">
-    <h1>Encaissez.<br>Payez.<br><em>C'est tout.</em></h1>
-    <p class="sub">Mobile money et cartes, une seule API.</p>
-    <div class="btns"><a class="btn lg" href="public/inscription-connexion.html">Commencer →</a></div>
-    
+    <h1>Encaissez.<br>Payez.<br><em>Sans friction.</em></h1>
+    <p class="sub">La couche de paiement de votre SaaS pour accepter les paiements et payer vos bénéficiaires en FCFA.</p>
+    <div class="btns">
+      <a class="btn lg" href="public/inscription-connexion.html">Créer mon compte</a>
+      <a class="btn alt lg" href="#pourquoi">Voir les avantages</a>
+    </div>
+    <div class="audit" aria-label="Méthodes de paiement supportées">
+      <span>Orange Money</span>
+      <span>MTN MoMo</span>
+      <span>Moov</span>
+      <span>Cartes</span>
+    </div>
   </div>
 
   <!-- Téléphone -->
@@ -208,6 +235,93 @@ small{display:block;color:var(--mute);font-size:12px}
     <div class="c ops" style="--r:-2deg;--dl:-5s"><b style="--c:#ff7900">Orange Money</b><b style="--c:#ffcc00">MTN MoMo</b><b style="--c:#0a7cff">Moov</b><b style="--c:#1dc8ff">Wave</b><b style="--c:#8fa8c4">Carte</b></div>
   </div></div>
 </main>
+
+<section id="pourquoi" class="section-head">
+  <span class="kicker">Pourquoi ABVSPAIE</span>
+  <h2>Une infrastructure de paiement claire, rapide et prête à intégrer.</h2>
+  <p>Pour les SaaS, marchands et plateformes qui veulent accepter facilement les paiements et gérer les transactions sans multiplier les intégrations.</p>
+</section>
+
+<section class="feature-grid" aria-label="Avantages">
+  <article class="feature-card">
+    <h3>Une seule intégration</h3>
+    <p>Centralisez les paiements, les transferts et la traçabilité dans un seul flux cohérent.</p>
+  </article>
+  <article class="feature-card">
+    <h3>Accélération du lancement</h3>
+    <p>Passez de l’idée à un premier flux de paiement en quelques jours, sans surcharger votre équipe produit.</p>
+  </article>
+  <article class="feature-card">
+    <h3>Confiance renforcée</h3>
+    <p>Protection MFA, KYC guidé, journaux d’audit et signatures de webhooks pour sécuriser chaque étape.</p>
+  </article>
+  <article class="feature-card">
+    <h3>Expérience client finale</h3>
+    <p>Donnez à vos utilisateurs une expérience de paiement fluide, mobile-first et compatible avec leurs habitudes locales.</p>
+  </article>
+</section>
+
+<section class="section-head">
+  <span class="kicker">Démarrage</span>
+  <h2>3 étapes pour lancer votre premier flux.</h2>
+</section>
+
+<section class="steps" aria-label="Étapes de mise en route">
+  <article class="step-card">
+    <div class="step-number">1</div>
+    <h3>Créez votre compte</h3>
+    <p>Inscrivez votre organisation et complétez la configuration minimale de votre espace marchand.</p>
+  </article>
+  <article class="step-card">
+    <div class="step-number">2</div>
+    <h3>Connectez votre flux</h3>
+    <p>Utilisez notre API ou nos liens de paiement configurés pour ajouter le paiement à votre produit.</p>
+  </article>
+  <article class="step-card">
+    <div class="step-number">3</div>
+    <h3>Suivez chaque paiement</h3>
+    <p>Surveillez les transactions, les webhooks et les confirmations depuis votre tableau de bord.</p>
+  </article>
+</section>
+
+<section class="section-head">
+  <span class="kicker">Tarification</span>
+  <h2>Une offre simple, adaptée à chaque niveau de croissance.</h2>
+</section>
+
+<section class="pricing" aria-label="Tarification">
+  <article class="price-card">
+    <h3>Starter</h3>
+    <div class="price-tag">0 <small>€</small></div>
+    <p>Idéal pour tester le produit et valider un premier parcours de paiement.</p>
+    <ul>
+      <li>Compte de test</li>
+      <li>Configuration basique</li>
+      <li>Support standard</li>
+    </ul>
+  </article>
+  <article class="price-card featured">
+    <h3>Growth</h3>
+    <div class="price-tag">Selon <small>volume</small></div>
+    <p>Pour les projets qui ont déjà une clientèle et veulent évoluer sereinement.</p>
+    <ul>
+      <li>Volumes plus importants</li>
+      <li>Webhooks avancés</li>
+      <li>Monitoring & audit</li>
+    </ul>
+  </article>
+  <article class="price-card">
+    <h3>Enterprise</h3>
+    <div class="price-tag">Sur <small>mesure</small></div>
+    <p>Pour les équipes qui nécessitent un accompagnement spécifique et une intégration poussée.</p>
+    <ul>
+      <li>Design sur mesure</li>
+      <li>Onboarding dédié</li>
+      <li>Support dédié</li>
+    </ul>
+  </article>
+</section>
+
 <footer class="foot"><nav aria-label="Pied de page"><a href="public/cgu-cgv.html">CGU/CGV</a><a href="public/confidentialite.html">Confidentialité</a><a href="public/mentions-legales.html">Mentions légales</a></nav><p>© 2026 ABVSPAIE · Abidjan, Côte d'Ivoire</p></footer>
 
 
