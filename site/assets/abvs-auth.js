@@ -91,10 +91,17 @@
     var r = await sb.auth.signInWithPassword({ email: email, password: password });
     if (r.error) return { error: r.error };
     var a = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
-    if (a.data && a.data.nextLevel === "aal2" && a.data.currentLevel === "aal1") {
+    if (a.error) return { error: a.error };
+    if (a.data && a.data.nextLevel === "aal2" && a.data.currentLevel !== "aal2") {
       var f = await sb.auth.mfa.listFactors();
-      var t = f.data && f.data.totp && f.data.totp[0];
+      if (f.error) return { error: f.error };
+      var factors = f.data && f.data.totp || [];
+      var t = factors.find(function (factor) { return factor.status === "verified"; });
       if (t) return { mfa: true, factorId: t.id };
+      await sb.auth.signOut();
+      var missingFactor = new Error("No verified TOTP factor is available.");
+      missingFactor.userMessage = "La MFA est requise pour ce compte, mais aucune application d'authentification confirmée n'est disponible. Contacte le support.";
+      return { error: missingFactor };
     }
     touch();
     return { ok: true };
@@ -105,6 +112,13 @@
     if (c.error) return { error: c.error };
     var v = await sb.auth.mfa.verify({ factorId: factorId, challengeId: c.data.id, code: code });
     if (v.error) return { error: v.error };
+    var assurance = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (assurance.error) return { error: assurance.error };
+    if (!assurance.data || assurance.data.currentLevel !== "aal2") {
+      var insufficientAssurance = new Error("The session did not reach the required MFA level.");
+      insufficientAssurance.userMessage = "La session n'a pas atteint le niveau MFA requis. Réessaie de te connecter.";
+      return { error: insufficientAssurance };
+    }
     touch();
     return { ok: true };
   }
@@ -119,6 +133,7 @@
 
   // Messages d'erreur en français.
   function msg(err) {
+    if (err && err.userMessage) return err.userMessage;
     var m = (err && err.message || "").toLowerCase(), s = err && err.status;
     if (s === 429 || m.indexOf("rate limit") > -1) return "Trop de tentatives. Réessayez dans quelques minutes.";
     if (m.indexOf("invalid login") > -1) return "E-mail ou mot de passe incorrect.";

@@ -474,15 +474,20 @@
       <div id="vLogin" class="hide">
         <h1>Content de vous <em>revoir</em></h1>
         <form id="fLogin" novalidate>
-          <input id="lemail" type="email" placeholder="E-mail" autocomplete="email">
-          <div class="err" data-for="lemail"></div>
-          <input id="lpwd" type="password" placeholder="Mot de passe" autocomplete="current-password">
-          <div class="err" data-for="lpwd"></div>
-          <div id="l2" class="hide">
-            <input id="lcode" type="text" inputmode="numeric" maxlength="6" placeholder="Code à 6 chiffres de votre application" autocomplete="one-time-code" aria-label="Code de double authentification">
-            <div class="err" data-for="lcode" role="alert"></div>
+          <div id="loginCredentials">
+            <input id="lemail" type="email" placeholder="E-mail" autocomplete="email">
+            <div class="err" data-for="lemail"></div>
+            <input id="lpwd" type="password" placeholder="Mot de passe" autocomplete="current-password">
+            <div class="err" data-for="lpwd"></div>
           </div>
-          <button class="btn" type="submit">Se connecter</button>
+          <div id="l2" class="hide" aria-live="polite">
+            <p>Le mot de passe est accepté. Saisissez le code à 6 chiffres de votre application d’authentification pour terminer la connexion.</p>
+            <label for="lcode">Code de double authentification</label>
+            <input id="lcode" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="000000" autocomplete="one-time-code" aria-label="Code de double authentification">
+            <div class="err" data-for="lcode" role="alert"></div>
+            <button class="btn alt" id="login-change-account" type="button">Retour à l’identifiant</button>
+          </div>
+          <button class="btn" id="login-submit" type="submit">Se connecter</button>
         </form>
         <div class="swap"><span class="link" id="forgot">Mot de passe oublié ?</span> · <span class="link"
             id="toSignup">Créer un compte</span></div>
@@ -560,6 +565,19 @@
 
     // ───── Connexion : mot de passe, puis TOTP si activé ─────
     let mfaFactor = null;
+    const setMfaStep = active => {
+      $('loginCredentials').classList.toggle('hide', active);
+      $('l2').classList.toggle('hide', !active);
+      $('login-submit').textContent = active ? 'Vérifier le code' : 'Se connecter';
+      if (active) $('lcode').focus();
+    };
+    $('login-change-account').onclick = () => {
+      mfaFactor = null;
+      $('lcode').value = '';
+      setErr('lcode', '');
+      setMfaStep(false);
+      $('lemail').focus();
+    };
     let loginAudioContext = null;
     const prepareLoginSound = () => {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -600,8 +618,6 @@
     };
     $('fLogin').onsubmit = async e => {
       e.preventDefault();
-      const r = [setErr('lemail', okMail($('lemail').value) ? '' : 'E-mail invalide.'), setErr('lpwd', $('lpwd').value ? '' : 'Saisissez votre mot de passe.')];
-      if (!r.every(Boolean)) return;
       if (!ABVS.ready) { setErr('lpwd', 'Service indisponible. Réessayez plus tard.'); return }
       const btn = e.submitter || $('fLogin').querySelector('button[type=submit]');
       btn.disabled = true;
@@ -614,19 +630,22 @@
           if (v.error) { setErr('lcode', ABVS.msg(v.error)); return }
           setErr('lcode', '');
           mfaFactor = null;
+          setMfaStep(false);
           goDash(); return
         }
+        const r = [setErr('lemail', okMail($('lemail').value) ? '' : 'E-mail invalide.'), setErr('lpwd', $('lpwd').value ? '' : 'Saisissez votre mot de passe.')];
+        if (!r.every(Boolean)) return;
         const res = await ABVS.signIn($('lemail').value.trim(), $('lpwd').value);
         if (res.error) { setErr('lpwd', ABVS.msg(res.error)); return }
         if (res.mfa) {
           mfaFactor = res.factorId;
-          $('l2').classList.remove('hide'); $('lcode').focus();
-          setErr('lcode', "Double authentification : entrez le code de votre application d'authentification.");
+          setErr('lcode', '');
+          setMfaStep(true);
           return
         }
         goDash();
       } catch (err) {
-        setErr('lpwd', err.message || 'La connexion a échoué. Réessayez.');
+        setErr(mfaFactor ? 'lcode' : 'lpwd', ABVS.msg(err));
       } finally { btn.disabled = false }
     };
     $('forgot').onclick = () => { location.replace('mot-de-passe-oublie.html'); };
