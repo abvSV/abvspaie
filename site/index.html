@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' http://localhost:3000 https:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -151,7 +151,7 @@ small{display:block;color:var(--mute);font-size:12px}
 .foot a{margin:0 9px;display:inline-block;padding:3px 0}.foot a:hover{color:var(--ink)}
 .foot p{margin:10px 0 0;font-size:12px}
 </style>
-</head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script><script src="assets/abvs-config.js"></script><script src="assets/abvs-auth.js"></script></head>
 <body>
 <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
 
@@ -249,6 +249,16 @@ stage.addEventListener("pointerdown",e=>{const m=e.target.closest(".mod");if(!m|
   const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up);m.removeEventListener("pointercancel",up);
     if(coin){const ok=hit();$("phone").classList.remove("hot");m.classList.add("snap");m.style.left=m.dataset.l;m.style.top=m.dataset.t;if(ok)pay()}};
   m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up);m.addEventListener("pointercancel",up)});
+</script>
+<script>
+// Si l'utilisateur est connecté, les boutons "Connexion / Commencer" mènent à son espace.
+(async()=>{if(!ABVS.ready||!await ABVS.hasSession())return;
+ABVS.touch();
+document.querySelectorAll('a[href="public/inscription-connexion.html"]').forEach(a=>{
+ a.href="compte/tableau-de-bord.html";
+ if(a.classList.contains("l"))a.textContent="Mon espace";
+ else if(a.classList.contains("btn"))a.textContent=a.classList.contains("lg")?"Tableau de bord →":"Tableau de bord";
+ else{a.dataset.t="Mon espace";a.setAttribute("aria-label","Mon espace");const sp=a.querySelector("span");if(sp)sp.textContent="🏠"}})})();
 </script>
 </body>
 </html>

@@ -503,6 +503,9 @@
 <script>
     const ISO = { "Côte d'Ivoire": 'CI', 'Sénégal': 'SN', 'Burkina Faso': 'BF', 'Mali': 'ML', 'Bénin': 'BJ', 'Togo': 'TG', 'Niger': 'NE', 'Guinée-Bissau': 'GW' };
 
+    // Déjà connecté : on va directement au tableau de bord.
+    if (ABVS.ready) ABVS.hasSession().then(ok => { if (ok) location.replace('../compte/tableau-de-bord.html') });
+
     const $ = id => document.getElementById(id);
     const views = ['vSignup', 'vLogin', 'vDone'];
     const show = v => views.forEach(x => $(x).classList.toggle('hide', x !== v));
