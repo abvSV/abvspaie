@@ -1,165 +1,46 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
-<meta name="referrer" content="strict-origin-when-cross-origin">
+-- ABVSPAIE — migration 02 : ajoute le nom du bénéficiaire aux décaissements.
+-- À exécuter APRÈS migration_01_production.sql (Supabase > SQL Editor > Run).
 
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ABVSPAIE — Paiement</title>
-<meta name="description" content="Page de paiement sécurisée ABVSPAIE : mobile money ou carte bancaire.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234a6283'/%3E%3Ctext x='32' y='45' font-size='36' text-anchor='middle' fill='%23fff' font-family='Arial%2Csans-serif' font-weight='800'%3EA%3C/text%3E%3C/svg%3E">
-<meta name="theme-color" content="#eef1f5" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#12171e" media="(prefers-color-scheme: dark)">
-<meta name="robots" content="noindex, nofollow">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap">
-<style>
-:root{--bg:#eef1f5;--solid:#fff;--ink:#1b2430;--mute:#6a7685;--pri:#4a6283;--grad:linear-gradient(135deg,#4a6283,#566f94);--line:#dde3ea;--ok:#14a46b;--err:#d93a4a;--in:#f7f9fb;--sh:rgba(40,60,90,.14);
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12171e;--solid:#1b222c;--ink:#edf1f5;--mute:#9aa6b4;--pri:#8fa8c4;--line:#2b3541;--in:#151b23;--sh:rgba(0,0,0,.4)}}
-:root[data-theme="dark"]{--bg:#12171e;--solid:#1b222c;--ink:#edf1f5;--mute:#9aa6b4;--pri:#8fa8c4;--line:#2b3541;--in:#151b23;--sh:rgba(0,0,0,.4)}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;overflow-x:hidden}
-.wrap{position:relative;width:100%;max-width:400px}
-.card{background:var(--solid);border:1px solid var(--line);border-radius:24px;padding:26px;box-shadow:0 24px 60px var(--sh);position:relative;z-index:2}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-size:13px;color:var(--mute)}
-.top b{color:var(--ink)}
-.amt{font-size:36px;font-weight:800;letter-spacing:-.03em;margin:2px 0}.amt span{font-size:16px;color:var(--mute);font-weight:600}
-.desc{color:var(--mute);font-size:14px;margin-bottom:20px}
-h2{font-size:13px;margin:0 0 10px;color:var(--mute);font-weight:600}
-.ops{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ops button{border:1px solid var(--line);background:var(--in);color:var(--ink);font:600 13px Inter,sans-serif;padding:12px;border-radius:12px;cursor:pointer;text-align:left}
-.ops button.on{border-color:var(--pri);box-shadow:0 0 0 2px var(--pri) inset;background:var(--solid)}
-input{width:100%;padding:13px 14px;border:1px solid var(--line);background:var(--in);color:var(--ink);border-radius:12px;font:15px Inter,sans-serif;margin-top:10px}
-input:focus{outline:2px solid var(--pri);outline-offset:1px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.err{color:var(--err);font-size:12px;min-height:14px;margin-top:4px}
-.btn{width:100%;margin-top:14px;background:var(--grad);color:#fff;border:0;padding:15px;border-radius:13px;font:600 15px Inter,sans-serif;cursor:pointer}
-.btn:hover{filter:brightness(1.08)}
-.safe{text-align:center;color:var(--mute);font-size:12px;margin-top:14px}
-.center{text-align:center;padding:16px 0}
-.spin{width:46px;height:46px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--pri);margin:0 auto 16px;animation:sp 1s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-.ic{width:60px;height:60px;border-radius:50%;background:#e3f8ee;color:var(--ok);display:grid;place-items:center;font-size:28px;margin:0 auto 14px}
-.center h3{margin:0 0 6px;font-size:20px}.center p{margin:0;color:var(--mute);font-size:14px}
-.hide{display:none}
-.m{position:absolute;background:var(--solid);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:0 16px 36px var(--sh);font-size:12px;animation:fl 6s ease-in-out infinite;white-space:nowrap}
-.m small{display:block;color:var(--mute)}.m b{font-size:14px}
-.f1{right:calc(100% - 36px);top:40px;--r:-6deg}.f2{left:calc(100% - 36px);bottom:60px;--r:5deg;animation-delay:-3s}
-@keyframes fl{0%,100%{transform:translateY(0) rotate(var(--r))}50%{transform:translateY(-10px) rotate(var(--r))}}
-@media(max-width:820px){.m{display:none}}
-@media(prefers-reduced-motion:reduce){.m,.spin{animation:none}.m{transform:rotate(var(--r))}}
+alter table public.payouts
+  add column if not exists beneficiary text
+  check (beneficiary is null or char_length(beneficiary) between 2 and 120);
 
-/* ===== Template bureau flottant ===== */
-body{background:radial-gradient(900px 500px at 12% 0,#dde5ee,transparent),radial-gradient(800px 500px at 92% 100%,#d3dbe7,transparent),var(--bg)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body{background:radial-gradient(900px 500px at 12% 0,#1e2733,transparent),radial-gradient(800px 500px at 92% 100%,#1a2230,transparent),var(--bg)}}
-:root[data-theme="dark"] body{background:radial-gradient(900px 500px at 12% 0,#1e2733,transparent),radial-gradient(800px 500px at 92% 100%,#1a2230,transparent),var(--bg)}
-.brand{position:fixed;top:16px;left:20px;z-index:30;font-weight:800;font-size:18px;letter-spacing:-.02em;padding:9px 14px;border:1px solid var(--line);border-radius:14px;color:var(--ink);background:color-mix(in srgb,var(--solid,var(--card)) 80%,transparent);backdrop-filter:blur(10px)}.brand span{color:var(--pri)}
-.card,.plan,.est{background:color-mix(in srgb,var(--solid,var(--card)) 84%,transparent)!important;backdrop-filter:blur(12px)}
-.m{backdrop-filter:blur(10px);cursor:grab;touch-action:none;user-select:none}
-.m.drag{animation:none!important;cursor:grabbing;transform:rotate(0)!important;box-shadow:0 34px 70px var(--sh,rgba(40,60,90,.2))}
-.pop{position:fixed;bottom:90px;z-index:25;background:var(--pri);color:var(--solid,var(--card));font:600 12px Inter,sans-serif;padding:7px 12px;border-radius:99px;box-shadow:0 10px 24px rgba(40,60,90,.2);animation:rise 4s ease-out forwards;pointer-events:none;white-space:nowrap}
-@keyframes rise{0%{opacity:0;transform:translateY(10px)}15%{opacity:1}100%{opacity:0;transform:translateY(-260px)}}
-@media(max-width:600px){.brand{left:12px;top:10px}}
-.legal-bar{position:fixed;left:0;right:0;bottom:6px;text-align:center;font:500 11px Inter,system-ui,sans-serif;color:var(--mute);z-index:5;pointer-events:none}.legal-bar a{pointer-events:auto;color:var(--mute);text-decoration:none;margin:0 7px}.legal-bar a:hover{text-decoration:underline}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-</style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script><script src="../assets/abvs-config.js"></script><script src="../assets/abvs-auth.js"></script></head>
-<body>
-<a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
+drop function if exists public.request_payout(integer, text, text);
 
-<div class="wrap">
-  <div class="m f1"><small>Paiement sécurisé</small><b>🔒 Chiffré</b></div>
-  <div class="m f2"><small>Opérateurs</small><b>Mobile money · Carte</b></div>
+create or replace function public.request_payout(
+  p_amount integer, p_method text, p_destination text, p_beneficiary text default null)
+returns jsonb language plpgsql security definer set search_path = '' as $$
+declare
+  v_uid uuid := auth.uid(); m record; v_avail bigint; v_ref text; v_benef text;
+begin
+  if v_uid is null then raise exception 'Non connecté'; end if;
+  if coalesce(auth.jwt()->>'aal', '') <> 'aal2' then
+    raise exception 'Double authentification requise';
+  end if;
 
-  <div class="card">
-    <h1 class="sr">Paiement sécurisé</h1>
-    <div id="vForm" class="hide">
-      <div class="top"><span>Payer <b id="mname">…</b></span></div>
-      <div class="amt"><b id="amtv">…</b> <span>FCFA</span></div>
-      <div class="desc" id="dsc"></div>
+  -- Verrou sur la ligne du marchand : deux retraits simultanés ne peuvent pas dépasser le solde.
+  select mm.kyc_status, mm.test_mode into m from public.merchants mm where mm.id = v_uid for update;
+  if not found then raise exception 'Marchand introuvable'; end if;
+  if m.kyc_status <> 'verified' then raise exception 'Vérification d''identité requise'; end if;
+  if m.test_mode then raise exception 'Retraits indisponibles en mode test'; end if;
 
-      <h2>Moyen de paiement</h2>
-      <div class="ops" id="ops">
-        <button type="button" data-m="Orange Money" class="on">Orange Money</button><button type="button" data-m="MTN MoMo">MTN MoMo</button>
-        <button type="button" data-m="Moov">Moov</button><button type="button" data-m="Wave">Wave</button>
-        <button type="button" data-m="Carte" style="grid-column:1/-1">Carte bancaire</button>
-      </div>
+  if p_method not in ('Orange Money','MTN MoMo','Moov','Wave') then raise exception 'Moyen invalide'; end if;
+  if p_destination is null or p_destination !~ '^[0-9+() -]{8,20}$' then raise exception 'Numéro invalide'; end if;
+  if p_amount is null or p_amount < 1000 then raise exception 'Montant minimum : 1 000 FCFA'; end if;
 
-      <form id="f" novalidate>
-        <div id="mm"><input id="phone" aria-label="Numéro de téléphone" type="tel" inputmode="tel" placeholder="Numéro de téléphone" autocomplete="tel"><div class="err" id="e1" role="alert"></div></div>
-        <div id="cd" class="hide">
-          <input id="num" aria-label="Numéro de carte" inputmode="numeric" placeholder="Numéro de carte" autocomplete="cc-number">
-          <div class="row"><input id="exp" aria-label="Date d'expiration (MM/AA)" placeholder="MM/AA" autocomplete="cc-exp"><input id="cvc" aria-label="Code de sécurité CVC" inputmode="numeric" placeholder="CVC" autocomplete="cc-csc"></div>
-          <div class="err" id="e2" role="alert"></div>
-        </div>
-        <button class="btn" type="submit" id="pay">Payer</button>
-      </form>
-      <div class="safe">🔒 Paiement sécurisé par ABVSPAIE</div>
-    </div>
+  v_benef := nullif(trim(coalesce(p_beneficiary, '')), '');
+  if v_benef is not null and char_length(v_benef) < 2 then raise exception 'Bénéficiaire invalide'; end if;
+  v_benef := left(v_benef, 120);
 
-    <div id="vWait" class="center hide" role="status" aria-live="polite"><div class="spin"></div><h3>Confirmez sur votre téléphone</h3><p id="wt"></p></div>
-    <div id="vOk" class="center hide" role="status" aria-live="polite"><div class="ic">✓</div><h3 id="okh">Paiement réussi</h3><p id="okp"></p></div>
-    <div id="vErr" class="center" role="alert"><h3>Lien introuvable</h3><p>Ce lien de paiement est invalide ou désactivé.</p></div>
-  </div>
-</div>
-<div class="legal-bar"><a href="cgu-cgv.html">CGU/CGV</a><a href="confidentialite.html">Confidentialité</a><a href="mentions-legales.html">Mentions légales</a></div>
-<script>
-const $=id=>document.getElementById(id);
-let method="Orange Money";
-$("ops").onclick=e=>{const btn=e.target.closest("button[data-m]");if(!btn)return;const m=btn.dataset.m;method=m;
-  document.querySelectorAll("#ops button").forEach(b=>{b.classList.toggle("on",b===btn);b.setAttribute("aria-pressed",String(b===btn))});
-  const card=m==="Carte";$("mm").classList.toggle("hide",card);$("cd").classList.toggle("hide",!card);$("e1").textContent=$("e2").textContent=""};
-document.querySelectorAll("#ops button").forEach(b=>b.setAttribute("aria-pressed",String(b.classList.contains("on"))));
-const show=v=>["vForm","vWait","vOk","vErr"].forEach(x=>$(x).classList.toggle("hide",x!==v));
-let LINK=null;const fmtN=n=>Number(n).toLocaleString("fr-FR").replace(/[\u202f\u00a0]/g," ");
-const slug=new URLSearchParams(location.search).get("l");
-(async()=>{
-  if(!slug||!ABVS.ready)return show("vErr");
-  try{
-    const {data,error}=await ABVS.client.rpc("get_payment_link",{p_slug:slug});
-    if(error||!data)return show("vErr");
-    LINK=data;
-    $("mname").textContent=data.merchant_name;$("amtv").textContent=fmtN(data.amount);$("dsc").textContent=data.title;
-    $("pay").textContent="Payer "+fmtN(data.amount)+" FCFA";
-    document.title="ABVSPAIE — Payer "+data.merchant_name;
-    show("vForm");
-  }catch(_){show("vErr")}
-})();
-$("f").onsubmit=async e=>{e.preventDefault();
-  if(!LINK)return;
-  const er=method==="Carte"?$("e2"):$("e1");
-  // Les données de carte sont seulement vérifiées ici : elles ne sont ni envoyées ni stockées.
-  if(method==="Carte"){
-    const n=$("num").value.replace(/\s/g,""),ok=/^\d{13,19}$/.test(n)&&/^(0[1-9]|1[0-2])\/\d{2}$/.test($("exp").value)&&/^\d{3,4}$/.test($("cvc").value);
-    $("e2").textContent=ok?"":"Vérifiez les informations de votre carte.";if(!ok)return;
-    $("wt").textContent="Vérification de votre banque en cours…";
-  }else{
-    const ok=$("phone").value.replace(/[\s+()-]/g,"").length>=8&&/^[\d\s+()-]+$/.test($("phone").value);
-    $("e1").textContent=ok?"":"Numéro invalide.";if(!ok)return;
-    $("wt").textContent="Validez le paiement "+method+" depuis "+$("phone").value+".";
-  }
-  show("vWait");
-  try{
-    const {data,error}=await ABVS.client.rpc("create_payment",{p_slug:slug,p_method:method,p_phone:method==="Carte"?null:$("phone").value.trim()});
-    if(error||!data){show("vForm");er.textContent="Le paiement n'a pas pu être enregistré. Réessayez.";return}
-    if(data.status==="succeeded"){
-      $("okh").textContent="Paiement réussi";
-      $("okp").textContent=fmtN(LINK.amount)+" FCFA envoyés à "+LINK.merchant_name+". Référence : "+data.reference+".";
-    }else{
-      $("okh").textContent="Paiement en cours";
-      $("okp").textContent="En attente de confirmation de l'opérateur. Référence : "+data.reference+".";
-    }
-    show("vOk");
-  }catch(_){show("vForm");er.textContent="Serveur injoignable. Réessayez plus tard."}
-};
-(()=>{let z=10;
-document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
-  const par=m.offsetParent||document.body,c=par.getBoundingClientRect(),dx=e.clientX-c.left-m.offsetLeft,dy=e.clientY-c.top-m.offsetTop;
-  m.style.left=m.offsetLeft+"px";m.style.top=m.offsetTop+"px";m.style.right="auto";m.style.bottom="auto";
-  m.classList.add("drag");m.style.zIndex=++z;m.setPointerCapture(e.pointerId);
-  const mv=ev=>{const cc=par.getBoundingClientRect();m.style.left=(ev.clientX-cc.left-dx)+"px";m.style.top=(ev.clientY-cc.top-dy)+"px"};
-  const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
-  m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
-</script>
-</body>
-</html>
+  select b.available into v_avail from public.merchant_balance b where b.merchant_id = v_uid;
+  if p_amount > coalesce(v_avail, 0) then raise exception 'Solde insuffisant'; end if;
+
+  insert into public.payouts (merchant_id, amount, method, destination, beneficiary)
+  values (v_uid, p_amount, p_method, trim(p_destination), v_benef)
+  returning reference into v_ref;
+
+  return jsonb_build_object('reference', v_ref, 'status', 'pending');
+end $$;
+
+revoke execute on function public.request_payout(integer, text, text, text) from public, anon;
+grant execute on function public.request_payout(integer, text, text, text) to authenticated;
