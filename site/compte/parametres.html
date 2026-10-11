@@ -136,11 +136,38 @@ f.addEventListener("submit",async e=>{e.preventDefault();
  .kyc-steps li[aria-current=step]{border-color:var(--pri);background:color-mix(in srgb,var(--pri) 12%,var(--solid));color:var(--ink);box-shadow:0 5px 16px var(--sh)}
  .kyc-step{padding:20px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--solid) 70%,transparent)}
  .kyc-step h3{margin:0 0 12px}
+ .kyc-step>p.mute{padding:12px 14px;border:1px solid color-mix(in srgb,var(--pri) 22%,var(--line));border-radius:13px;background:color-mix(in srgb,var(--pri) 6%,var(--solid));line-height:1.6}
  .kyc-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
  .kyc-actions .btn{margin:0}
  .kyc-step>label{margin-top:15px}
+ .kyc-face-uploads{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:20px}
+ .kyc-face-card{position:relative;display:flex;flex-direction:column;min-width:0;padding:20px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,color-mix(in srgb,var(--pri) 7%,var(--solid)),color-mix(in srgb,var(--solid) 92%,transparent));box-shadow:0 12px 28px var(--sh);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+ .kyc-face-card:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--pri) 45%,var(--line));box-shadow:0 18px 38px var(--sh)}
+ .kyc-face-card.is-uploaded{border-color:color-mix(in srgb,var(--ok) 48%,var(--line));background:linear-gradient(145deg,color-mix(in srgb,var(--ok) 8%,var(--solid)),color-mix(in srgb,var(--solid) 92%,transparent))}
+ .kyc-face-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+ .kyc-face-card-heading{display:flex;align-items:center;gap:11px}
+ .kyc-face-number{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:12px;background:color-mix(in srgb,var(--pri) 14%,var(--solid));color:var(--pri);font-size:13px;font-weight:800}
+ .kyc-face-card h4{margin:0;font-size:17px;color:var(--ink)}
+ .kyc-face-card>p{margin:5px 0 0;color:var(--mute);font-size:13px;line-height:1.5}
+ .kyc-face-card .kyc-face-status{min-height:20px;margin:12px 0 2px;font-size:12px;font-weight:600}
+ .kyc-face-status[data-uploaded="true"]{color:var(--ok)}
+ .kyc-face-card label{margin-top:16px;color:var(--ink);font-size:12px}
+ .kyc-face-card input[type=file]{box-sizing:border-box;min-height:50px;padding:7px;border:1px dashed color-mix(in srgb,var(--pri) 40%,var(--line));background:color-mix(in srgb,var(--in) 75%,transparent);font-size:12px}
+ .kyc-face-card input[type=file]::file-selector-button{margin-right:10px;padding:8px 11px;border:0;border-radius:9px;background:color-mix(in srgb,var(--pri) 14%,var(--solid));color:var(--pri);font:600 12px Inter,sans-serif;cursor:pointer}
+ .kyc-face-upload-all{display:flex;justify-content:center;width:100%;margin-top:16px;padding:14px 18px;font-size:15px}
+ .kyc-face-upload-all:disabled{opacity:.65;cursor:default}
+ .kyc-side-picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+ .kyc-side-choice{position:relative;display:flex;align-items:center;gap:10px;min-height:58px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--in);color:var(--ink);cursor:pointer}
+ .kyc-side-choice input{width:18px;height:18px;flex:none;margin:0;accent-color:var(--pri)}
+ .kyc-side-choice:has(input:checked){border-color:var(--pri);background:color-mix(in srgb,var(--pri) 12%,var(--solid))}
+ .kyc-side-choice:focus-within{outline:2px solid var(--pri);outline-offset:2px}
+ .kyc-side-choice span{display:grid;gap:3px}
+ .kyc-side-choice small{color:var(--mute);font-size:11px;font-weight:400}
+ @media(max-width:480px){.kyc-side-picker{grid-template-columns:1fr}}
  #kyc-review-details,#kyc-review-documents{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--in);line-height:1.7}
- @media(max-width:480px){.kyc-steps{gap:5px}.kyc-steps li{padding:10px 4px;font-size:11px}.kyc-step{padding:15px}.kyc-actions .btn{flex:1}}
+ @media(max-width:620px){.kyc-face-uploads{grid-template-columns:1fr}}
+ @media(max-width:480px){.kyc-steps{gap:5px}.kyc-steps li{padding:10px 4px;font-size:11px}.kyc-step{padding:15px}.kyc-actions .btn{flex:1}.kyc-face-card{padding:16px}}
+ @media(prefers-reduced-motion:reduce){.kyc-face-card{transition:none}.kyc-face-card:hover{transform:none}}
  .settings-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
  .settings-actions .btn{margin:0}
  .settings-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
@@ -187,7 +214,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     <a href="#kyc"><span class="settings-nav-icon" aria-hidden="true">▣</span>KYC</a><a href="#entreprise"><span class="settings-nav-icon" aria-hidden="true">⌂</span>Entreprise</a><a href="#frais"><span class="settings-nav-icon" aria-hidden="true">¤</span>Frais</a><a href="#equipe"><span class="settings-nav-icon" aria-hidden="true">♧</span>Équipe</a><a href="#profil"><span class="settings-nav-icon" aria-hidden="true">◉</span>Profil</a><a href="#securite"><span class="settings-nav-icon" aria-hidden="true">◇</span>Sécurité</a><a href="#mot-de-passe"><span class="settings-nav-icon" aria-hidden="true">⚿</span>Mot de passe</a><a href="#legal"><span class="settings-nav-icon" aria-hidden="true">§</span>Informations légales</a>
    </nav>
    <div class="settings-content">
-   <section class="card settings-section" id="kyc"><div id="kyc-start" class="kyc-start"><h2>Vérification d’identité (KYC)</h2><p>Commencez pour remplir le formulaire guidé : vos informations, les justificatifs nécessaires, puis la confirmation avant l’envoi à l’équipe conformité. Préparez une pièce d’identité valide.</p><p class="settings-status">Statut : <span class="tag warn" id="kyc-status">Chargement…</span></p><p class="settings-note" id="kyc-status-note" role="status" aria-live="polite">Chargement du dossier…</p><button class="btn p kyc-start-button" id="kyc-start-button" type="button" disabled>Commencer</button></div><div id="kyc-mfa-note" class="settings-note" hidden>Pour commencer, active la MFA et valide le code OTP à la connexion afin de sécuriser ta session. <a href="securite.html#mfa">Configurer la MFA</a></div><form id="kyc-form" class="settings-form" hidden><ol class="kyc-steps" aria-label="Étapes de vérification"><li data-step-indicator="0" aria-current="step">Informations</li><li data-step-indicator="1">Justificatif</li><li data-step-indicator="2">Confirmation</li></ol><section class="kyc-step" data-step="0"><h3 tabindex="-1">Étape 1 — Tes informations</h3><p class="mute">Renseigne les informations qui apparaîtront sur ton dossier, puis appuie sur « Suivant ».</p><label for="kyc-full-name">Nom légal complet<input id="kyc-full-name" name="full_name" autocomplete="name" minlength="2" maxlength="120" required></label><label for="kyc-country">Pays de résidence<select id="kyc-country" name="country" required><option value="">Choisir un pays</option><option value="CI">Côte d'Ivoire</option><option value="SN">Sénégal</option><option value="BF">Burkina Faso</option><option value="ML">Mali</option><option value="BJ">Bénin</option><option value="TG">Togo</option><option value="NE">Niger</option><option value="GW">Guinée-Bissau</option></select></label><label for="kyc-document-kind">Type de pièce d'identité<select id="kyc-document-kind" name="identity_type" required><option value="">Choisir un type</option><option value="national_id">Carte nationale d'identité</option><option value="passport">Passeport</option><option value="driving_license">Permis de conduire</option></select></label><button class="btn p" type="button" data-step-next>Suivant</button></section><section class="kyc-step" data-step="1" hidden><h3 tabindex="-1">Étape 2 — Tes justificatifs</h3><p class="mute">Choisis le type et le côté du document à déposer. Le recto de la pièce d’identité est obligatoire ; tu peux ensuite ajouter d’autres justificatifs avant la soumission.</p><label for="kyc-type">Type de fichier à déposer<select id="kyc-type" name="document_type" required><option value="">Choisir un type</option><option value="identity">Pièce d'identité</option><option value="business">Document d'entreprise</option><option value="address">Justificatif d'adresse</option><option value="other">Autre document demandé</option></select></label><label for="kyc-side">Côté du document<select id="kyc-side" name="document_side" required><option value="front">Recto / page d'identité</option><option value="back">Verso</option><option value="supporting">Justificatif complémentaire</option></select></label><label for="kyc-file">Fichier (PDF, JPG ou PNG, 4 Mo maximum)<input id="kyc-file" name="document" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><div class="kyc-actions"><button class="btn" type="button" data-step-back>Précédent</button><button class="btn p" id="kyc-submit" type="button">Déposer et continuer</button></div></section><section class="kyc-step" data-step="2" hidden><h3 tabindex="-1">Étape 3 — Vérifie et soumets</h3><p class="settings-note">Relis toutes tes informations et vérifie que le recto de ta pièce d’identité est déposé. Tu pourras revenir en arrière ou ajouter un justificatif complémentaire avant de soumettre. L’équipe conformité examinera le dossier manuellement.</p><p id="kyc-review-details"></p><p id="kyc-review-documents"></p><div class="kyc-actions"><button class="btn" type="button" data-step-back>Précédent</button><button class="btn" type="button" id="kyc-add-document">Ajouter un justificatif</button><button class="btn p" id="kyc-submit-case" type="button">Soumettre mon dossier</button></div></section><p class="err" id="kyc-error" role="status" aria-live="polite"></p></form><div id="kyc-documents-area" hidden><h3>Justificatifs déposés</h3><div id="kyc-documents" class="settings-note" role="status" aria-live="polite">Chargement…</div><p class="settings-note">N'envoie que les documents utiles à ta vérification, jamais de données de carte bancaire. Les justificatifs sont limités à 4 Mo chacun et ne sont pas analysés par un antivirus.</p></div></section>
+   <section class="card settings-section" id="kyc"><div id="kyc-start" class="kyc-start"><h2>Vérification d’identité (KYC)</h2><p>Commencez pour remplir le formulaire guidé : vos informations, les justificatifs nécessaires, puis la confirmation avant l’envoi à l’équipe conformité. Préparez une pièce d’identité valide.</p><p class="settings-status">Statut : <span class="tag warn" id="kyc-status">Chargement…</span></p><p class="settings-note" id="kyc-status-note" role="status" aria-live="polite">Chargement du dossier…</p><button class="btn p kyc-start-button" id="kyc-start-button" type="button" disabled>Commencer</button></div><div id="kyc-mfa-note" class="settings-note" hidden>Pour commencer, active la MFA et valide le code OTP à la connexion afin de sécuriser ta session. <a href="securite.html#mfa">Configurer la MFA</a></div><form id="kyc-form" class="settings-form" hidden><ol class="kyc-steps" aria-label="Étapes de vérification"><li data-step-indicator="0" aria-current="step">Informations</li><li data-step-indicator="1">Justificatif</li><li data-step-indicator="2">Confirmation</li></ol><section class="kyc-step" data-step="0"><h3 tabindex="-1">Étape 1 — Tes informations</h3><p class="mute">Renseigne les informations qui apparaîtront sur ton dossier, puis appuie sur « Suivant ».</p><label for="kyc-full-name">Nom légal complet<input id="kyc-full-name" name="full_name" autocomplete="name" minlength="2" maxlength="120" required></label><label for="kyc-country">Pays de résidence<select id="kyc-country" name="country" required><option value="">Choisir un pays</option><option value="CI">Côte d'Ivoire</option><option value="SN">Sénégal</option><option value="BF">Burkina Faso</option><option value="ML">Mali</option><option value="BJ">Bénin</option><option value="TG">Togo</option><option value="NE">Niger</option><option value="GW">Guinée-Bissau</option></select></label><label for="kyc-document-kind">Type de pièce d'identité<select id="kyc-document-kind" name="identity_type" required><option value="">Choisir un type</option><option value="national_id">Carte nationale d'identité</option><option value="passport">Passeport</option><option value="driving_license">Permis de conduire</option></select></label><button class="btn p" type="button" data-step-next>Suivant</button></section><section class="kyc-step" data-step="1" hidden><h3 tabindex="-1">Étape 2 — Tes justificatifs</h3><p class="mute">Choisis le type de justificatif, puis la face à déposer. Dépose une face à la fois : le recto est obligatoire et le verso peut être ajouté ensuite.</p><label for="kyc-type">Type de justificatif<select id="kyc-type" name="document_type" required><option value="identity" selected>Pièce d’identité</option><option value="business">Document d'entreprise</option><option value="address">Justificatif d'adresse</option><option value="other">Autre document demandé</option></select></label><fieldset id="kyc-side-group" style="border:0;padding:0;margin:16px 0 0"><legend style="font-size:13px;font-weight:600;color:var(--mute)">Face de la pièce d’identité</legend><div class="kyc-side-picker"><label class="kyc-side-choice"><input type="radio" name="document_side" value="front" required checked><span>Recto<small>Face avec la photo et les informations</small></span></label><label class="kyc-side-choice"><input type="radio" name="document_side" value="back" required><span>Verso<small>Face arrière de la pièce</small></span></label></div></fieldset><label for="kyc-file">Fichier (PDF, JPG ou PNG, 4 Mo maximum)<input id="kyc-file" name="document" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><div class="kyc-actions"><button class="btn" type="button" data-step-back>Précédent</button><button class="btn p" id="kyc-submit" type="button">Déposer cette face</button></div></section><section class="kyc-step" data-step="2" hidden><h3 tabindex="-1">Étape 3 — Vérifie et soumets</h3><p class="settings-note">Relis toutes tes informations et vérifie que le recto de ta pièce d’identité est déposé. Tu pourras revenir en arrière ou ajouter le verso ou un justificatif complémentaire avant de soumettre. L’équipe conformité examinera le dossier manuellement.</p><p id="kyc-review-details"></p><p id="kyc-review-documents"></p><div class="kyc-actions"><button class="btn" type="button" data-step-back>Précédent</button><button class="btn" type="button" id="kyc-add-document">Ajouter une face ou un justificatif</button><button class="btn p" id="kyc-submit-case">Soumettre mon dossier</button></div></section><p class="err" id="kyc-error" role="status" aria-live="polite"></p></form><div id="kyc-documents-area" hidden><h3>Justificatifs déposés</h3><div id="kyc-documents" class="settings-note" role="status" aria-live="polite">Chargement…</div><p class="settings-note">N'envoie que les documents utiles à ta vérification, jamais de données de carte bancaire. Les justificatifs sont limités à 4 Mo chacun et ne sont pas analysés par un antivirus.</p></div></section>
    <section class="card settings-section" id="entreprise"><h2>Entreprise</h2><p class="mute">Mets à jour les informations enregistrées dans ton profil de compte.</p><form id="business-form" class="settings-form"><label for="business-name">Nom de l'entreprise<input id="business-name" name="company" autocomplete="organization" maxlength="120" required></label><label for="business-country">Pays<select id="business-country" name="country" required><option value="">Choisir un pays</option>${countryNames.map(name=>`<option value="${countryCodes[name]}">${name}</option>`).join("")}</select></label><button class="btn p" type="submit">Enregistrer l'entreprise</button><p class="err" id="business-error" role="status" aria-live="polite"></p></form></section>
    <section class="card settings-section" id="profil"><h2>Profil</h2><p class="mute">Gère le nom associé à ton compte. L'adresse e-mail reste celle utilisée pour te connecter.</p><form id="profile-form" class="settings-form"><label for="profile-name">Nom complet<input id="profile-name" name="full_name" autocomplete="name" maxlength="120" required></label><label for="profile-email">Adresse e-mail<input id="profile-email" name="email" type="email" autocomplete="email" readonly></label><button class="btn p" type="submit">Enregistrer le profil</button><p class="err" id="profile-error" role="status" aria-live="polite"></p></form></section>
    <section class="card settings-section" id="securite"><h2>Sécurité</h2><p class="mute">Ajoute une seconde étape pour mieux protéger ton compte.</p><p class="settings-status">Authentification à deux facteurs : <span class="tag warn" id="mfa-state">Vérification…</span></p><p class="settings-note" id="mfa-risk-note">La MFA est désactivée : avec le mot de passe seul, une personne qui le connaît peut se connecter. <a href="securite.html#mfa">Activer la MFA avec une application d'authentification</a></p><div class="settings-options">
@@ -316,6 +343,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
      :displayStatus==="verified"?"Ton identité a été vérifiée. Aucun nouveau document ne peut être ajouté."
      :"Aucun dossier soumis. Tu peux commencer la vérification en renseignant tes informations et en déposant le recto de ta pièce d'identité.";
     setKycFormEnabled(form,canEdit&&!inconsistentVerified);
+    updateKycSideOptions();
     const startButton=document.getElementById("kyc-start-button");
     startButton.disabled=!kycCanStart;
     startButton.textContent=displayStatus==="rejected"?"Reprendre mon dossier":"Commencer";
@@ -364,21 +392,103 @@ f.addEventListener("submit",async e=>{e.preventDefault();
   document.querySelectorAll("#kyc-form [data-step-next]").forEach(button=>button.addEventListener("click",()=>{
    if(!validateKycStep(kycStep))return;
    updateKycReview();
+   playKycStepSound();
    showKycStep(kycStep+1);
   }));
-  document.querySelectorAll("#kyc-form [data-step-back]").forEach(button=>button.addEventListener("click",()=>showKycStep(Math.max(0,kycStep-1))));
-  document.getElementById("kyc-submit").addEventListener("click",async()=>{
-   const form=document.getElementById("kyc-form"),fileInput=document.getElementById("kyc-file"),file=fileInput.files[0],type=form.elements.document_type.value,button=document.getElementById("kyc-submit"),message=document.getElementById("kyc-error");
-   message.textContent="";
-   if(!file&&kycDocuments.length){updateKycReview();showKycStep(2);return}
-   if(!validateKycStep(1))return;
-   if(!file){message.textContent="Sélectionne un justificatif.";return}
-   const extensions={"application/pdf":"pdf","image/jpeg":"jpg","image/png":"png"};
-   const extension=extensions[file.type];
-   if(!extension){message.textContent="Format refusé. Utilise un fichier PDF, JPG ou PNG.";return}
-   if(file.size===0||file.size>4*1024*1024){message.textContent="Le fichier doit peser entre 1 octet et 4 Mo.";return}
-   button.disabled=true;button.textContent="Téléversement…";
+  const kycTypeSelect=document.getElementById("kyc-type"),kycSideGroup=document.getElementById("kyc-side-group"),kycFileInput=document.getElementById("kyc-file"),kycFileLabel=kycFileInput.closest("label"),kycUploadButton=document.getElementById("kyc-submit"),kycFaceUploads=document.createElement("div");
+  let kycAudioContext=null;
+  function playKycStepSound(){
+   const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+   if(!AudioContextClass)return;
    try{
+    if(!kycAudioContext)kycAudioContext=new AudioContextClass();
+    const play=()=>{
+     const start=kycAudioContext.currentTime;
+     [784,1046].forEach((frequency,index)=>{
+      const oscillator=kycAudioContext.createOscillator(),gain=kycAudioContext.createGain(),noteStart=start+index*.11;
+      oscillator.type="sine";
+      oscillator.frequency.setValueAtTime(frequency,noteStart);
+      gain.gain.setValueAtTime(.0001,noteStart);
+      gain.gain.exponentialRampToValueAtTime(.1,noteStart+.015);
+      gain.gain.exponentialRampToValueAtTime(.0001,noteStart+.18);
+      oscillator.connect(gain);gain.connect(kycAudioContext.destination);
+      oscillator.start(noteStart);oscillator.stop(noteStart+.19);
+     });
+    };
+    if(kycAudioContext.state==="suspended")kycAudioContext.resume().then(play).catch(()=>{});
+    else play();
+   }catch(error){console.warn("Le son de validation KYC n'a pas pu être joué.",error)}
+  }
+  document.querySelector('#kyc-form [data-step="1"]>p.mute').textContent="Sélectionne une image pour le recto et une autre pour le verso, puis clique une seule fois sur « Déposer les fichiers sélectionnés » pour envoyer les deux. Tu peux aussi ne choisir qu’une face. Le recto est obligatoire ; le verso est facultatif.";
+  document.querySelector('#kyc-form [data-step="2"]>.settings-note').textContent="Vérifie les informations et les fichiers déposés. Le recto de ta pièce d’identité est obligatoire ; le verso est facultatif. Tu peux revenir à l’étape précédente pour ajouter une face ou un justificatif.";
+  kycFaceUploads.className="kyc-face-uploads";
+  kycFileLabel.after(kycFaceUploads);
+  const kycFaceControls={};
+  for(const [side,title,description] of [["front","Recto","Face avec la photo et les informations"],["back","Verso","Face arrière de la pièce"]]){
+   const card=document.createElement("section");card.className="kyc-face-card";
+   const cardHead=document.createElement("div");cardHead.className="kyc-face-card-head";
+   const headingGroup=document.createElement("div");headingGroup.className="kyc-face-card-heading";
+   const number=document.createElement("span");number.className="kyc-face-number";number.textContent=side==="front"?"01":"02";number.setAttribute("aria-hidden","true");
+   const heading=document.createElement("h4");heading.textContent=title;
+   headingGroup.append(number,heading);
+   const badge=document.createElement("span");badge.className="tag mute kyc-face-badge";badge.textContent="À déposer";
+   cardHead.append(headingGroup,badge);
+   const hint=document.createElement("p");hint.textContent=description;
+   const inputLabel=document.createElement("label");inputLabel.textContent=`Image du ${title.toLowerCase()} (PDF, JPG ou PNG, 4 Mo maximum)`;
+   const input=document.createElement("input");input.type="file";input.accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png";input.setAttribute("aria-label",`Fichier du ${title.toLowerCase()}`);
+   inputLabel.appendChild(input);
+   const status=document.createElement("p");status.className="kyc-face-status";status.setAttribute("role","status");status.setAttribute("aria-live","polite");
+   card.append(cardHead,hint,status,inputLabel);kycFaceUploads.appendChild(card);
+   kycFaceControls[side]={input,status,title,badge,card};
+  }
+  const kycUploadFacesButton=document.createElement("button");
+  kycUploadFacesButton.type="button";
+  kycUploadFacesButton.className="btn p kyc-face-upload-all";
+  kycUploadFacesButton.textContent="Déposer les fichiers sélectionnés";
+  kycFaceUploads.after(kycUploadFacesButton);
+  const kycContinueButton=document.createElement("button");
+  kycContinueButton.type="button";
+  kycContinueButton.className="btn p";
+  kycContinueButton.textContent="Suivant";
+  kycContinueButton.disabled=true;
+  document.querySelector('#kyc-form [data-step="1"] .kyc-actions').appendChild(kycContinueButton);
+  kycContinueButton.addEventListener("click",()=>{
+   if(!kycDocuments.some(document=>document.document_type==="identity"&&document.document_side==="front"))return;
+   updateKycReview();
+   playKycStepSound();
+   showKycStep(2);
+  });
+  kycUploadButton.textContent="Déposer ce justificatif";
+  function updateKycSideOptions(){
+   const isIdentity=kycTypeSelect.value==="identity";
+   kycSideGroup.hidden=true;
+   kycFileLabel.hidden=isIdentity;
+   kycFaceUploads.hidden=!isIdentity;
+   kycUploadFacesButton.hidden=!isIdentity;
+   kycUploadButton.hidden=isIdentity;
+   let selectedCount=0;
+   for(const [side,control] of Object.entries(kycFaceControls)){
+    const uploaded=kycDocuments.some(document=>document.document_type==="identity"&&document.document_side===side);
+    const selectedFile=control.input.files[0];
+    if(selectedFile)selectedCount++;
+    control.status.textContent=uploaded?`${control.title} déjà déposé.`:selectedFile?`Fichier sélectionné : ${selectedFile.name}`:side==="front"?"Le recto est obligatoire pour envoyer ton dossier.":"Le verso est facultatif.";
+     control.status.dataset.uploaded=String(uploaded);
+     control.badge.textContent=uploaded?"Déposé":"À déposer";
+     control.badge.className=`tag ${uploaded?"":"mute"} kyc-face-badge`;
+     control.card.classList.toggle("is-uploaded",uploaded);
+     control.input.disabled=!kycCanEdit||kycDocuments.length>=8||uploaded;
+   }
+   kycContinueButton.disabled=!kycCanEdit||!kycDocuments.some(document=>document.document_type==="identity"&&document.document_side==="front");
+   kycUploadFacesButton.disabled=!kycCanEdit||kycDocuments.length>=8||selectedCount===0;
+  }
+  Object.values(kycFaceControls).forEach(control=>control.input.addEventListener("change",updateKycSideOptions));
+  kycTypeSelect.addEventListener("change",updateKycSideOptions);
+  updateKycSideOptions();
+  document.querySelectorAll("#kyc-form [data-step-back]").forEach(button=>button.addEventListener("click",()=>showKycStep(Math.max(0,kycStep-1))));
+  async function uploadKycFile(file,type,side){
+   if(!file)throw new Error("Sélectionne un justificatif.");
+   if(!["application/pdf","image/jpeg","image/png"].includes(file.type))throw new Error("Format refusé. Utilise un fichier PDF, JPG ou PNG.");
+   if(file.size===0||file.size>4*1024*1024)throw new Error("Le fichier doit peser entre 1 octet et 4 Mo.");
     const {data:sessionData,error:sessionError}=await auth.getSession();
     if(sessionError||!sessionData.session)throw new Error("Session expirée. Reconnecte-toi.");
     const response=await fetch("/api/kyc/upload",{
@@ -387,18 +497,64 @@ f.addEventListener("submit",async e=>{e.preventDefault();
      Authorization:`Bearer ${sessionData.session.access_token}`,
      "Content-Type":file.type,
      "X-KYC-Document-Type":type,
-     "X-KYC-Document-Side":form.elements.document_side.value
+     "X-KYC-Document-Side":side
     },
     body:file
     });
-    const result=await response.json();
+    const responseText=await response.text();
+    let result;
+    try{result=JSON.parse(responseText)}
+    catch(_){
+     console.error("KYC upload endpoint returned a non-JSON response:",response.status,response.headers.get("content-type"));
+     if(response.status===401||response.status===403)throw new Error("Le serveur a refusé le dépôt. Reconnecte-toi et vérifie que ta session MFA est toujours active.");
+     throw new Error(`Le serveur a renvoyé une réponse inattendue (HTTP ${response.status}). Réessaie ; si le problème persiste, contacte le support.`);
+    }
     if(!response.ok)throw new Error(result.error||"Le justificatif n'a pas pu être déposé.");
-    fileInput.value="";
+   return result;
+  }
+  kycUploadFacesButton.addEventListener("click",async()=>{
+   const message=document.getElementById("kyc-error");
+   const selected=Object.entries(kycFaceControls).filter(([side,control])=>control.input.files[0]&&!kycDocuments.some(document=>document.document_type==="identity"&&document.document_side===side));
+   message.textContent="";
+   if(!selected.length){message.textContent="Sélectionne l’image du recto, du verso, ou les deux.";return}
+   for(const [,control] of selected){
+    const file=control.input.files[0];
+    if(!["application/pdf","image/jpeg","image/png"].includes(file.type)){message.textContent=`Format refusé pour le ${control.title.toLowerCase()}. Utilise un fichier PDF, JPG ou PNG.`;return}
+    if(file.size===0||file.size>4*1024*1024){message.textContent=`Le fichier du ${control.title.toLowerCase()} doit peser entre 1 octet et 4 Mo.`;return}
+   }
+   kycUploadFacesButton.disabled=true;
+   kycUploadFacesButton.textContent="Dépôt en cours…";
+   const uploaded=[];
+   try{
+    for(const [side,control] of selected){
+     await uploadKycFile(control.input.files[0],"identity",side);
+     control.input.value="";
+     uploaded.push(control.title);
+    }
     await loadKyc();
-    updateKycReview();showKycStep(2);
+    updateKycReview();
    }catch(error){
-    message.textContent=error.message||"Le justificatif n'a pas pu être déposé.";
-   }finally{button.disabled=!kycCanEdit;button.textContent="Déposer et continuer"}
+    if(uploaded.length)await loadKyc();
+    message.textContent=uploaded.length?`${uploaded.join(" et ")} déposé${uploaded.length>1?"s":""}. Échec du dépôt suivant : ${error.message||"Réessaie."}`:error.message||"Les fichiers n'ont pas pu être déposés.";
+   }finally{
+    kycUploadFacesButton.textContent="Déposer les fichiers sélectionnés";
+    updateKycSideOptions();
+   }
+  });
+  kycUploadButton.addEventListener("click",async()=>{
+   if(!validateKycStep(1))return;
+   const message=document.getElementById("kyc-error");
+   message.textContent="";
+   kycUploadButton.disabled=true;
+   try{
+    await uploadKycFile(kycFileInput.files[0],kycTypeSelect.value,"supporting");
+    kycFileInput.value="";
+    await loadKyc();
+    updateKycReview();
+    playKycStepSound();
+    showKycStep(2);
+   }catch(error){message.textContent=error.message||"Le justificatif n'a pas pu être déposé."}
+   finally{kycUploadButton.disabled=!kycCanEdit||kycDocuments.length>=8}
   });
   document.getElementById("kyc-add-document").addEventListener("click",()=>showKycStep(1));
   document.getElementById("kyc-submit-case").addEventListener("click",async()=>{

@@ -69,8 +69,10 @@ module.exports = async function handler(req, res) {
       body: bytes
     });
     if (!upload.ok) {
-      console.error("KYC object upload failed with HTTP status:", upload.status);
-      return json(res, 502, { error: "Le stockage sécurisé du justificatif a échoué." });
+      console.error("KYC object upload failed with HTTP status:", upload.status, "content type:", upload.headers.get("content-type"));
+      return json(res, 502, { error: upload.status === 401 || upload.status === 403
+        ? "Le stockage a refusé le fichier. Vérifie la configuration Supabase du stockage KYC ou contacte le support."
+        : "Le stockage sécurisé du justificatif a échoué. Réessaie dans quelques instants." });
     }
 
     const metadata = await rest("merchant_kyc_documents", {
@@ -86,13 +88,29 @@ module.exports = async function handler(req, res) {
     if (!metadata.ok) {
       const cleaned = await removeObject(url, serviceKey, path);
       if (!cleaned) console.error("KYC orphan cleanup failed for upload:", metadata.status);
+      if (metadata.status === 401 || metadata.status === 403) {
+        console.error("KYC metadata registration was forbidden. Verify service-role permissions and KYC database setup.");
+        return json(res, 502, { error: cleaned
+          ? "Le service KYC a refusé l’enregistrement du justificatif. Vérifie la configuration Supabase ou contacte le support."
+          : "Le service KYC a refusé l’enregistrement et le nettoyage du fichier temporaire a échoué. Contacte le support." });
+      }
       return json(res, 409, {
         error: cleaned
           ? "Le justificatif n'a pas pu être enregistré. Vérifie le statut KYC et la limite de fichiers."
           : "Le justificatif n'a pas pu être enregistré et le nettoyage du fichier temporaire a échoué. Contacte le support."
       });
     }
-    const rows = await metadata.json();
+    let rows;
+    try {
+      rows = JSON.parse(await metadata.text());
+    } catch (_) {
+      const cleaned = await removeObject(url, serviceKey, path);
+      console.error("KYC metadata registration returned invalid JSON with HTTP status:", metadata.status);
+      if (!cleaned) console.error("KYC orphan cleanup failed after invalid metadata response.");
+      return json(res, 502, { error: cleaned
+        ? "Le service KYC a renvoyé une réponse invalide. Réessaie ou contacte le support."
+        : "Le service KYC a renvoyé une réponse invalide et le nettoyage du fichier temporaire a échoué. Contacte le support." });
+    }
     if (!Array.isArray(rows) || !rows[0] || typeof rows[0].id !== "string") {
       const cleaned = await removeObject(url, serviceKey, path);
       if (!cleaned) console.error("KYC orphan cleanup failed after invalid metadata response.");

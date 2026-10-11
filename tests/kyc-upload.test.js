@@ -130,3 +130,45 @@ test("removes the uploaded object when metadata registration fails", async t => 
   assert.equal(calls[2].options.method, "DELETE");
   assert.match(JSON.parse(res.body).error, /pas pu être enregistré/i);
 });
+
+test("cleans up the uploaded file when metadata returns a non-JSON response", async t => {
+  const userId = crypto.randomUUID();
+  const calls = [];
+  await withEnvironment(t, userId, async (url, options) => {
+    calls.push({ url: String(url), options });
+    if (String(url).includes("/storage/v1/object/merchant-kyc-documents/")) {
+      return new Response(null, { status: options.method === "DELETE" ? 200 : 201 });
+    }
+    if (String(url).endsWith("/rest/v1/merchant_kyc_documents")) {
+      return new Response("Interdit.", { status: 200, headers: { "content-type": "text/plain" } });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  });
+  const res = createResponse();
+  await handler(request(userId, Buffer.from("%PDF-1.7 test"), "application/pdf"), res);
+  assert.equal(res.statusCode, 502);
+  assert.match(JSON.parse(res.body).error, /réponse invalide/i);
+  assert.equal(calls.length, 3);
+  assert.equal(calls[2].options.method, "DELETE");
+});
+
+test("returns an actionable error when KYC metadata registration is forbidden", async t => {
+  const userId = crypto.randomUUID();
+  const calls = [];
+  await withEnvironment(t, userId, async (url, options) => {
+    calls.push({ url: String(url), options });
+    if (String(url).includes("/storage/v1/object/merchant-kyc-documents/")) {
+      return new Response(null, { status: options.method === "DELETE" ? 200 : 201 });
+    }
+    if (String(url).endsWith("/rest/v1/merchant_kyc_documents")) {
+      return new Response("Interdit.", { status: 403, headers: { "content-type": "text/plain" } });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  });
+  const res = createResponse();
+  await handler(request(userId, Buffer.from("%PDF-1.7 test"), "application/pdf"), res);
+  assert.equal(res.statusCode, 502);
+  assert.match(JSON.parse(res.body).error, /configuration Supabase/i);
+  assert.equal(calls.length, 3);
+  assert.equal(calls[2].options.method, "DELETE");
+});
