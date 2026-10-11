@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' http://localhost:3000 https:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ABVSPAIE — La couche de paiement de votre SaaS</title>
+<meta name="description" content="Une seule API pour encaisser par mobile money et par carte, et payer vos bénéficiaires en FCFA.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234a6283'/%3E%3Ctext x='32' y='45' font-size='36' text-anchor='middle' fill='%23fff' font-family='Arial%2Csans-serif' font-weight='800'%3EA%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#eef1f5" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#12171e" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website"><meta property="og:site_name" content="ABVSPAIE"><meta property="og:locale" content="fr_FR"><meta property="og:title" content="ABVSPAIE — La couche de paiement de votre SaaS"><meta property="og:description" content="Une seule API pour encaisser par mobile money et par carte, et payer vos bénéficiaires en FCFA.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap">
+<style>
+:root{--bg:#eef1f5;--solid:#fff;--ink:#1b2430;--mute:#6a7685;--pri:#4a6283;--grad:linear-gradient(135deg,#4a6283,#566f94);--line:#dde3ea;--ok:#14a46b;--in:#f7f9fb;--sh:rgba(40,60,90,.18);--o1:#b9c8de;--o2:#c9d0f7;--o3:#c4e6dd;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1319;--solid:#1b222c;--ink:#edf1f5;--mute:#9aa6b4;--pri:#8fa8c4;--line:#2b3541;--in:#151b23;--sh:rgba(0,0,0,.5);--o1:#27374d;--o2:#2a2d63;--o3:#17463f}}
+:root[data-theme="dark"]{--bg:#0e1319;--solid:#1b222c;--ink:#edf1f5;--mute:#9aa6b4;--pri:#8fa8c4;--line:#2b3541;--in:#151b23;--sh:rgba(0,0,0,.5);--o1:#27374d;--o2:#2a2d63;--o3:#17463f}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--pri);outline-offset:3px;border-radius:10px}
+
+/* ── Fond : orbes + grille de points ── */
+body:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(var(--line) 1px,transparent 1.2px);background-size:30px 30px;-webkit-mask-image:radial-gradient(ellipse at 50% 45%,#000 25%,transparent 75%);mask-image:radial-gradient(ellipse at 50% 45%,#000 25%,transparent 75%)}
+.orb{position:fixed;z-index:0;border-radius:50%;filter:blur(90px);pointer-events:none;animation:drift 20s ease-in-out infinite alternate}
+.o1{width:560px;height:560px;left:-8%;top:-12%;background:var(--o1)}
+.o2{width:520px;height:520px;right:-10%;top:10%;background:var(--o2);animation-delay:-7s}
+.o3{width:480px;height:480px;left:30%;bottom:-22%;background:var(--o3);animation-delay:-13s}
+@keyframes drift{to{transform:translate(40px,-30px) scale(1.12)}}
+
+/* ── Barre du haut et dock ── */
+.nav{position:fixed;top:16px;left:20px;right:20px;z-index:40;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+.nav>*{pointer-events:auto}
+.glass{background:color-mix(in srgb,var(--solid) 78%,transparent);backdrop-filter:blur(14px);border:1px solid var(--line)}
+.brand{font-weight:800;font-size:18px;letter-spacing:-.02em;padding:9px 14px;border-radius:14px}.brand span{color:var(--pri)}
+.right{display:flex;align-items:center;gap:8px;padding:6px;border-radius:16px;font-size:14px;font-weight:600}
+.right a.l{padding:8px 12px;color:var(--mute)}.right a.l:hover{color:var(--ink)}
+.btn{display:inline-block;background:var(--grad);color:#fff;border:0;border-radius:11px;padding:10px 18px;font:600 14px Inter,sans-serif;cursor:pointer;transition:filter .15s,transform .15s}
+.btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn.alt{background:var(--solid);color:var(--ink);border:1px solid var(--line)}
+.btn.lg{padding:15px 28px;font-size:16px;border-radius:14px}
+.dock{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:6px;padding:8px;border-radius:22px;box-shadow:0 20px 50px var(--sh);z-index:40}
+.dock a{position:relative;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:20px}
+.dock a span{transition:transform .2s}.dock a:hover span{transform:translateY(-4px) scale(1.25)}
+.dock a:hover{background:var(--in)}
+@media(min-width:901px){.dock a:hover:after{content:attr(data-t);position:absolute;bottom:58px;background:var(--ink);color:var(--solid);font:600 11px Inter,sans-serif;padding:5px 9px;border-radius:8px;white-space:nowrap}}
+
+/* ── Scène ── */
+.stage{position:relative;z-index:2;min-height:max(100svh,740px);overflow:hidden}
+.hero{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:6;text-align:center;width:min(620px,48vw);pointer-events:none}
+.hero .btn{pointer-events:auto}
+h1{font-size:clamp(44px,7.4vw,98px);line-height:.96;letter-spacing:-.05em;font-weight:800;margin:0 0 20px}
+h1 em{font-family:Georgia,serif;font-weight:400;font-style:italic;color:var(--pri);letter-spacing:-.03em}
+.sub{color:var(--mute);font-size:clamp(16px,1.5vw,20px);margin:0 0 30px}
+.btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.mobhint{display:none}
+
+/* ── Modules ── */
+.mod{position:absolute;z-index:3;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.mod.drag{cursor:grabbing}
+.mod.snap{transition:left .55s cubic-bezier(.2,1.5,.4,1),top .55s cubic-bezier(.2,1.5,.4,1)}
+.px{translate:calc(var(--px,0)*var(--d,0)*1px) calc(var(--py,0)*var(--d,0)*1px);transition:translate .35s ease-out}
+.f,.c{rotate:var(--r,0deg);animation:fl 7s ease-in-out infinite;animation-delay:var(--dl,0s);transition:rotate .25s}
+@keyframes fl{50%{transform:translateY(-12px)}}
+.mod.drag .f,.mod.drag .c{animation-play-state:paused;rotate:0deg}
+.c{background:color-mix(in srgb,var(--solid) 80%,transparent);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:22px;box-shadow:0 24px 50px var(--sh);padding:18px}
+.mod.drag .c,.mod.drag .phone,.mod.drag .bcard{filter:drop-shadow(0 26px 30px var(--sh))}
+small{display:block;color:var(--mute);font-size:12px}
+.tag{display:inline-block;background:#e3f8ee;color:var(--ok);font-weight:600;font-size:11px;padding:3px 10px;border-radius:99px}
+.tag.w{background:#fdf2d9;color:#c98a10}
+
+/* Téléphone */
+.phone{width:216px;border-radius:40px;padding:9px;background:linear-gradient(160deg,#2f3a4b,#0d1117);box-shadow:0 40px 70px var(--sh),inset 0 0 0 1.5px #3b4759;transition:box-shadow .2s}
+.phone.hot{box-shadow:0 0 0 4px var(--ok),0 0 60px rgba(20,164,107,.45),0 40px 70px var(--sh)}
+.screen{position:relative;height:392px;border-radius:32px;background:linear-gradient(180deg,var(--solid),var(--in));padding:44px 20px 20px;display:flex;flex-direction:column;overflow:hidden}
+.screen:before{content:"";position:absolute;top:10px;left:50%;width:62px;height:17px;margin-left:-31px;border-radius:99px;background:#0d1117}
+.who{font-size:12px;color:var(--mute);font-weight:600}
+.amt{font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.05;margin:6px 0 2px;white-space:nowrap}.amt i{font:600 14px Inter,sans-serif;color:var(--mute);font-style:normal;margin-left:3px}
+.v{display:none;flex:1;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center}
+.v.on{display:flex}
+.vask{align-items:stretch}
+.pin{display:flex;gap:8px;justify-content:center;margin:0 0 18px}.pin i{width:10px;height:10px;border-radius:50%;background:var(--line)}.pin i:nth-child(-n+3){background:var(--pri)}
+.go{width:100%;border:0;border-radius:16px;padding:15px;background:var(--grad);color:#fff;font:700 15px Inter,sans-serif;cursor:pointer;animation:pulse 2s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(74,98,131,.5)}70%,100%{box-shadow:0 0 0 14px transparent}}
+.spin{width:54px;height:54px;border-radius:50%;border:5px solid var(--line);border-top-color:var(--pri);animation:sp .9s linear infinite;margin-bottom:84px}
+@keyframes sp{to{rotate:360deg}}
+.ok{width:74px;height:74px;border-radius:50%;background:#e3f8ee;color:var(--ok);display:grid;place-items:center;font-size:36px;font-weight:800;margin-bottom:12px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{scale:.3;opacity:0}}
+.vok b{font-size:16px;margin-bottom:70px}
+
+/* Pièce */
+.coin{width:98px;height:98px;border-radius:50%;display:grid;place-items:center;text-align:center;font-weight:800;line-height:1.05;color:#6b4300;background:radial-gradient(circle at 30% 26%,#fff7d9,#f3cd63 46%,#c98a10);box-shadow:0 18px 34px rgba(201,138,16,.45),inset 0 -7px 12px rgba(120,70,0,.35),inset 0 4px 8px rgba(255,255,255,.65);position:relative}
+.coin:after{content:"";position:absolute;inset:8px;border-radius:50%;border:2px solid rgba(120,70,0,.28)}
+.coin b{font-size:19px;letter-spacing:-.03em}.coin span{font-size:10px;letter-spacing:.08em;display:block}
+.chint{margin-top:16px;font-size:12px;font-weight:600;color:var(--mute);text-align:center;white-space:nowrap}
+.chint i{display:inline-block;font-style:normal;animation:nudge 1.4s ease-in-out infinite}
+@keyframes nudge{50%{translate:-6px 0}}
+
+/* Solde */
+.wallet{width:262px}
+.big{font-size:32px;font-weight:800;letter-spacing:-.04em;margin:4px 0 2px}.big i{font:600 13px Inter,sans-serif;color:var(--mute);font-style:normal}
+.up{color:var(--ok);font-size:12px;font-weight:700}
+.wallet svg{display:block;width:100%;height:64px;margin-top:10px;overflow:visible}
+
+/* Carte bancaire */
+.bcard{width:234px;height:144px;border-radius:20px;padding:16px 18px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(135deg,#334861,#6b88b3);box-shadow:0 30px 50px var(--sh)}
+.bcard:before{content:"";position:absolute;width:210px;height:210px;border-radius:50%;right:-70px;top:-90px;background:rgba(255,255,255,.14)}
+.bcard:after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;left:-50px;bottom:-80px;background:rgba(255,255,255,.08)}
+.chip{width:36px;height:27px;border-radius:7px;background:linear-gradient(135deg,#f3cd63,#c98a10);margin-top:6px}
+.bcard .n{position:absolute;left:18px;bottom:40px;font:600 15px ui-monospace,Menlo,monospace;letter-spacing:.14em}
+.bcard .t{position:absolute;left:18px;right:18px;bottom:14px;display:flex;justify-content:space-between;font-size:11px;opacity:.85;font-weight:600}
+.bcard .lg{font-weight:800;font-size:13px;letter-spacing:-.02em;float:right}
+
+/* Code */
+.code{width:236px;background:#0f141b;border:1px solid #263140;border-radius:18px;padding:14px 16px;box-shadow:0 24px 50px var(--sh);color:#cfe0f5;font:12.5px/1.75 ui-monospace,Menlo,monospace}
+.code .k{color:#8fa8c4}.code .s{color:#4fd1a0}.code .d{display:flex;gap:6px;margin-bottom:8px}.code .d i{width:9px;height:9px;border-radius:50%;background:#2b3541}
+
+/* Opérateurs */
+.ops{width:250px;display:flex;flex-wrap:wrap;gap:7px;padding:14px}
+.ops b{display:inline-flex;align-items:center;gap:7px;background:var(--solid);border:1px solid var(--line);border-radius:99px;padding:6px 12px;font-size:12px;font-weight:600}
+.ops b:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
+
+/* Toast webhook */
+.toast{position:fixed;top:82px;left:50%;z-index:50;translate:-50% -16px;opacity:0;pointer-events:none;display:flex;align-items:center;gap:12px;padding:11px 16px;border-radius:16px;box-shadow:0 20px 40px var(--sh);transition:opacity .3s,translate .35s cubic-bezier(.2,1.4,.4,1)}
+.toast.show{opacity:1;translate:-50% 0}
+.toast .dot{width:30px;height:30px;border-radius:50%;background:#e3f8ee;color:var(--ok);display:grid;place-items:center;font-weight:800}
+.toast b{font-size:13px;display:block}.toast small{font-size:12px}
+
+/* ── Mobile : on empile, pas de glisser ── */
+@media(max-width:900px){
+  .stage{min-height:0;padding:104px 20px 120px;display:flex;flex-direction:column;align-items:center;gap:26px}
+  .hero{position:static;transform:none;width:100%;margin-bottom:10px}
+  .mod{position:relative;left:auto!important;top:auto!important;cursor:default}
+  .px{translate:none!important}
+  .coin-mod{display:none}
+  .mobhint{display:block;margin-top:16px;color:var(--mute);font-size:13px;font-weight:600}
+  .f,.c{rotate:none;animation:none}
+  .right a.l{display:none}
+}
+@media(prefers-reduced-motion:reduce){.f,.c,.orb,.go,.chint i{animation:none}.px{translate:none!important}}
+.dock{max-width:calc(100vw - 20px);overflow-x:auto;scrollbar-width:none}.legal-bar{position:fixed;left:20px;right:auto;bottom:22px;text-align:left;font:500 11px Inter,system-ui,sans-serif;color:var(--mute);z-index:5;pointer-events:none}.legal-bar a{pointer-events:auto;color:var(--mute);text-decoration:none;margin:0 7px}.legal-bar a:hover{text-decoration:underline}@media(max-width:1000px){.legal-bar{display:none}}
+
+.nv{display:none}
+@media(min-width:901px){.nv{display:inline-block}}
+.hlinks{margin:22px 0 0;font-size:14px;color:var(--mute);pointer-events:auto}
+.hlinks a{margin:0 9px;text-decoration:underline;text-underline-offset:3px}.hlinks a:hover{color:var(--ink)}
+.foot{position:relative;z-index:2;text-align:center;font-size:13px;color:var(--mute);padding:22px 20px 110px}
+.foot a{margin:0 9px;display:inline-block;padding:3px 0}.foot a:hover{color:var(--ink)}
+.foot p{margin:10px 0 0;font-size:12px}
+</style>
+</head>
+<body>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+
+<header class="nav">
+  <a class="brand glass" href="index.html">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
+  <div class="right glass"><a class="l" href="public/inscription-connexion.html">Connexion</a><a class="btn" href="public/inscription-connexion.html">Commencer</a></div>
+</header>
+
+<main class="stage" id="stage">
+  <div class="hero">
+    <h1>Encaissez.<br>Payez.<br><em>C'est tout.</em></h1>
+    <p class="sub">Mobile money et cartes, une seule API.</p>
+    <div class="btns"><a class="btn lg" href="public/inscription-connexion.html">Commencer →</a></div>
+    
+    <p class="mobhint">👆 Touchez « Valider » sur le téléphone</p>
+  </div>
+
+  <!-- Téléphone -->
+  <div class="mod" id="phoneMod" style="left:6%;top:12%"><div class="px" style="--d:26">
+    <div class="phone f" id="phone" style="--r:-5deg"><div class="screen">
+      <div class="who">Ma Boutique SaaS</div>
+      <div class="amt">15 000<i>FCFA</i></div>
+      <small>Abonnement Pro</small>
+      <div class="v vask on" id="vAsk"><div class="pin"><i></i><i></i><i></i><i></i></div><button class="go" id="go" type="button">Valider</button></div>
+      <div class="v" id="vWait"><div class="spin"></div></div>
+      <div class="v vok" id="vOk"><div class="ok">✓</div><b>Payé</b></div>
+    </div></div>
+  </div></div>
+
+  <!-- Pièce -->
+  <div class="mod coin-mod" id="coinMod" data-l="25%" data-t="60%" style="left:25%;top:60%"><div class="px" style="--d:40">
+    <div class="f" style="--r:8deg;--dl:-2s"><div class="coin" aria-label="Pièce de 15 000 FCFA"><div><b>15 000</b><span>FCFA</span></div></div></div>
+    <div class="chint"><i>←</i> faites-moi glisser sur le téléphone</div>
+  </div></div>
+
+  <!-- Solde -->
+  <div class="mod" id="walletMod" style="left:72%;top:9%"><div class="px" style="--d:18">
+    <div class="c wallet" id="wallet" style="--r:3deg;--dl:-1s">
+      <small>Solde disponible</small><div class="big"><span id="bal">5 320 000</span> <i>FCFA</i></div><span class="up">+12 % cette semaine</span>
+      <svg viewBox="0 0 200 64" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a6283" stop-opacity=".35"/><stop offset="1" stop-color="#4a6283" stop-opacity="0"/></linearGradient></defs>
+        <path d="M0 52 L33 44 L66 48 L100 30 L133 36 L166 20 L200 6 L200 64 L0 64Z" fill="url(#ga)"/><path d="M0 52 L33 44 L66 48 L100 30 L133 36 L166 20 L200 6" fill="none" stroke="#4a6283" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="200" cy="6" r="4.5" fill="#4a6283"/></svg>
+    </div>
+  </div></div>
+
+  <!-- Carte bancaire -->
+  <div class="mod" style="left:76%;top:42%"><div class="px" style="--d:34">
+    <div class="bcard f" style="--r:-6deg;--dl:-3s"><span class="lg">ᗩᗷᐯᔕᑭᗩIᗴ</span><div class="chip"></div><div class="n">•••• •••• •••• 4521</div><div class="t"><span>Carte bancaire</span><span>12/28</span></div></div>
+  </div></div>
+
+  <!-- Code -->
+  <div class="mod" style="left:69%;top:70%"><div class="px" style="--d:12">
+    <div class="code f" style="--r:2deg;--dl:-4s"><div class="d"><i></i><i></i><i></i></div><span class="k">POST</span> /v1/payments<br><span class="k">{</span> <span class="k">"amount"</span>: <span class="s">15000</span> <span class="k">}</span><br>→ <span class="s">201</span> <span class="tag w" style="font-family:Inter,sans-serif">pending</span></div>
+  </div></div>
+
+  <!-- Opérateurs -->
+  <div class="mod" style="left:4%;top:76%"><div class="px" style="--d:22">
+    <div class="c ops" style="--r:-2deg;--dl:-5s"><b style="--c:#ff7900">Orange Money</b><b style="--c:#ffcc00">MTN MoMo</b><b style="--c:#0a7cff">Moov</b><b style="--c:#1dc8ff">Wave</b><b style="--c:#8fa8c4">Carte</b></div>
+  </div></div>
+</main>
+<footer class="foot"><nav aria-label="Pied de page"><a href="public/cgu-cgv.html">CGU/CGV</a><a href="public/confidentialite.html">Confidentialité</a><a href="public/mentions-legales.html">Mentions légales</a></nav><p>© 2026 ABVSPAIE · Abidjan, Côte d'Ivoire</p></footer>
+
+
+<div class="toast glass" id="toast" role="status" aria-live="polite"><div class="dot">✓</div><div><b>payment.succeeded</b><small>+15 000 FCFA · Mobile money</small></div></div>
+
+<nav class="dock glass" aria-label="Navigation">
+  <a href="public/paiement.html" data-t="Voir la page de paiement" aria-label="Voir la page de paiement"><span>💳</span></a>
+  <a href="public/inscription-connexion.html" data-t="Connexion" aria-label="Connexion"><span>🔑</span></a>
+  <a href="public/mentions-legales.html" data-t="Mentions légales et CGU" aria-label="Mentions légales et CGU"><span>⚖️</span></a>
+</nav>
+
+<script>
+const $=id=>document.getElementById(id),stage=$("stage"),mq=matchMedia("(max-width:900px)"),calm=matchMedia("(prefers-reduced-motion:reduce)");
+let bal=5320000,busy=false,z=10,tt;
+const fmt=n=>n.toLocaleString("fr-FR");
+const view=v=>["vAsk","vWait","vOk"].forEach(i=>$(i).classList.toggle("on",i===v));
+function count(a,b){const t0=performance.now();(function s(t){const k=Math.min(1,(t-t0)/700);$("bal").textContent=fmt(Math.round(a+(b-a)*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(s)})(t0)}
+function pay(){if(busy)return;busy=true;view("vWait");
+  setTimeout(()=>{view("vOk");count(bal,bal+15000);bal+=15000;$("toast").classList.add("show");clearTimeout(tt);tt=setTimeout(()=>$("toast").classList.remove("show"),3200)},1100);
+  setTimeout(()=>{view("vAsk");busy=false},3700)}
+$("go").onclick=pay;
+
+/* Parallaxe */
+addEventListener("pointermove",e=>{if(mq.matches||calm.matches||e.pointerType==="touch")return;
+  stage.style.setProperty("--px",(e.clientX/innerWidth-.5)*2);stage.style.setProperty("--py",(e.clientY/innerHeight-.5)*2)});
+
+/* Glisser-déposer */
+const inside=(r,x,y,m=14)=>x>r.left-m&&x<r.right+m&&y>r.top-m&&y<r.bottom+m;
+stage.addEventListener("pointerdown",e=>{const m=e.target.closest(".mod");if(!m||mq.matches||e.target.closest("button,a"))return;
+  const coin=m.id==="coinMod",dx=e.clientX-m.offsetLeft-stage.getBoundingClientRect().left,dy=e.clientY-m.offsetTop-stage.getBoundingClientRect().top;
+  m.classList.remove("snap");m.style.left=m.offsetLeft+"px";m.style.top=m.offsetTop+"px";m.classList.add("drag");m.style.zIndex=++z;m.setPointerCapture(e.pointerId);
+  const hit=()=>{const r=(coin?m.querySelector(".coin"):m).getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;return inside($("phone").getBoundingClientRect(),x,y)||inside($("wallet").getBoundingClientRect(),x,y)};
+  const mv=ev=>{const c=stage.getBoundingClientRect();
+    m.style.left=Math.max(0,Math.min(c.width-m.offsetWidth,ev.clientX-c.left-dx))+"px";m.style.top=Math.max(0,Math.min(c.height-m.offsetHeight,ev.clientY-c.top-dy))+"px";
+    if(coin)$("phone").classList.toggle("hot",hit())};
+  const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up);m.removeEventListener("pointercancel",up);
+    if(coin){const ok=hit();$("phone").classList.remove("hot");m.classList.add("snap");m.style.left=m.dataset.l;m.style.top=m.dataset.t;if(ok)pay()}};
+  m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up);m.addEventListener("pointercancel",up)});
+</script>
+</body>
+</html>
