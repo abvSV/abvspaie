@@ -1,6 +1,6 @@
 -- ABVSPAIE — schéma initial (à exécuter dans Supabase > SQL Editor)
 
-create table public.merchants (
+create table if not exists public.merchants (
   id          uuid primary key references auth.users(id) on delete cascade,
   name        text not null check (char_length(name) between 2 and 120),
   email       text not null,
@@ -12,8 +12,10 @@ create table public.merchants (
 alter table public.merchants enable row level security;
 
 -- Un marchand ne voit et ne modifie que sa propre ligne.
+drop policy if exists merchants_select_own on public.merchants;
 create policy merchants_select_own on public.merchants
   for select to authenticated using (id = (select auth.uid()));
+drop policy if exists merchants_update_own on public.merchants;
 create policy merchants_update_own on public.merchants
   for update to authenticated using (id = (select auth.uid())) with check (id = (select auth.uid()));
 
@@ -37,6 +39,7 @@ end $$;
 
 revoke execute on function public.handle_new_user() from public, anon, authenticated;
 
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
