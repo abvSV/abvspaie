@@ -121,13 +121,13 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
   <section id="home">
     <h1>Bonjour 👋</h1><p class="sub">Déplacez les modules où vous voulez.</p>
     <div class="canvas" id="cv">
-      <div class="mod" style="left:2%;top:20px;width:330px;--r:-2deg"><small>Solde disponible</small><div class="big" id="homeBal">5 320 000 <span style="font-size:14px;font-weight:600;color:var(--mute)">FCFA</span></div><span class="up">+12 % cette semaine</span>
+      <div class="mod" style="left:2%;top:20px;width:330px;--r:-2deg"><small>Solde disponible</small><div class="big" id="homeBal">0 <span style="font-size:14px;font-weight:600;color:var(--mute)">FCFA</span></div><span class="up">Encaissements réussis</span>
         <div class="bars"><i style="height:40%"></i><i style="height:55%"></i><i style="height:35%"></i><i style="height:70%"></i><i style="height:50%"></i><i style="height:62%"></i><i style="height:92%"></i></div></div>
-      <div class="mod" style="left:41%;top:0;width:190px;--r:3deg"><small>Paiements (7 j)</small><div class="big">184</div><span class="up">+9 %</span></div>
-      <div class="mod" style="left:41%;top:140px;width:190px;--r:-3deg"><small>Taux de réussite</small><div class="big">97,3 %</div><span class="up">+0,8 pt</span></div>
+      <div class="mod" style="left:41%;top:0;width:190px;--r:3deg"><small>Paiements (7 j)</small><div class="big" id="p7">0</div><span class="up">sur 7 jours</span></div>
+      <div class="mod" style="left:41%;top:140px;width:190px;--r:-3deg"><small>Taux de réussite</small><div class="big" id="rate">—</div><span class="up">paiements réussis</span></div>
       <div class="mod" style="right:1%;top:20px;width:310px;--r:2deg"><b>Dernières transactions</b><div id="tHome"></div></div>
       <div class="mod" style="left:14%;top:330px;width:250px;--r:2deg"><small>Action rapide</small><b style="display:block;margin:4px 0 12px">Créer un lien de paiement</b><button class="btn" onclick="go('links')">Créer</button></div>
-      <div class="mod" style="right:12%;top:340px;width:230px;--r:-2deg"><small>Webhook</small><b style="display:block;margin:4px 0 8px">payment.succeeded</b><span class="tag succeeded">200 OK</span></div>
+      <div class="mod" style="right:12%;top:340px;width:230px;--r:-2deg"><small>Mode</small><b style="display:block;margin:4px 0 8px">Test</b><span class="tag pending">Aucun argent réel</span></div>
     </div>
   </section>
 
@@ -171,7 +171,7 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
   <section id="keys" class="hide">
     <h1>Développeurs</h1><p class="sub">Utilisez ces clés pour appeler l'API. Ne les partagez jamais.</p>
     <div class="card"><b>Clé de test</b><small>En mode test : aucun vrai paiement.</small>
-      <div class="key"><code id="kv">sk_test_8f3a••••••21</code><button class="btn alt" id="rev">Afficher</button><button class="btn" id="cp">Copier</button></div></div>
+      <p class="sub" style="margin:10px 0 0">Les clés API seront disponibles prochainement.</p><div class="key" style="display:none"><code id="kv">sk_test_8f3a••••••21</code><button class="btn alt" id="rev">Afficher</button><button class="btn" id="cp">Copier</button></div></div>
     <div class="card" style="margin-top:14px"><b>Clé live</b><small>Pour les vrais paiements.</small>
       <div class="lock">🔒 Disponible après la vérification de votre entreprise.</div></div>
   </section>
@@ -181,25 +181,30 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
 
 <script>
 const $=id=>document.getElementById(id);
-const TX=[["TX-1048","Orange Money","15 000","succeeded","10/10 09:12"],["TX-1047","Wave","8 000","succeeded","10/10 08:40"],["TX-1046","MTN MoMo","22 000","pending","09/10 18:05"],["TX-1045","Carte","5 000","failed","09/10 16:30"],["TX-1044","Moov","42 500","succeeded","09/10 11:22"],["TX-1043","Orange Money","15 000","succeeded","08/10 20:11"]];
+let TX=[];
 const L={succeeded:"Réussi",pending:"En attente",failed:"Échoué"};
-const rows=a=>"<tr><th>Référence</th><th>Méthode</th><th>Montant (FCFA)</th><th>Statut</th><th>Date</th></tr>"+a.map(t=>`<tr><td>${t[0]}</td><td>${t[1]}</td><td><b>${t[2]}</b></td><td><span class="tag ${t[3]}">${L[t[3]]}</span></td><td>${t[4]}</td></tr>`).join("");
-$("tHome").innerHTML=TX.slice(0,4).map(t=>"<div class='li'><span>"+t[1]+"</span><b>"+t[2]+"</b><span class='tag "+t[3]+"'>"+L[t[3]]+"</span></div>").join("");$("tAll").innerHTML=rows(TX);
+const rows=a=>"<tr><th>Référence</th><th>Méthode</th><th>Montant (FCFA)</th><th>Statut</th><th>Date</th></tr>"+(a.length?a.map(t=>`<tr><td>${esc(t[0])}</td><td>${esc(t[1])}</td><td><b>${esc(t[2])}</b></td><td><span class="tag ${t[3]}">${L[t[3]]}</span></td><td>${esc(t[4])}</td></tr>`).join(""):"<tr><td colspan='5'>Aucune transaction pour le moment.</td></tr>");
+let curF="all";
+function drawTx(){$("tHome").innerHTML=TX.length?TX.slice(0,4).map(t=>"<div class='li'><span>"+esc(t[1])+"</span><b>"+esc(t[2])+"</b><span class='tag "+t[3]+"'>"+L[t[3]]+"</span></div>").join(""):"<div class='li'><span>Aucune transaction</span></div>";$("tAll").innerHTML=rows(curF==="all"?TX:TX.filter(t=>t[3]===curF))}
+drawTx();
 function go(v){document.querySelectorAll("#nav button").forEach(x=>x.classList.toggle("on",x.dataset.v===v));document.querySelectorAll("main > section").forEach(e=>e.classList.toggle("hide",e.id!==v));scrollTo(0,0)}
 $("filters").onclick=e=>{const f=e.target.dataset.f;if(!f)return;
   document.querySelectorAll("#filters button").forEach(x=>x.classList.toggle("on",x===e.target));
-  $("tAll").innerHTML=rows(f==="all"?TX:TX.filter(t=>t[3]===f));};
-const LK=[{d:"Abonnement Pro",a:15000,u:"pay.abvspaie.com/l/pro123",s:"succeeded"},{d:"Don mensuel",a:5000,u:"pay.abvspaie.com/l/don456",s:"pending"}];
+  curF=f;drawTx();};
+let LK=[];
 const esc=t=>t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt=n=>n.toLocaleString("fr-FR");
-function drawLinks(){$("lkList").innerHTML=LK.map((l,i)=>`<div class="lk"><div><b>${esc(l.d)}</b><small>${esc(l.u)}</small></div><div class="r"><b>${fmt(l.a)} FCFA</b><span class="tag ${l.s}">${l.s==="succeeded"?"Payé":"En attente"}</span></div><div class="act"><button class="btn alt" data-c="${i}">Copier</button><a class="btn alt" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=${encodeURIComponent(l.d+" : "+fmt(l.a)+" FCFA - https://"+l.u)}">WhatsApp</a></div></div>`).join("")}
+function drawLinks(){$("lkList").innerHTML=LK.map((l,i)=>`<div class="lk"><div><b>${esc(l.d)}</b><small>${esc(l.u)}</small></div><div class="r"><b>${fmt(l.a)} FCFA</b><span class="tag ${l.s}">${l.s==="succeeded"?"Payé":"En attente"}</span></div><div class="act"><button class="btn alt" data-c="${i}">Copier</button><a class="btn alt" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=${encodeURIComponent(l.d+" : "+fmt(l.a)+" FCFA - "+l.u)}">WhatsApp</a></div></div>`).join("")}
 drawLinks();
-$("lkList").onclick=async e=>{const i=e.target.dataset.c;if(i===undefined)return;try{await navigator.clipboard.writeText("https://"+LK[i].u);e.target.textContent="Copié ✓"}catch(x){e.target.textContent="Copie impossible"}setTimeout(drawLinks,1200)};
-$("lkForm").onsubmit=e=>{e.preventDefault();const a=parseInt($("lkAmt").value,10),d=$("lkDesc").value.trim();
-  if(!(a>0)){$("lkErr").textContent="Indiquez un montant valide.";return}
+$("lkList").onclick=async e=>{const i=e.target.dataset.c;if(i===undefined)return;try{await navigator.clipboard.writeText(LK[i].u);e.target.textContent="Copié ✓"}catch(x){e.target.textContent="Copie impossible"}setTimeout(drawLinks,1200)};
+$("lkForm").onsubmit=async e=>{e.preventDefault();const a=parseInt($("lkAmt").value,10),d=$("lkDesc").value.trim();
+  if(!(a>=100)){$("lkErr").textContent="Montant minimum : 100 FCFA.";return}
   if(d.length<2){$("lkErr").textContent="Ajoutez une description.";return}
-  $("lkErr").textContent="";LK.unshift({d,a,u:"pay.abvspaie.com/l/"+Math.random().toString(36).slice(2,8),s:"pending"});drawLinks();$("lkAmt").value="";$("lkDesc").value=""};
-let BAL=5320000,PEND=120000;
+  if(!ABVS.ready){$("lkErr").textContent="Service indisponible.";return}
+  const {error}=await ABVS.client.from("payment_links").insert({title:d,amount:a});
+  if(error){$("lkErr").textContent="Création impossible. Réessayez.";return}
+  $("lkErr").textContent="";$("lkAmt").value="";$("lkDesc").value="";if(window.__reload)window.__reload()};
+let BAL=0,PEND=0;
 function drawBal(){const h=document.getElementById("homeBal"),w=document.getElementById("wBal"),p=document.getElementById("wPend");
   if(h)h.innerHTML=fmt(BAL)+' <span style="font-size:14px;font-weight:600;color:var(--mute)">FCFA</span>';if(w)w.textContent=fmt(BAL);if(p)p.textContent=fmt(PEND)}
 function addMove(l,a){const t=document.querySelector("#wallet table");if(!t)return;const r=t.insertRow(1);r.innerHTML="<td>"+esc(l)+"</td><td><b>\u2212"+fmt(a)+"</b></td><td>\u00c0 l'instant</td>"}
@@ -231,7 +236,7 @@ const tg=(c,t)=>"<span class='tag "+c+"'>"+t+"</span>";
 const sec=(id,t,s,h)=>{const e=document.createElement("section");e.id=id;e.className="hide";e.innerHTML="<h1>"+t+"</h1><p class='sub'>"+s+"</p>"+h;document.querySelector("main").appendChild(e)};
 const gap="<div style='margin-top:14px'></div>";
 
-sec("wallet","Wallet","Votre solde et vos mouvements.","<div class='grid'><div class='card'><small>Disponible</small><div class='big' id='wBal'>5 320 000</div><span class='up'>FCFA</span></div><div class='card'><small>En attente</small><div class='big' id='wPend'>120 000</div></div><div class='card'><small>Encaissé (30 j)</small><div class='big'>8 940 000</div></div></div>"+tbl(["Mouvement","Montant (FCFA)","Date"],[["Paiement TX-1048","<b>+15 000</b>","Aujourd'hui"],["Paiement TX-1044","<b>+42 500</b>","09/10"],["Retrait vers Orange Money","<b>−200 000</b>","Hier"],["Frais ABVSPAIE","<b>−638</b>","09/10"]]));
+sec("wallet","Wallet","Votre solde et vos mouvements.","<div class='grid'><div class='card'><small>Disponible</small><div class='big' id='wBal'>0</div><span class='up'>FCFA</span></div><div class='card'><small>En attente</small><div class='big' id='wPend'>120 000</div></div><div class='card'><small>Encaissé (30 j)</small><div class='big'>8 940 000</div></div></div>"+tbl(["Mouvement","Montant (FCFA)","Date"],[["Paiement TX-1048","<b>+15 000</b>","Aujourd'hui"],["Paiement TX-1044","<b>+42 500</b>","09/10"],["Retrait vers Orange Money","<b>−200 000</b>","Hier"],["Frais ABVSPAIE","<b>−638</b>","09/10"]]));
 
 sec("sessions","Sessions de checkout","Les pages de paiement ouvertes par vos clients.",tbl(["Session","Montant (FCFA)","Statut","Créée"],[["cs_7a1","15 000",tg("succeeded","Complétée"),"10/10 09:12"],["cs_7a0","8 000",tg("succeeded","Complétée"),"10/10 08:40"],["cs_79f","22 000",tg("pending","Ouverte"),"09/10 18:05"],["cs_79e","5 000",tg("failed","Expirée"),"09/10 16:30"]]));
 
@@ -273,9 +278,27 @@ sec("support","Support","Une question ? On vous répond rapidement.","<div class
 $("suF").onsubmit=e=>{e.preventDefault();const ok=$("suM").value.trim().length>=10;
   $("suE").style.color=ok?"var(--ok)":"var(--err)";$("suE").textContent=ok?"Message envoyé ✓ Nous revenons vers vous rapidement.":"Décrivez votre problème en quelques mots (10 caractères min.).";if(ok)$("suM").value=""};
 
+(async()=>{if(!ABVS.ready)return;const sb=ABVS.client;
+ async function loadAll(){
+  const [t,l]=await Promise.all([
+   sb.from("transactions").select("reference,created_at,amount,method,status,link_id").order("created_at",{ascending:false}).limit(200),
+   sb.from("payment_links").select("id,slug,title,amount").eq("active",true).order("created_at",{ascending:false})]);
+  if(t.error||l.error)return;
+  const dt=x=>new Date(x).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}).replace(",","");
+  TX=t.data.map(x=>[x.reference,x.method,fmt(x.amount),x.status,dt(x.created_at)]);
+  const paid=new Set(t.data.filter(x=>x.status==="succeeded").map(x=>x.link_id));
+  const base=new URL("../public/paiement.html",location.href).href;
+  LK=l.data.map(x=>({d:x.title,a:x.amount,u:base+"?l="+encodeURIComponent(x.slug),s:paid.has(x.id)?"succeeded":"pending"}));
+  BAL=t.data.filter(x=>x.status==="succeeded").reduce((n,x)=>n+x.amount,0);
+  PEND=t.data.filter(x=>x.status==="pending").reduce((n,x)=>n+x.amount,0);
+  drawTx();drawLinks();drawBal();
+  const wk=Date.now()-7*864e5;$("p7").textContent=t.data.filter(x=>new Date(x.created_at)>wk).length;
+  const done=t.data.filter(x=>x.status!=="pending"),ok=done.filter(x=>x.status==="succeeded").length;
+  $("rate").textContent=done.length?(Math.round(1000*ok/done.length)/10).toLocaleString("fr-FR")+" %":"—";}
+ window.__reload=loadAll;await loadAll();})();
 const NAV=[["home","🏠","Tableau de bord"],["wallet","👛","Wallet"],["tx","↔️","Transactions"],["links","🔗","Liens de paiement"],["sessions","🧾","Sessions de checkout"],["clients","👥","Clients"],["stats","📈","Statistiques"],["retraits","🏦","Retraits"],["pay","💸","Décaissements"],["keys","🔑","Développeurs"],["hooks","🪝","Webhooks"],["hooklog","📜","Journal des webhooks"],["disputes","⚖️","Litiges"],["pricing","🏷️","Tarification"],["support","💬","Support"]];
 $("nav").innerHTML=NAV.map((n,i)=>"<button title='"+n[2]+"' aria-label='"+n[2]+"' data-v='"+n[0]+"'"+(i?"":" class='on'")+"><span>"+n[1]+"</span>"+n[2]+"</button>").join("");
-$("nav").insertAdjacentHTML("beforeend",[["onboarding.html","🚀","Configuration du compte"],["rapprochement.html","🧮","Rapprochement"],["equipe.html","🤝","Équipe"],["facturation.html","💳","Facturation"],["parametres.html","⚙️","Paramètres"],["securite.html","🛡️","Sécurité"],["fonctionnalites.html","📚","Découvrir ABVSPAIE"]].map(n=>"<a href='"+n[0]+"' title='"+n[2]+"' aria-label='"+n[2]+"'><span>"+n[1]+"</span></a>").join(""));
+$("nav").insertAdjacentHTML("beforeend",[["onboarding.html","🚀","Configuration du compte"],["rapprochement.html","🧮","Rapprochement"],["equipe.html","🤝","Équipe"],["facturation.html","💳","Facturation"],["parametres.html","⚙️","Paramètres"],["securite.html","🛡️","Sécurité"],["../public/fonctionnalites.html","📚","Découvrir ABVSPAIE"]].map(n=>"<a href='"+n[0]+"' title='"+n[2]+"' aria-label='"+n[2]+"'><span>"+n[1]+"</span></a>").join(""));
 $("nav").insertAdjacentHTML("beforeend","<a href='#' data-logout title='Se déconnecter' aria-label='Se déconnecter'><span>🚪</span></a>");
 document.addEventListener("click",e=>{if(e.target.closest("[data-logout]")){e.preventDefault();ABVS.signOut()}});
 $("nav").onclick=e=>{const b=e.target.closest("button");if(b)go(b.dataset.v)};
@@ -296,6 +319,9 @@ $("rev").onclick=()=>{shown=!shown;$("kv").textContent=shown?KEY:"sk_test_8f3a�
 $("cp").onclick=async()=>{try{await navigator.clipboard.writeText(KEY);$("cp").textContent="Copié ✓"}catch(e){$("cp").textContent="Copie impossible"}setTimeout(()=>$("cp").textContent="Copier",1500)};
 document.querySelectorAll(".mode span").forEach(s=>s.onclick=()=>{
   if(s.textContent==="Live"){alert("Le mode live sera disponible après la vérification de votre entreprise.");return}});
+</script>
+<script>
+["wallet","sessions","clients","stats","retraits","pay","hooks","hooklog","disputes"].forEach(id=>{const e=document.querySelector("#"+id+" .sub");if(e)e.textContent+=" — Données d'exemple.";});
 </script>
 </body>
 </html>

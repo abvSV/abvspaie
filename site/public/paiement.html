@@ -80,9 +80,9 @@ body{background:radial-gradient(900px 500px at 12% 0,#dde5ee,transparent),radial
 
       <h2>Moyen de paiement</h2>
       <div class="ops" id="ops">
-        <button data-m="Orange Money" class="on">Orange Money</button><button data-m="MTN MoMo">MTN MoMo</button>
-        <button data-m="Moov">Moov</button><button data-m="Wave">Wave</button>
-        <button data-m="Carte" style="grid-column:1/-1">Carte bancaire</button>
+        <button type="button" data-m="Orange Money" class="on">Orange Money</button><button type="button" data-m="MTN MoMo">MTN MoMo</button>
+        <button type="button" data-m="Moov">Moov</button><button type="button" data-m="Wave">Wave</button>
+        <button type="button" data-m="Carte" style="grid-column:1/-1">Carte bancaire</button>
       </div>
 
       <form id="f" novalidate>
@@ -106,9 +106,10 @@ body{background:radial-gradient(900px 500px at 12% 0,#dde5ee,transparent),radial
 <script>
 const $=id=>document.getElementById(id);
 let method="Orange Money";
-$("ops").onclick=e=>{const m=e.target.dataset.m;if(!m)return;method=m;
-  document.querySelectorAll("#ops button").forEach(b=>b.classList.toggle("on",b===e.target));
+$("ops").onclick=e=>{const btn=e.target.closest("button[data-m]");if(!btn)return;const m=btn.dataset.m;method=m;
+  document.querySelectorAll("#ops button").forEach(b=>{b.classList.toggle("on",b===btn);b.setAttribute("aria-pressed",String(b===btn))});
   const card=m==="Carte";$("mm").classList.toggle("hide",card);$("cd").classList.toggle("hide",!card);$("e1").textContent=$("e2").textContent=""};
+document.querySelectorAll("#ops button").forEach(b=>b.setAttribute("aria-pressed",String(b.classList.contains("on"))));
 const show=v=>["vForm","vWait","vOk","vErr"].forEach(x=>$(x).classList.toggle("hide",x!==v));
 let LINK=null;const fmtN=n=>Number(n).toLocaleString("fr-FR").replace(/[\u202f\u00a0]/g," ");
 const slug=new URLSearchParams(location.search).get("l");
