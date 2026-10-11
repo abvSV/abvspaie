@@ -61,8 +61,8 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 .dock{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);max-width:calc(100vw - 20px);display:flex;align-items:center;gap:4px;padding:8px 10px;border:1px solid var(--line);border-radius:22px;background:color-mix(in srgb,var(--solid) 80%,transparent);backdrop-filter:blur(14px);box-shadow:0 20px 50px var(--sh);z-index:20;overflow-x:auto;scrollbar-width:none}
 .dock a{position:relative;display:grid;place-items:center;width:46px;height:46px;min-width:46px;border-radius:14px;font-size:20px;text-decoration:none;transition:transform .2s}.dock a:hover{transform:translateY(-4px) scale(1.2)}
 .dock a.on{background:var(--in);box-shadow:inset 0 0 0 1px var(--line)}.dock a.on:after{content:"";position:absolute;bottom:3px;width:5px;height:5px;border-radius:50%;background:var(--pri)}
-.mode{display:none;margin-left:6px;background:var(--in);border:1px solid var(--line);border-radius:11px;padding:3px}.mode span{font:600 12px Inter,sans-serif;padding:7px 10px;border-radius:8px;color:var(--mute);cursor:pointer}.mode span.on{background:var(--pri);color:#fff}
-@media(min-width:821px){.dock{overflow:visible}.mode{display:flex}.dock a:hover:before{content:attr(title);position:absolute;bottom:58px;background:var(--ink);color:var(--solid);font:600 11px Inter,sans-serif;padding:5px 9px;border-radius:8px;white-space:nowrap}}
+
+@media(min-width:821px){.dock{overflow:visible}.dock a:hover:before{content:attr(title);position:absolute;bottom:58px;background:var(--ink);color:var(--solid);font:600 11px Inter,sans-serif;padding:5px 9px;border-radius:8px;white-space:nowrap}}
 .m{position:absolute;z-index:2;background:color-mix(in srgb,var(--solid) 84%,transparent);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:0 16px 36px var(--sh);font-size:12px;animation:fl 6s ease-in-out infinite;white-space:nowrap;cursor:grab;touch-action:none;user-select:none}
 .m small{display:block;color:var(--mute)}.m b{font-size:14px}.f1{left:-4px;top:30px;--r:-6deg}.f2{right:-4px;top:60px;--r:5deg;animation-delay:-3s}
 .app .f1{left:auto;right:20px;top:84px}.app .f2{right:200px;top:104px}.c .f1{left:auto;right:calc(100% - 36px);top:140px}.c .f2{right:auto;left:calc(100% - 36px);top:auto;bottom:25%}
@@ -76,10 +76,10 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-<div class="app"><div class="m f1"><small>Mode</small><b>Test · aucun argent réel</b></div><div class="m f2"><small>Session</small><b>🔒 Protégée</b></div><main>
+<div class="app"><div class="m f2"><small>Session</small><b>🔒 Protégée</b></div><main>
 <div class="head l"><span class="pill">Sécurité</span><h1>Sécurité et conformité</h1><p class="sub">Protégez votre compte, vérifiez votre entreprise et gardez la trace de chaque action.</p></div>
 
-<div class="card"><h2>🪪 Vérification de l'entreprise (KYC)</h2><p class="mute">Obligatoire pour passer en mode Live et retirer de l'argent. Vos documents servent uniquement à cette vérification.</p>
+<div class="card"><h2>🪪 Vérification de l'entreprise (KYC)</h2><p class="mute">Obligatoire pour retirer de l'argent. Vos documents servent uniquement à cette vérification.</p>
 <p>Statut : <span class="tag warn" id="kst">À compléter</span></p>
 <form id="kyc"><div class="row"><label>Raison sociale<input name="rs" type="text" required></label><label>N° RCCM / NINEA<input name="rc" type="text" required></label></div>
 <div class="row"><label>Pièce d'identité du dirigeant<input name="id" type="file" accept=".pdf,.jpg,.jpeg,.png" required></label><label>Justificatif d'activité (RCCM, patente)<input name="doc" type="file" accept=".pdf,.jpg,.jpeg,.png" required></label></div>
@@ -93,11 +93,7 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 <form id="t-form" hidden style="margin-top:12px"><label>Code reçu par SMS<input id="t-code" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="6 chiffres" required></label><div class="err" id="t-err"></div><button class="btn p">Confirmer</button></form>
 <button class="btn" id="t-off" hidden>Désactiver</button></div>
 
-<div class="card"><h2>🔑 Clés API · Test et Live séparés</h2><p class="mute">Les clés Test n'affectent jamais de vrais paiements. La clé Live se débloque après validation KYC.</p>
-<div class="tw"><table><thead><tr><th>Mode</th><th>Clé</th><th>Statut</th><th></th></tr></thead><tbody>
-<tr><td>Test</td><td><code id="k-test">sk_test_••••••••••3f9a</code></td><td><span class="tag">Active</span></td><td><button class="btn s" data-rot="k-test" data-pre="sk_test_">Régénérer</button> <button class="btn s" data-rev="k-test">Révoquer</button></td></tr>
-<tr><td>Live</td><td><code id="k-live">Verrouillée</code></td><td><span class="tag mute" id="k-lst">KYC requis</span></td><td><button class="btn s" id="k-lrot" data-rot="k-live" data-pre="sk_live_" disabled>Générer</button></td></tr></tbody></table></div>
-<p class="mute" style="margin-top:10px">Régénérer une clé invalide immédiatement l'ancienne. Ne partagez jamais une clé secrète.</p></div>
+<div class="card"><h2>🔑 Clés API</h2><p class="mute">Les clés API seront disponibles prochainement.</p></div>
 
 <div class="card"><h2>💻 Sessions actives</h2><div class="tw"><table id="sess"><thead><tr><th>Appareil</th><th>Lieu</th><th>Dernière activité</th><th></th></tr></thead><tbody>
 <tr><td>Cet appareil</td><td>Abidjan, CI</td><td>En ligne</td><td><span class="tag">Actuelle</span></td></tr>
@@ -116,12 +112,12 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 <div class="tw"><table id="log"><thead><tr><th>Date</th><th>Utilisateur</th><th>Action</th><th>Appareil</th></tr></thead><tbody>
 <tr><td>Aujourd'hui 09:12</td><td>Vous</td><td>Connexion</td><td>Chrome · Abidjan</td></tr>
 <tr><td>Hier 17:40</td><td>Vous</td><td>Création d'un lien de paiement</td><td>Chrome · Abidjan</td></tr>
-<tr><td>Hier 11:05</td><td>Vous</td><td>Régénération de la clé Test</td><td>Chrome · Abidjan</td></tr>
+<tr><td>Hier 11:05</td><td>Vous</td><td>Régénération d'une clé API</td><td>Chrome · Abidjan</td></tr>
 <tr><td>Il y a 3 jours</td><td>Équipe</td><td>Invitation d'un collaborateur</td><td>Safari · Abidjan</td></tr></tbody></table></div></div>
 
 <div class="card"><h2>📤 Exports comptables</h2><p class="mute">Téléchargez vos données pour votre comptable.</p>
 <div class="bar"><button class="btn" data-csv="journal">Journal d'activité (CSV)</button><button class="btn" data-csv="releve">Relevé du mois (CSV)</button></div></div>
-</main></div><nav class="dock" aria-label="Navigation"><a href="tableau-de-bord.html" title="Tableau de bord" aria-label="Tableau de bord">🏠</a><a href="transactions.html" title="Transactions" aria-label="Transactions">↔️</a><a href="liens-de-paiement.html" title="Liens de paiement" aria-label="Liens de paiement">🔗</a><a href="decaissements.html" title="Décaissements" aria-label="Décaissements">💸</a><a href="developpeurs.html" title="Développeurs" aria-label="Développeurs">🔑</a><a href="rapprochement.html" title="Rapprochement" aria-label="Rapprochement">🧾</a><a href="equipe.html" title="Équipe" aria-label="Équipe">👥</a><a href="facturation.html" title="Facturation" aria-label="Facturation">🏷️</a><a href="parametres.html" title="Paramètres" aria-label="Paramètres">⚙️</a><a href="securite.html" title="Sécurité" aria-label="Sécurité" class=on>🛡️</a><a href="#" data-logout title="Se déconnecter" aria-label="Se déconnecter">🚪</a><a href="../public/fonctionnalites.html" title="Découvrir ABVSPAIE" aria-label="Découvrir ABVSPAIE">📚</a><div class="mode"><span class="on">Test</span><span data-toast="Le mode live sera disponible après la vérification de votre entreprise.">Live</span></div></nav>
+</main></div><nav class="dock" aria-label="Navigation"><a href="tableau-de-bord.html" title="Tableau de bord" aria-label="Tableau de bord">🏠</a><a href="transactions.html" title="Transactions" aria-label="Transactions">↔️</a><a href="liens-de-paiement.html" title="Liens de paiement" aria-label="Liens de paiement">🔗</a><a href="decaissements.html" title="Décaissements" aria-label="Décaissements">💸</a><a href="developpeurs.html" title="Développeurs" aria-label="Développeurs">🔑</a><a href="rapprochement.html" title="Rapprochement" aria-label="Rapprochement">🧾</a><a href="equipe.html" title="Équipe" aria-label="Équipe">👥</a><a href="facturation.html" title="Facturation" aria-label="Facturation">🏷️</a><a href="parametres.html" title="Paramètres" aria-label="Paramètres">⚙️</a><a href="securite.html" title="Sécurité" aria-label="Sécurité" class=on>🛡️</a><a href="#" data-logout title="Se déconnecter" aria-label="Se déconnecter">🚪</a><a href="../public/fonctionnalites.html" title="Découvrir ABVSPAIE" aria-label="Découvrir ABVSPAIE">📚</a></nav>
 <script>
 (()=>{
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -156,23 +152,19 @@ s.addEventListener("change",()=>{if(s.value==="English"){s.value="Français";toa
 <script>
 (()=>{const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const g=k=>{try{return localStorage.getItem(k)}catch(_){return null}},p=(k,v)=>{try{localStorage.setItem(k,v)}catch(_){}};
-const rnd=n=>{const a=new Uint8Array(n);crypto.getRandomValues(a);return [...a].map(x=>(x%36).toString(36)).join("")};
 function kyc(){const v=g("abvs_kyc");const st=$("#kst"),fk=$("#fk");
  if(v==="ok"){st.textContent="Vérifié";st.className="tag"}else if(v==="pending"){st.textContent="En cours d'examen";st.className="tag warn"}else{st.textContent="À compléter";st.className="tag warn"}
- $("#kdemo").hidden=v!=="pending";fk.textContent=v==="ok"?"Vérifié":v==="pending"?"En examen":"À compléter";
- const live=v==="ok";$("#k-lrot").disabled=!live;$("#k-lst").textContent=live?"Prête":"KYC requis";$("#k-lst").className="tag "+(live?"":"mute")}
+ $("#kdemo").hidden=v!=="pending";fk.textContent=v==="ok"?"Vérifié":v==="pending"?"En examen":"À compléter";}
 function tfa(){const on=g("abvs_2fa")==="1";$("#tst").textContent=on?"Activée":"Désactivée";$("#tst").className="tag "+(on?"":"err");$("#t-on").hidden=on;$("#t-off").hidden=!on;$("#t-form").hidden=true}
 $("#kyc").addEventListener("submit",e=>{e.preventDefault();p("abvs_kyc","pending");kyc();toast("Documents envoyés · vérification sous 48 h");e.target.reset()});
 $("#t-on").onclick=()=>{$("#t-on").hidden=true;$("#t-form").hidden=false;toast("Code envoyé par SMS")};
 $("#t-form").addEventListener("submit",e=>{e.preventDefault();if(!/^[0-9]{6}$/.test($("#t-code").value)){$("#t-err").textContent="Entrez les 6 chiffres reçus.";return}p("abvs_2fa","1");$("#t-code").value="";$("#t-err").textContent="";tfa();toast("2FA activée")});
 $("#t-off").onclick=()=>{if(confirm("Désactiver la double authentification ?")){p("abvs_2fa","0");tfa();toast("2FA désactivée")}};
-$$("[data-rot]").forEach(b=>b.onclick=()=>{if(b.disabled)return;const c=document.getElementById(b.dataset.rot);const k=b.dataset.pre+rnd(24);c.textContent=k.slice(0,8+b.dataset.pre.length-8)+"••••••••"+k.slice(-4);c.dataset.shown=k;toast("Nouvelle clé générée · l'ancienne est invalidée")});
-$$("[data-rev]").forEach(b=>b.onclick=()=>{if(confirm("Révoquer cette clé ? Vos intégrations cesseront de fonctionner.")){document.getElementById(b.dataset.rev).textContent="Révoquée";toast("Clé révoquée")}});
 document.addEventListener("click",e=>{const k=e.target.closest("[data-kill]");if(k){k.closest("tr").remove();toast("Appareil déconnecté")}});
 $("#kall").onclick=()=>{$$("[data-kill]").forEach(b=>b.closest("tr").remove());toast("Tous les autres appareils ont été déconnectés")};
 const csv={journal:()=>[["Date","Utilisateur","Action","Appareil"],...$$("#log tbody tr").map(r=>[...r.cells].map(c=>c.textContent))],releve:()=>[["Date","Référence","Moyen","Montant FCFA","Frais FCFA"],["01/10","TX-1001","Orange Money","15000","225"],["03/10","TX-1002","Wave","8000","120"],["05/10","TX-1003","Carte","42500","638"]]};
 $$("[data-csv]").forEach(b=>b.onclick=()=>{const t=csv[b.dataset.csv]().map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(";")).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download=b.dataset.csv+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});
-$("#kok").onclick=()=>{p("abvs_kyc","ok");kyc();toast("Entreprise vérifiée · retraits et clé Live débloqués")};
+$("#kok").onclick=()=>{p("abvs_kyc","ok");kyc();toast("Entreprise vérifiée · retraits débloqués")};
 kyc();tfa()})();
 </script>
 <script>document.addEventListener("click",e=>{if(e.target.closest("[data-logout]")){e.preventDefault();ABVS.signOut()}});</script>
