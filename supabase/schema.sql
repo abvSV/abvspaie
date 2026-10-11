@@ -13,11 +13,12 @@ create table if not exists public.merchant_profiles (
 
 alter table public.merchant_profiles enable row level security;
 
--- L'utilisateur peut LIRE son profil, jamais l'écrire (sinon il s'activerait Live lui-même).
+-- L'utilisateur ne peut lire que son profil, jamais l'écrire directement.
 drop policy if exists "merchant_profiles_select_own" on public.merchant_profiles;
 create policy "merchant_profiles_select_own" on public.merchant_profiles
   for select to authenticated using (user_id = auth.uid());
 
+-- Le client ne peut ni créer, ni modifier, ni supprimer les profils marchands.
 revoke insert, update, delete on public.merchant_profiles from anon, authenticated;
 
 -- 2) Un profil est créé automatiquement à chaque inscription.
@@ -41,14 +42,22 @@ select id from auth.users on conflict do nothing;
 alter table public.payment_links add column if not exists mode text not null default 'test' check (mode in ('test','live'));
 alter table public.transactions  add column if not exists mode text not null default 'test' check (mode in ('test','live'));
 
--- 4) Garde-fou : impossible de créer un lien Live sans autorisation serveur.
+-- 4) Garde-fou renforcé : impossible de créer un lien Live sans validation KYC + autorisation serveur.
 create or replace function public.enforce_live_mode()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  if new.mode = 'live'
-     and coalesce(auth.jwt() ->> 'role', '') <> 'service_role'
-     and not exists (select 1 from public.merchant_profiles p where p.user_id = auth.uid() and p.live_enabled) then
-    raise exception 'live_not_enabled' using errcode = '42501';
+  if new.mode = 'live' then
+    if coalesce(auth.jwt() ->> 'role', '') <> 'service_role' then
+      if not exists (
+        select 1
+        from public.merchant_profiles p
+        where p.user_id = auth.uid()
+          and p.live_enabled = true
+          and p.kyc_status = 'verified'
+      ) then
+        raise exception 'live_not_enabled' using errcode = '42501';
+      end if;
+    end if;
   end if;
   return new;
 end $$;
