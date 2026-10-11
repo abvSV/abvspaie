@@ -11,14 +11,28 @@
     });
   } catch (e) { sb = null; }
 
-  function touch() { try { localStorage.setItem(KEY, String(Date.now())); } catch (_) {} }
-  function idle() { try { var t = +localStorage.getItem(KEY) || 0; return t > 0 && Date.now() - t > IDLE_MS; } catch (_) { return false; } }
+  function touch() {
+    try { sessionStorage.setItem(KEY, String(Date.now())); }
+    catch (_) {
+      try { localStorage.setItem(KEY, String(Date.now())); } catch (_) {}
+    }
+  }
+  function idle() {
+    try {
+      var t = +(sessionStorage.getItem(KEY) || localStorage.getItem(KEY)) || 0;
+      return t > 0 && Date.now() - t > IDLE_MS;
+    } catch (_) { return false; }
+  }
+  function clearTouch() {
+    try { sessionStorage.removeItem(KEY); } catch (_) {}
+    try { localStorage.removeItem(KEY); } catch (_) {}
+  }
   function ungate() { var g = document.getElementById("abvs-gate"); if (g) g.remove(); }
 
   async function signOut() {
     try { if (sb) await sb.auth.signOut(); } catch (_) {}
-    try { localStorage.removeItem(KEY); } catch (_) {}
-    location.href = LOGIN;
+    clearTouch();
+    location.replace(LOGIN);
   }
 
   // Garde de page : masque la page tant que la session n'est pas confirmée.
@@ -111,5 +125,5 @@
 
   window.ABVS = { client: sb, ready: !!sb, requireSession: requireSession, hasSession: hasSession, signUp: signUp, signIn: signIn,
     verifyMfa: verifyMfa, signOut: signOut, resetRequest: resetRequest, updatePassword: updatePassword,
-    onPasswordRecovery: onPasswordRecovery, msg: msg, touch: touch };
+    onPasswordRecovery: onPasswordRecovery, msg: msg, touch: touch, clearTouch: clearTouch };
 })();
