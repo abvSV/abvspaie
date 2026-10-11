@@ -1,9 +1,0 @@
-ABVSPAIE - site + Supabase
-
-1. Supabase > SQL Editor : lancer supabase/schema.sql, PUIS supabase/schema_paiements.sql
-2. assets/abvs-config.js : remplacer VOTRE-PROJET par l'URL du projet (Settings > Data API > Project URL)
-3. Authentication > URL Configuration : ajouter les adresses de inscription-connexion.html et mot-de-passe-oublie.html
-4. Tester avec VS Code + Live Server (ne pas double-cliquer sur les fichiers)
-
-Branché sur Supabase : inscription/connexion/2FA, liens de paiement, page de paiement, transactions.
-Mode test (merchants.test_mode = true) : les paiements sont validés automatiquement, sans argent réel.
