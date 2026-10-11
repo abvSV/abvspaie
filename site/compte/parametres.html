@@ -264,12 +264,13 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     const {data:userData,error:userError}=await auth.getUser();
     if(userError||!userData.user)throw new Error("Session expirée. Reconnecte-toi puis réessaie.");
     const user=userData.user;
-    const [{data:profile,error:profileError},{data:assurance,error:assuranceError}]=await Promise.all([
-     ABVS.client.from("merchant_profiles").select("kyc_status,kyc_rejection_reason,kyc_full_name,kyc_country,kyc_document_type,kyc_submitted_at,kyc_decided_at,kyc_decided_by,verified_at").eq("user_id",user.id).maybeSingle(),
+    const [{data:profiles,error:profileError},{data:assurance,error:assuranceError}]=await Promise.all([
+     ABVS.client.rpc("get_kyc_profile"),
      auth.mfa.getAuthenticatorAssuranceLevel()
     ]);
-    if(profileError)throw new Error("Impossible de lire le statut KYC. Vérifie que schema.sql est appliqué.");
-    if(!profile)throw new Error("Profil marchand introuvable. Vérifie que schema.sql est appliqué.");
+    if(profileError)throw new Error(`Impossible de lire le statut KYC. Détail Supabase : ${profileError.message}`);
+    const profile=profiles&&profiles[0];
+    if(!profile)throw new Error("Profil marchand introuvable après réparation automatique. Vérifie que le site et le SQL Editor utilisent le même projet Supabase.");
     if(assuranceError)throw new Error("Impossible de vérifier le niveau de sécurité de la session.");
     document.getElementById("kyc-full-name").value=profile.kyc_full_name||"";
     document.getElementById("kyc-country").value=profile.kyc_country||"";
@@ -353,9 +354,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     kycStarted=false;
     status.textContent="Configuration requise";
     status.className="tag err";
-    note.textContent=error.message==="Profil marchand introuvable. Vérifie que schema.sql est appliqué."
-     ?"Le profil KYC de ce compte n'existe pas encore dans la base. Un administrateur doit appliquer les scripts SQL Supabase dans l'ordre : schema_paiements.sql, schema.sql, puis schema_kyc.sql. Ensuite, recharge cette page."
-     :error.message||"Impossible de charger le dossier KYC.";
+    note.textContent=error.message||"Impossible de charger le dossier KYC.";
     document.getElementById("kyc-start").hidden=false;
     document.getElementById("kyc-start-button").disabled=true;
     list.textContent="Les justificatifs sont indisponibles tant que le profil KYC n'est pas initialisé.";

@@ -23,6 +23,75 @@ create policy "merchant_profiles_select_own" on public.merchant_profiles
 revoke all on public.merchant_profiles from anon, authenticated;
 grant select on public.merchant_profiles to authenticated;
 
+-- Allows an authenticated account to safely recreate only its own missing profile.
+create or replace function public.ensure_merchant_profile()
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_user_id uuid := auth.uid();
+begin
+  if v_user_id is null then
+    raise exception 'Authentification requise' using errcode = '42501';
+  end if;
+
+  insert into public.merchant_profiles (user_id)
+  values (v_user_id)
+  on conflict (user_id) do nothing;
+end
+$$;
+
+revoke execute on function public.ensure_merchant_profile() from public, anon;
+grant execute on function public.ensure_merchant_profile() to authenticated;
+
+create or replace function public.get_kyc_profile()
+returns table (
+  kyc_status text,
+  kyc_rejection_reason text,
+  kyc_full_name text,
+  kyc_country text,
+  kyc_document_type text,
+  kyc_submitted_at timestamptz,
+  kyc_decided_at timestamptz,
+  kyc_decided_by uuid,
+  verified_at timestamptz
+)
+language plpgsql
+security definer
+set search_path = ''
+as $function$
+declare
+  v_user_id uuid := auth.uid();
+begin
+  if v_user_id is null then
+    raise exception 'Authentification requise' using errcode = '42501';
+  end if;
+
+  insert into public.merchant_profiles (user_id)
+  values (v_user_id)
+  on conflict (user_id) do nothing;
+
+  return query
+  select
+    p.kyc_status,
+    p.kyc_rejection_reason,
+    p.kyc_full_name,
+    p.kyc_country,
+    p.kyc_document_type,
+    p.kyc_submitted_at,
+    p.kyc_decided_at,
+    p.kyc_decided_by,
+    p.verified_at
+  from public.merchant_profiles p
+  where p.user_id = v_user_id;
+end
+$function$;
+
+revoke execute on function public.get_kyc_profile() from public, anon;
+grant execute on function public.get_kyc_profile() to authenticated;
+
 -- 2) Un profil est créé automatiquement à chaque inscription.
 create or replace function public.handle_new_merchant()
 returns trigger language plpgsql security definer set search_path = public as $$

@@ -6,11 +6,16 @@
 create table if not exists public.merchants (
   id uuid primary key references auth.users(id) on delete cascade,
   name text not null default 'Marchand',
+  email text,
+  country text,
   test_mode boolean not null default true,
   kyc_status text not null default 'none' check (kyc_status in ('none','pending','verified','rejected'))
 );
 
 alter table public.merchants add column if not exists name text not null default 'Marchand';
+alter table public.merchants add column if not exists email text;
+alter table public.merchants add column if not exists country text;
+alter table public.merchants alter column country drop not null;
 alter table public.merchants add column if not exists test_mode boolean not null default true;
 alter table public.merchants add column if not exists kyc_status text not null default 'none'
   check (kyc_status in ('none','pending','verified','rejected'));
@@ -20,9 +25,16 @@ revoke all on public.merchants from anon, authenticated;
 create or replace function public.handle_new_merchant_record()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
-  insert into public.merchants (id, name)
-  values (new.id, coalesce(nullif(trim(new.raw_user_meta_data ->> 'company'), ''), 'Marchand'))
-  on conflict (id) do nothing;
+  insert into public.merchants (id, name, email, country)
+  values (
+    new.id,
+    coalesce(nullif(trim(new.raw_user_meta_data ->> 'company'), ''), 'Marchand'),
+    new.email,
+    nullif(trim(new.raw_user_meta_data ->> 'country'), '')
+  )
+  on conflict (id) do update
+    set email = coalesce(public.merchants.email, excluded.email),
+        country = coalesce(public.merchants.country, excluded.country);
   return new;
 end $$;
 
@@ -39,18 +51,32 @@ begin
       set name = coalesce(nullif(trim(new.raw_user_meta_data ->> 'company'), ''), 'Marchand')
       where id = new.id;
   end if;
+  if new.email is distinct from old.email then
+    update public.merchants set email = new.email where id = new.id;
+  end if;
+  if new.raw_user_meta_data ->> 'country' is distinct from old.raw_user_meta_data ->> 'country' then
+    update public.merchants
+      set country = coalesce(public.merchants.country, nullif(trim(new.raw_user_meta_data ->> 'country'), ''))
+      where id = new.id;
+  end if;
   return new;
 end $$;
 
 drop trigger if exists on_auth_user_company_updated on auth.users;
 create trigger on_auth_user_company_updated
-  after update of raw_user_meta_data on auth.users
+  after update of raw_user_meta_data, email on auth.users
   for each row execute function public.sync_merchant_name_from_auth_metadata();
 
-insert into public.merchants (id, name)
-select id, coalesce(nullif(trim(raw_user_meta_data ->> 'company'), ''), 'Marchand')
+insert into public.merchants (id, name, email, country)
+select
+  id,
+  coalesce(nullif(trim(raw_user_meta_data ->> 'company'), ''), 'Marchand'),
+  email,
+  nullif(trim(raw_user_meta_data ->> 'country'), '')
 from auth.users
-on conflict (id) do nothing;
+on conflict (id) do update
+  set email = coalesce(public.merchants.email, excluded.email),
+      country = coalesce(public.merchants.country, excluded.country);
 
 -- ───────── Liens de paiement ─────────
 create table if not exists public.payment_links (

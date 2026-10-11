@@ -27,6 +27,8 @@ abvspaie/
 4. Vercel : importer le dépôt GitHub, Framework « Other », aucune commande de build. Les fonctions de `api/` sont déployées avec le site.
 5. Test local : VS Code + extension Live Server, en ouvrant le dossier `site/`.
 
+Si un compte existant n'a pas de profil KYC, exécuter `supabase/repair_merchant_profiles.sql` dans le SQL Editor. Cette réparation idempotente crée uniquement les profils manquants et affiche le nombre restant. La page KYC récupère et initialise ensuite le profil du compte connecté via les fonctions sécurisées `ensure_merchant_profile` et `get_kyc_profile` définies dans `schema.sql`.
+
 Les coordonnées recueillies au paiement servent à créer ou retrouver une fiche dans **Clients** ; le téléphone et l'e-mail ne sont jamais publiés. Les transactions antérieures à cette migration ne seront pas automatiquement rattachées : l'ancien flux ne conservait que le téléphone masqué.
 
 ## Vérification d'identité (KYC)
