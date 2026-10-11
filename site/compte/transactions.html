@@ -48,6 +48,18 @@ input[type=checkbox]{width:auto;margin:0 8px 0 0}.chk{display:flex;align-items:c
 .tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--mute);font-size:12px;font-weight:600}
 .tag{display:inline-block;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok);font-weight:600;font-size:12px;padding:3px 9px;border-radius:99px}
 .tag.warn{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}.tag.err{background:color-mix(in srgb,var(--err) 14%,transparent);color:var(--err)}.tag.mute{background:var(--in);color:var(--mute)}
+.tx-categories{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:30px 0}
+.tx-categories button{min-width:132px;padding:12px 18px;border:1px solid color-mix(in srgb,var(--pri) 18%,var(--line));border-radius:16px;background:color-mix(in srgb,var(--solid) 84%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 10px 26px var(--sh);color:var(--mute);font:600 13px Inter,sans-serif;cursor:pointer;transition:transform .18s ease,border-color .18s ease,color .18s ease}
+.tx-categories button:hover{transform:translateY(-3px);border-color:var(--pri);color:var(--ink)}
+.tx-categories button[aria-pressed=true]{border-color:var(--pri);background:color-mix(in srgb,var(--pri) 12%,var(--solid));color:var(--ink)}
+.tx-results{border:1px solid color-mix(in srgb,var(--pri) 18%,var(--line));border-radius:28px;background:radial-gradient(ellipse at 50% 0,color-mix(in srgb,var(--pri) 7%,transparent),transparent 68%),color-mix(in srgb,var(--solid) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 22px 54px var(--sh);animation:tx-float 7s ease-in-out infinite}
+.tx-results .bar{align-items:center;padding:18px 18px 0}
+.tx-results .bar input{min-width:220px}
+.tx-results .tw{padding:0 18px 18px}
+.tx-message{margin:0 18px 18px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--in);color:var(--mute);font-size:13px}
+@keyframes tx-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@media(max-width:600px){.tx-categories{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tx-categories button{min-width:0;padding:11px 8px}.tx-results .bar{display:grid;grid-template-columns:1fr;padding:14px 14px 0}.tx-results .bar input{min-width:0}.tx-results .tw{padding:0 14px 14px}.tx-message{margin:0 14px 14px}}
+@media(prefers-reduced-motion:reduce){.tx-categories button{transition:none}.tx-results{animation:none}}
 .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:22px}.chips button{border:1px solid var(--line);background:var(--solid);color:var(--ink);font:600 13px Inter,sans-serif;padding:7px 14px;border-radius:99px;cursor:pointer}.chips button.on{background:var(--pri);color:var(--solid);border-color:var(--pri)}
 code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{background:var(--in);border:1px solid var(--line);border-radius:12px;padding:14px;overflow-x:auto;line-height:1.7;margin:0}
 .prog{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:12px 0}.prog i{display:block;height:100%;background:var(--grad);width:0;transition:width .3s}
@@ -76,7 +88,7 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-<div class="app"><main><div class="head l"><span class="pill">Transactions</span><h1>Transactions</h1><p class="sub">Consultez, filtrez et exportez vos paiements.</p></div><div class="card"><div class="bar"><input type="search" data-filter="tx" placeholder="Rechercher (référence, client, opérateur)" aria-label="Rechercher"><select data-filter="tx" aria-label="Statut"><option value="">Tous les statuts</option><option>Réussi</option><option>En attente</option><option>Échoué</option></select><button class="btn" id="csv" type="button">Exporter en CSV</button></div><div class="tw"><table id="tx"><thead><tr><th>Référence</th><th>Date</th><th>Montant</th><th>Opérateur</th><th>Client</th><th>Statut</th></tr></thead><tbody></tbody></table></div></div></main>
+<div class="app"><main><div class="head l"><span class="pill">Transactions</span><h1>Transactions</h1><p class="sub">Choisissez une rubrique pour consulter vos paiements.</p></div><nav class="tx-categories" aria-label="Rubriques des transactions"><button type="button" data-tx-status="all" aria-pressed="false">Toutes</button><button type="button" data-tx-status="succeeded" aria-pressed="false">Réussies</button><button type="button" data-tx-status="pending" aria-pressed="false">En attente</button><button type="button" data-tx-status="failed" aria-pressed="false">Échouées</button></nav><section class="tx-results" id="tx-results" aria-label="Liste des transactions" hidden><div class="bar"><input type="search" id="tx-search" placeholder="Rechercher (référence, client, opérateur)" aria-label="Rechercher dans les transactions"><button class="btn" id="csv" type="button">Exporter en CSV</button></div><p class="tx-message" id="tx-message" role="status" aria-live="polite" hidden></p><div class="tw"><table id="tx"><thead><tr><th>Référence</th><th>Date</th><th>Montant</th><th>Opérateur</th><th>Client</th><th>Statut</th></tr></thead><tbody></tbody></table></div></section></main>
 <style>.legal{margin:18px auto 90px;max-width:760px;padding:0 16px;text-align:center;font-size:12px;line-height:1.6;color:var(--mut,#6b7684)}.legal a{color:inherit;text-decoration:underline}</style>
 <p class="legal">🔒 Vos données sont chiffrées en transit et ne sont jamais revendues. <a href="../public/confidentialite.html">Confidentialité</a> · <a href="../public/cgu-cgv.html">CGU/CGV</a> · <a href="../public/mentions-legales.html">Mentions légales</a></p>
 </div><nav class="dock" aria-label="Navigation"><a href="tableau-de-bord.html" title="Tableau de bord" aria-label="Tableau de bord">🏠</a><a href="transactions.html" title="Transactions" aria-label="Transactions" class=on>↔️</a><a href="liens-de-paiement.html" title="Liens de paiement" aria-label="Liens de paiement">🔗</a><a href="decaissements.html" title="Décaissements" aria-label="Décaissements">💸</a><a href="developpeurs.html" title="Développeurs" aria-label="Développeurs">🔑</a><a href="rapprochement.html" title="Rapprochement" aria-label="Rapprochement">🧾</a><a href="equipe.html" title="Équipe" aria-label="Équipe">👥</a><a href="facturation.html" title="Facturation" aria-label="Facturation">🏷️</a><a href="parametres.html" title="Paramètres" aria-label="Paramètres">⚙️</a><a href="securite.html" title="Sécurité" aria-label="Sécurité">🛡️</a><a href="#" data-logout title="Se déconnecter" aria-label="Se déconnecter">🚪</a><a href="../public/fonctionnalites.html" title="Découvrir ABVSPAIE" aria-label="Découvrir ABVSPAIE">📚</a></nav>
@@ -89,8 +101,6 @@ document.addEventListener('click',e=>{
  const t=e.target.closest('[data-toast]');if(t)toast(t.dataset.toast);
  const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
  const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
-$$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
-
 })();
 (()=>{let z=10;
 document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
@@ -107,20 +117,41 @@ document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m
 const sb=ABVS.client,tb=document.querySelector("#tx tbody"),LAB={succeeded:["Réussi",""],pending:["En attente","warn"],failed:["Échoué","err"]};
 const fmt=n=>n.toLocaleString("fr-FR").replace(/[\u202f\u00a0]/g," ")+" FCFA";
 const dt=s=>new Date(s).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}).replace(",","");
-let ROWS=[];
+let ROWS=[],selectedStatus=null,loaded=false,loadFailed=false;
+const buttons=[...document.querySelectorAll("[data-tx-status]")],panel=document.getElementById("tx-results"),search=document.getElementById("tx-search"),message=document.getElementById("tx-message");
 function render(){
- tb.replaceChildren(...ROWS.map(t=>{const [lab,cls]=LAB[t.status]||[t.status,""],tr=document.createElement("tr");tr.dataset.s=lab;
+ if(loadFailed){tb.replaceChildren();message.textContent="Impossible de charger les transactions. Réessayez plus tard.";message.hidden=false;return []}
+ if(!loaded){tb.replaceChildren();message.textContent="Chargement des transactions…";message.hidden=false;return []}
+ const query=search.value.trim().toLocaleLowerCase("fr");
+ const filtered=ROWS.filter(t=>(selectedStatus==="all"||t.status===selectedStatus)&&[t.reference,t.method,t.payer,t.amount].join(" ").toLocaleLowerCase("fr").includes(query));
+ tb.replaceChildren(...filtered.map(t=>{const [lab,cls]=LAB[t.status]||[t.status,""],tr=document.createElement("tr");
   [t.reference,dt(t.created_at),fmt(t.amount),t.method,t.payer||"—"].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td)});
   const td=document.createElement("td"),sp=document.createElement("span");sp.className="tag "+cls;sp.textContent=lab;td.appendChild(sp);tr.appendChild(td);return tr}));
- if(!ROWS.length){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=6;td.textContent="Aucune transaction pour le moment.";tr.appendChild(td);tb.appendChild(tr)}}
-(async()=>{const {data,error}=await sb.from("transactions").select("reference,created_at,amount,method,payer,status").order("created_at",{ascending:false}).limit(200);
- if(error)return toast("Impossible de charger les transactions.");ROWS=data;render()})();
+ if(!filtered.length){message.textContent=ROWS.length?"Aucune transaction ne correspond à cette rubrique ou à votre recherche.":"Aucune transaction enregistrée pour le moment.";message.hidden=false}
+ else message.hidden=true;
+ return filtered;
+}
+function selectStatus(status,updateLocation=true){
+ if(!buttons.some(button=>button.dataset.txStatus===status)){selectedStatus=null;panel.hidden=true;buttons.forEach(button=>button.setAttribute("aria-pressed","false"));return}
+ selectedStatus=status;panel.hidden=false;
+ buttons.forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.txStatus===status)));
+ if(updateLocation&&location.hash!=="#"+status)location.hash=status;
+ render();
+}
+buttons.forEach(button=>button.addEventListener("click",()=>selectStatus(button.dataset.txStatus)));
+search.addEventListener("input",render);
+window.addEventListener("hashchange",()=>selectStatus(location.hash.slice(1),false));
+selectStatus(location.hash.slice(1),false);
+(async()=>{try{const {data,error}=await sb.from("transactions").select("reference,created_at,amount,method,payer,status").order("created_at",{ascending:false}).limit(200);
+ loaded=true;if(error){loadFailed=true;if(selectedStatus)render();return}
+ ROWS=data||[];if(selectedStatus)render()
+ }catch(_){loaded=true;loadFailed=true;if(selectedStatus)render()}})();
 // Export CSV (les cellules commençant par = + - @ sont neutralisées contre l'injection de formules)
 document.getElementById("csv").addEventListener("click",()=>{
- if(!ROWS.length)return toast("Rien à exporter.");
+ const exportRows=render();if(!exportRows.length)return toast("Aucune transaction à exporter dans cette rubrique.");
  const q=v=>{v=String(v??"");if(/^[=+\-@]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'};
  const lines=[["Référence","Date","Montant (FCFA)","Opérateur","Client","Statut"].map(q).join(";")]
-  .concat(ROWS.map(t=>[t.reference,new Date(t.created_at).toISOString(),t.amount,t.method,t.payer||"",(LAB[t.status]||[t.status])[0]].map(q).join(";")));
+  .concat(exportRows.map(t=>[t.reference,new Date(t.created_at).toISOString(),t.amount,t.method,t.payer||"",(LAB[t.status]||[t.status])[0]].map(q).join(";")));
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv;charset=utf-8"}));
  a.download="transactions.csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Export CSV généré")});
 })();

@@ -72,6 +72,24 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 @keyframes rise{0%{opacity:0;transform:translateY(10px)}15%{opacity:1}100%{opacity:0;transform:translateY(-260px)}}
 @media(max-width:1100px){.m{display:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.m{animation:none;transform:rotate(var(--r))}}
+.session-card{padding:0;overflow:hidden}
+.session-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px;border-bottom:1px solid var(--line)}
+.session-title{display:flex;align-items:center;gap:13px;min-width:0}
+.session-icon{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:14px;background:var(--in);font-size:21px}
+.session-title h2{margin:0 0 4px}
+.session-title p{margin:0;color:var(--mute);font-size:13px;line-height:1.5}
+.session-state{flex:none}
+.session-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line)}
+.session-detail{min-width:0;padding:17px 22px;background:var(--solid)}
+.session-detail small{display:block;color:var(--mute);font-size:12px;margin-bottom:6px}
+.session-detail strong{display:block;overflow-wrap:anywhere;font-size:14px;font-weight:600}
+.session-foot{padding:18px 22px}
+.session-foot p{margin:0 0 14px;line-height:1.6}
+.session-actions{display:flex;flex-wrap:wrap;gap:10px}
+.session-actions .btn{margin:0}
+.session-actions .session-danger{color:var(--err);border-color:color-mix(in srgb,var(--err) 35%,var(--line))}
+.session-actions button:disabled{opacity:.6;cursor:wait}
+@media(max-width:560px){.session-head{align-items:flex-start;padding:18px}.session-detail{padding:15px 18px}.session-foot{padding:16px 18px}.session-actions{display:grid}.session-actions .btn{width:100%}}
 </style>
 </head>
 <body>
@@ -79,10 +97,10 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 <div class="app"><main>
 <div class="head l"><span class="pill">Sécurité</span><h1>Sécurité et conformité</h1><p class="sub">Protégez votre compte, vérifiez votre entreprise et gardez la trace de chaque action.</p></div>
 
-<div class="card"><h2>🪪 Vérification de l'entreprise (KYC)</h2><p class="mute">La vérification KYC n'est pas disponible tant qu'un service sécurisé de dépôt et de traitement des documents n'est pas configuré. N'envoyez pas de documents sur cette page.</p>
+<div class="card" id="kyc"><h2>🪪 Vérification de l'entreprise (KYC)</h2><p class="mute">La vérification KYC n'est pas disponible tant qu'un service sécurisé de dépôt et de traitement des documents n'est pas configuré. N'envoyez pas de documents sur cette page.</p>
 <p>Statut : <span class="tag warn">Non configuré</span></p></div>
 
-<div class="card"><h2>🔐 Double authentification (2FA)</h2><p class="mute">Utilisez une application d'authentification pour générer un code à 6 chiffres.</p>
+<div class="card" id="mfa"><h2>🔐 Double authentification (2FA)</h2><p class="mute">Utilisez une application d'authentification pour générer un code à 6 chiffres.</p>
 <p>Statut : <span class="tag err" id="tst">Désactivée</span></p>
 <div class="err" id="t-err" role="status" aria-live="polite"></div>
 <button class="btn p" id="t-on">Activer la 2FA</button>
@@ -91,10 +109,23 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 
 <div class="card"><h2>🔑 Clés API</h2><p class="mute">Les clés API seront disponibles prochainement.</p></div>
 
-<div class="card"><h2>💻 Session active</h2><div class="tw"><table id="sess"><thead><tr><th>Session</th><th>Statut</th></tr></thead><tbody>
-<tr><td>Cette session</td><td><span class="tag">Active</span></td></tr></tbody></table></div>
-<p class="mute" style="margin-top:12px">Votre session expire après 30 minutes d'inactivité.</p>
-<div class="bar" style="margin:12px 0 0"><button class="btn p" id="lout" data-logout>Se déconnecter</button></div></div>
+<section class="card session-card" id="sessions" aria-labelledby="session-heading">
+<header class="session-head">
+<div class="session-title"><span class="session-icon" aria-hidden="true">💻</span><div><h2 id="session-heading">Gestion des connexions</h2><p>Consultez l'appareil utilisé et sécurisez votre compte.</p></div></div>
+<span class="tag warn session-state" id="session-state">Vérification…</span>
+</header>
+<div class="session-details">
+<div class="session-detail"><small>Compte connecté</small><strong id="session-email">Chargement…</strong></div>
+<div class="session-detail"><small>Appareil et navigateur</small><strong id="session-device">Chargement…</strong></div>
+<div class="session-detail"><small>Dernière connexion</small><strong id="session-login">Chargement…</strong></div>
+<div class="session-detail"><small>Expiration de la session</small><strong id="session-expiry">Chargement…</strong></div>
+</div>
+<div class="session-foot">
+<p class="mute">Les autres appareils ne peuvent pas être détaillés ici. Pour sécuriser le compte, vous pouvez fermer toutes les sessions actives.</p>
+<div class="session-actions"><button class="btn" id="lout" data-logout>Déconnecter cet appareil</button><button class="btn session-danger" id="lout-all" type="button">Déconnecter tous les appareils</button></div>
+<p class="err" id="session-error" role="status" aria-live="polite"></p>
+</div>
+</section>
 
 <div class="card"><h2>🔔 Alertes de sécurité</h2>
 <p class="mute">Les alertes ne sont pas disponibles tant que les services de notification ne sont pas configurés.</p></div>
@@ -134,6 +165,35 @@ s.addEventListener("change",()=>{if(s.value==="English"){s.value="Français";toa
 const $=s=>document.querySelector(s),auth=ABVS.ready?ABVS.client.auth:null;
 let factorId=null,pendingFactorId=null;
 const error=t=>{$("#t-err").textContent=t};
+const dateTime=value=>value?new Date(value).toLocaleString("fr-FR"):"Indisponible";
+async function loadSession(){
+ const message=$("#session-error");
+ if(!auth){message.textContent="Service d'authentification indisponible.";return}
+ try{
+  const {data,error:failure}=await auth.getSession();
+  if(failure||!data||!data.session){message.textContent="Impossible de charger la session active.";$("#session-state").textContent="Indisponible";$("#session-state").className="tag err session-state";return}
+  const session=data.session,user=session.user;
+  $("#session-state").textContent="Session active";
+  $("#session-state").className="tag session-state";
+  $("#session-email").textContent=user.email||"Compte authentifié";
+  const agent=navigator.userAgent;
+  const browser=/Edg\//.test(agent)?"Microsoft Edge":/Firefox\//.test(agent)?"Firefox":/Chrome\//.test(agent)?"Google Chrome":/Safari\//.test(agent)?"Safari":"Navigateur";
+  $("#session-device").textContent=(/Mobi|Android|iPhone|iPad/i.test(agent)?"Appareil mobile":"Ordinateur")+" · "+browser;
+  $("#session-login").textContent=dateTime(user.last_sign_in_at);
+  $("#session-expiry").textContent=session.expires_at?dateTime(session.expires_at*1000):"Non fournie";
+  message.textContent="";
+ }catch(_){message.textContent="Impossible de joindre le service d'authentification."}
+}
+$("#lout-all").addEventListener("click",async()=>{
+ if(!confirm("Déconnecter ce compte de tous les appareils ?"))return;
+ const button=$("#lout-all"),message=$("#session-error");
+ button.disabled=true;message.textContent="";
+ try{
+  const result=await ABVS.signOutAll();
+  if(result.error)message.textContent=ABVS.msg(result.error);
+ }catch(_){message.textContent="Impossible de fermer toutes les sessions. Réessayez."}
+ finally{button.disabled=false}
+});
 function showFactor(active){
  $("#tst").textContent=active?"Activée":"Désactivée";
  $("#tst").className="tag "+(active?"":"err");
@@ -202,6 +262,7 @@ $("#t-off").onclick=async()=>{
  finally{$("#t-off").disabled=false}
 };
 loadFactors();
+loadSession();
 })();
 </script>
 <script>document.addEventListener("click",e=>{if(e.target.closest("[data-logout]")){e.preventDefault();ABVS.signOut()}});</script>

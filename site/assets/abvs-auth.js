@@ -35,6 +35,15 @@
     location.replace(LOGIN);
   }
 
+  async function signOutAll() {
+    if (!sb) return { error: new Error("Service d'authentification indisponible.") };
+    var r = await sb.auth.signOut({ scope: "global" });
+    if (r.error) return { error: r.error };
+    clearTouch();
+    location.replace(LOGIN);
+    return { ok: true };
+  }
+
   // Garde de page : masque la page tant que la session n'est pas confirmée.
   // NB : c'est du confort d'affichage ; la vraie protection des données, c'est la RLS côté base.
   async function requireSession() {
@@ -124,6 +133,6 @@
   }
 
   window.ABVS = { client: sb, ready: !!sb, requireSession: requireSession, hasSession: hasSession, signUp: signUp, signIn: signIn,
-    verifyMfa: verifyMfa, signOut: signOut, resetRequest: resetRequest, updatePassword: updatePassword,
+    verifyMfa: verifyMfa, signOut: signOut, signOutAll: signOutAll, resetRequest: resetRequest, updatePassword: updatePassword,
     onPasswordRecovery: onPasswordRecovery, msg: msg, touch: touch, clearTouch: clearTouch };
 })();

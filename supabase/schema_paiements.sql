@@ -31,6 +31,22 @@ create trigger on_auth_user_created_merchant_record
   after insert on auth.users
   for each row execute function public.handle_new_merchant_record();
 
+create or replace function public.sync_merchant_name_from_auth_metadata()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  if (new.raw_user_meta_data ->> 'company') is distinct from (old.raw_user_meta_data ->> 'company') then
+    update public.merchants
+      set name = coalesce(nullif(trim(new.raw_user_meta_data ->> 'company'), ''), 'Marchand')
+      where id = new.id;
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists on_auth_user_company_updated on auth.users;
+create trigger on_auth_user_company_updated
+  after update of raw_user_meta_data on auth.users
+  for each row execute function public.sync_merchant_name_from_auth_metadata();
+
 insert into public.merchants (id, name)
 select id, coalesce(nullif(trim(raw_user_meta_data ->> 'company'), ''), 'Marchand')
 from auth.users
