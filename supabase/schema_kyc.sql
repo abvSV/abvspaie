@@ -47,6 +47,46 @@ create index if not exists kyc_audit_logs_merchant_created_idx
 alter table public.kyc_audit_logs enable row level security;
 revoke all on public.kyc_audit_logs from public, anon, authenticated;
 
+-- Fail closed on legacy or inconsistent approvals without a complete manual-review record.
+update public.merchant_profiles p
+set kyc_status = 'none',
+    live_enabled = false,
+    verified_at = null,
+    kyc_decided_at = null,
+    kyc_decided_by = null,
+    kyc_rejection_reason = null
+where p.kyc_status = 'verified'
+  and not (
+    p.kyc_submitted_at is not null
+    and p.kyc_decided_at is not null
+    and p.kyc_decided_by is not null
+    and p.verified_at is not null
+    and exists (
+      select 1
+      from public.merchant_kyc_documents d
+      where d.merchant_id = p.user_id
+        and d.document_type = 'identity'
+        and d.document_side = 'front'
+    )
+    and exists (
+      select 1
+      from public.kyc_audit_logs submitted
+      where submitted.merchant_id = p.user_id
+        and submitted.actor_id = p.user_id
+        and submitted.event_type = 'submitted'
+        and submitted.created_at <= p.kyc_decided_at
+    )
+    and exists (
+      select 1
+      from public.kyc_audit_logs approved
+      where approved.merchant_id = p.user_id
+        and approved.actor_id = p.kyc_decided_by
+        and approved.event_type = 'approved'
+        and approved.created_at >= p.kyc_submitted_at
+        and approved.created_at <= p.kyc_decided_at
+    )
+  );
+
 alter table public.merchant_kyc_documents enable row level security;
 revoke all on public.merchant_kyc_documents from public, anon, authenticated;
 grant select on public.merchant_kyc_documents to authenticated;

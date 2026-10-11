@@ -2,7 +2,7 @@
 
 ```
 abvspaie/
-├── api/                 fonctions Vercel : création et réception des webhooks
+├── api/                 fonctions Vercel : auth, KYC et webhooks
 ├── server/              utilitaires serveur (signature et chiffrement)
 ├── vercel.json          réglages Vercel (site statique + fonctions API)
 ├── .gitignore
@@ -11,7 +11,8 @@ abvspaie/
 │   ├── schema.sql
 │   ├── schema_paiements.sql
 │   ├── schema_webhooks.sql
-│   └── schema_kyc.sql
+│   ├── schema_kyc.sql
+│   └── schema_email_mfa.sql
 └── site/                tout ce qui est publié sur Vercel
     ├── index.html
     ├── assets/          abvs-config.js (URL + clé publique Supabase), abvs-auth.js
@@ -30,11 +31,28 @@ Les coordonnées recueillies au paiement servent à créer ou retrouver une fich
 
 ## Vérification d'identité (KYC)
 
-Dans **Paramètres > KYC**, le marchand renseigne son nom légal, son pays de résidence et le type de pièce, dépose le recto (et éventuellement le verso) d'une pièce d'identité, puis soumet son dossier. Huit fichiers PDF, JPG ou PNG de 4 Mo maximum chacun sont acceptés. La fonction Vercel valide la signature binaire avant l'envoi au bucket privé `merchant-kyc-documents`, sous un chemin aléatoire ne contenant pas le nom d'origine. La consultation, le dépôt et la soumission exigent une session MFA AAL2 ; RLS limite l'accès au compte propriétaire. Le marchand ne peut ni modifier son statut ni supprimer un justificatif enregistré. Une insertion incomplète autorise uniquement le nettoyage de son objet orphelin.
+Dans **Paramètres > KYC**, tout marchand peut démarrer sa vérification de sa propre initiative après activation de la MFA. Il renseigne son nom légal, son pays de résidence et le type de pièce, dépose le recto (et éventuellement le verso) d'une pièce d'identité, puis soumet son dossier. Huit fichiers PDF, JPG ou PNG de 4 Mo maximum chacun sont acceptés. La fonction Vercel valide la signature binaire avant l'envoi au bucket privé `merchant-kyc-documents`, sous un chemin aléatoire ne contenant pas le nom d'origine. La consultation, le dépôt et la soumission exigent une session MFA AAL2 ; RLS limite l'accès au compte propriétaire. Le marchand ne peut ni modifier son statut ni supprimer un justificatif enregistré. Une insertion incomplète autorise uniquement le nettoyage de son objet orphelin.
 
 La validation est manuelle. L'espace `site/compte/kyc-admin.html` et `/api/kyc/admin` permettent aux seuls utilisateurs dont `app_metadata.kyc_admin` vaut `true` d'examiner les dossiers en attente. L'API exige une session MFA AAL2, émet des liens de consultation des pièces valables 60 secondes, interdit l'auto-examen et consigne chaque dépôt, soumission et décision dans `kyc_audit_logs`. Le refus exige un motif ; après un refus, le marchand peut déposer des pièces et soumettre à nouveau. L'approbation KYC ne met pas Live en service.
 
+Pour corriger les anciens comptes éventuellement marqués « vérifiés » sans soumission, pièce d'identité et décision auditée, réexécute `supabase/schema_kyc.sql` dans Supabase. La migration remet ces statuts incohérents à `none` et désactive Live ; elle conserve l'historique d'audit. Seuls les dossiers avec les preuves complètes du flux manuel restent vérifiés. Ne marque jamais directement un profil comme vérifié dans SQL.
+
+Pour corriger uniquement ces statuts après que la migration KYC est déjà installée, exécute `supabase/repair_kyc_legacy_status.sql` dans Supabase SQL Editor. Le script affiche le nombre de profils réinitialisés ; il conserve les journaux et les justificatifs.
+
 Pour autoriser un administrateur, active d'abord la MFA sur son compte, puis définis `app_metadata.kyc_admin: true` depuis une opération administrative de confiance dans Supabase Auth (dashboard/Auth Admin API). Ne place jamais ce rôle dans `user_metadata` ni dans un champ modifiable par le navigateur. Configurer les variables serveur `SUPABASE_URL`, `SUPABASE_ANON_KEY` et `SUPABASE_SERVICE_ROLE_KEY` dans Vercel ; la clé de service ne doit jamais être publiée côté client. La signature binaire est contrôlée, mais aucun antivirus, outil de suppression/rétention automatisé ni prestataire KYC n'est intégré. Définir ces processus, les durées légales et les responsabilités de traitement avant production ; ne collecte pas de justificatifs réels avant cette validation.
+
+## Code de sécurité par e-mail à la connexion
+
+Dans **Paramètres > Sécurité > Code par e-mail**, un utilisateur peut activer un code à six chiffres demandé après le mot de passe. Les codes expirent après 10 minutes, sont limités à cinq envois par heure et à cinq essais de vérification par code. La valeur brute n'est jamais enregistrée en base ; seul un HMAC est conservé temporairement. Cette option est distincte des facteurs MFA natifs de Supabase.
+
+**Activation de l'intégration (interruption temporaire des sessions nécessaire)** :
+
+1. Dans Supabase SQL Editor, appliquer `supabase/schema_email_mfa.sql`. Cette migration ajoute un contrôle RLS fermé par défaut : les comptes authentifiés ne pourront accéder aux tables tant que le Custom Access Token Hook n'émet pas les claims attendus. Prévoir une courte fenêtre de maintenance.
+2. Dans Supabase > Authentication > Hooks, activer le hook **Customize Access Token (JWT)** et sélectionner `public.email_mfa_access_token_hook`. Tous les utilisateurs devront se reconnecter afin de recevoir un JWT contenant `email_mfa_verified`.
+3. Dans Brevo, créer une clé API et vérifier l'adresse expéditeur. Dans Vercel > Settings > Environment Variables, ajouter `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`, `EMAIL_MFA_SECRET` (générer une valeur avec `node -p "require('node:crypto').randomBytes(32).toString('hex')"`), et `EMAIL_MFA_TOKEN_HOOK_CONFIGURED=true`, ainsi que les variables Supabase serveur déjà requises. Ne jamais exposer ces valeurs dans `site/` ou dans le navigateur.
+4. Redéployer Vercel après la migration et la configuration du hook et des secrets. Tester d'abord sur un compte non critique : activer l'option dans Paramètres, vérifier la réception du code, se déconnecter, puis confirmer que l'accès aux pages et API reste bloqué avant le code et fonctionne après son acceptation.
+
+Ne positionne `EMAIL_MFA_TOKEN_HOOK_CONFIGURED=true` qu'après activation réelle du hook. Si la page indique que le service n'est pas configuré, l'activation n'est pas encore disponible ; ne rends pas le bouton opérationnel en retirant simplement son verrou serveur.
 
 La rubrique **Statistiques** s'appuie sur les transactions du compte des 30 derniers jours. Le volume et la répartition par moyen de paiement ne comptent que les transactions réussies ; le taux de réussite compare celles-ci à toutes les transactions de la période.
 
@@ -95,7 +113,7 @@ const crypto = require("node:crypto");
 
 Une livraison acceptée renvoie `202` avec son `delivery_id`. Les erreurs utilisent notamment `400` (JSON/en-têtes invalides), `401` (horodatage ou signature invalides), `404` (endpoint inconnu/désactivé), `413` (corps trop grand) et `415` (type de contenu incorrect). Désactiver un endpoint dans le tableau de bord invalide immédiatement son secret. Ne transmettez pas de mots de passe, de données de carte bancaire ou d'autres informations sensibles dans le corps du webhook.
 
-Lancer les tests KYC et webhook avec `node --test tests/kyc-upload.test.js tests/kyc-admin.test.js tests/webhooks.test.js`.
+Lancer les tests e-mail MFA, KYC et webhook avec `node --test tests/email-mfa.test.js tests/kyc-upload.test.js tests/kyc-admin.test.js tests/webhooks.test.js`.
 
 ## Avant la mise en production
 - Appliquer et vérifier les scripts SQL d'abord sur un projet Supabase de test.

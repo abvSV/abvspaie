@@ -159,13 +159,13 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     <a href="#kyc"><span class="settings-nav-icon" aria-hidden="true">▣</span>KYC</a><a href="#entreprise"><span class="settings-nav-icon" aria-hidden="true">⌂</span>Entreprise</a><a href="#frais"><span class="settings-nav-icon" aria-hidden="true">¤</span>Frais</a><a href="#equipe"><span class="settings-nav-icon" aria-hidden="true">♧</span>Équipe</a><a href="#profil"><span class="settings-nav-icon" aria-hidden="true">◉</span>Profil</a><a href="#securite"><span class="settings-nav-icon" aria-hidden="true">◇</span>Sécurité</a><a href="#mot-de-passe"><span class="settings-nav-icon" aria-hidden="true">⚿</span>Mot de passe</a><a href="#legal"><span class="settings-nav-icon" aria-hidden="true">§</span>Informations légales</a>
    </nav>
    <div class="settings-content">
-   <section class="card settings-section" id="kyc"><h2>Vérification d'identité (KYC)</h2><p class="mute">Dépose uniquement les justificatifs demandés par l'équipe conformité. Les documents sont conservés dans un espace privé et accessibles à ton compte et aux administrateurs du projet autorisés.</p><p class="settings-status">Statut : <span class="tag warn" id="kyc-status">Chargement…</span></p><p class="settings-note" id="kyc-status-note" role="status" aria-live="polite">Chargement du dossier…</p><div id="kyc-mfa-note" class="settings-note" hidden>Active la double authentification pour déposer ou consulter des justificatifs. <a href="securite.html#mfa">Configurer la MFA</a></div><form id="kyc-form" class="settings-form" hidden><label for="kyc-full-name">Nom légal complet<input id="kyc-full-name" name="full_name" autocomplete="name" maxlength="120" required></label><label for="kyc-country">Pays de résidence<select id="kyc-country" name="country" required><option value="">Choisir un pays</option><option value="CI">Côte d'Ivoire</option><option value="SN">Sénégal</option><option value="BF">Burkina Faso</option><option value="ML">Mali</option><option value="BJ">Bénin</option><option value="TG">Togo</option><option value="NE">Niger</option><option value="GW">Guinée-Bissau</option></select></label><label for="kyc-document-kind">Type de pièce d'identité<select id="kyc-document-kind" name="identity_type" required><option value="">Choisir un type</option><option value="national_id">Carte nationale d'identité</option><option value="passport">Passeport</option><option value="driving_license">Permis de conduire</option></select></label><label for="kyc-type">Type de fichier à déposer<select id="kyc-type" name="document_type" required><option value="">Choisir un type</option><option value="identity">Pièce d'identité</option><option value="business">Document d'entreprise</option><option value="address">Justificatif d'adresse</option><option value="other">Autre document demandé</option></select></label><label for="kyc-side">Côté du document<select id="kyc-side" name="document_side" required><option value="front">Recto / page d'identité</option><option value="back">Verso</option><option value="supporting">Justificatif complémentaire</option></select></label><label for="kyc-file">Fichier (PDF, JPG ou PNG, 4 Mo maximum)<input id="kyc-file" name="document" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><button class="btn p" id="kyc-submit" type="submit">Déposer le justificatif</button><button class="btn" id="kyc-submit-case" type="button" hidden>Soumettre mon dossier</button><p class="err" id="kyc-error" role="status" aria-live="polite"></p></form><h3>Justificatifs déposés</h3><div id="kyc-documents" class="settings-note" role="status" aria-live="polite">Chargement…</div><p class="settings-note">Le dépôt ne valide pas automatiquement le dossier. La vérification est manuelle ; n'envoie pas de données de carte ou de documents non demandés. Les fichiers sont limités à 4 Mo et leur nom d'origine n'est pas conservé par les données KYC de l'application. Les fichiers ne sont pas analysés par un antivirus.</p></section>
+   <section class="card settings-section" id="kyc"><h2>Vérification d'identité (KYC)</h2><p class="mute">Tu peux démarrer ta vérification d'identité depuis ton compte. Les documents sont conservés dans un espace privé et accessibles à ton compte et aux administrateurs autorisés.</p><p class="settings-status">Statut : <span class="tag warn" id="kyc-status">Chargement…</span></p><p class="settings-note" id="kyc-status-note" role="status" aria-live="polite">Chargement du dossier…</p><div id="kyc-mfa-note" class="settings-note" hidden>Active la double authentification pour déposer ou consulter des justificatifs. <a href="securite.html#mfa">Configurer la MFA</a></div><form id="kyc-form" class="settings-form" hidden><label for="kyc-full-name">Nom légal complet<input id="kyc-full-name" name="full_name" autocomplete="name" maxlength="120" required></label><label for="kyc-country">Pays de résidence<select id="kyc-country" name="country" required><option value="">Choisir un pays</option><option value="CI">Côte d'Ivoire</option><option value="SN">Sénégal</option><option value="BF">Burkina Faso</option><option value="ML">Mali</option><option value="BJ">Bénin</option><option value="TG">Togo</option><option value="NE">Niger</option><option value="GW">Guinée-Bissau</option></select></label><label for="kyc-document-kind">Type de pièce d'identité<select id="kyc-document-kind" name="identity_type" required><option value="">Choisir un type</option><option value="national_id">Carte nationale d'identité</option><option value="passport">Passeport</option><option value="driving_license">Permis de conduire</option></select></label><label for="kyc-type">Type de fichier à déposer<select id="kyc-type" name="document_type" required><option value="">Choisir un type</option><option value="identity">Pièce d'identité</option><option value="business">Document d'entreprise</option><option value="address">Justificatif d'adresse</option><option value="other">Autre document demandé</option></select></label><label for="kyc-side">Côté du document<select id="kyc-side" name="document_side" required><option value="front">Recto / page d'identité</option><option value="back">Verso</option><option value="supporting">Justificatif complémentaire</option></select></label><label for="kyc-file">Fichier (PDF, JPG ou PNG, 4 Mo maximum)<input id="kyc-file" name="document" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required></label><button class="btn p" id="kyc-submit" type="submit">Déposer le justificatif</button><button class="btn" id="kyc-submit-case" type="button" hidden>Soumettre mon dossier</button><p class="err" id="kyc-error" role="status" aria-live="polite"></p></form><h3>Justificatifs déposés</h3><div id="kyc-documents" class="settings-note" role="status" aria-live="polite">Chargement…</div><p class="settings-note">Tu peux soumettre un dossier KYC de ta propre initiative. Le dépôt ne valide pas automatiquement le dossier : l'examen est manuel. N'envoie que les documents utiles à ta vérification, jamais de données de carte bancaire. Les fichiers sont limités à 4 Mo, leur nom d'origine n'est pas conservé par les données KYC de l'application et ils ne sont pas analysés par un antivirus.</p></section>
    <section class="card settings-section" id="entreprise"><h2>Entreprise</h2><p class="mute">Mets à jour les informations enregistrées dans ton profil de compte.</p><form id="business-form" class="settings-form"><label for="business-name">Nom de l'entreprise<input id="business-name" name="company" autocomplete="organization" maxlength="120" required></label><label for="business-country">Pays<select id="business-country" name="country" required><option value="">Choisir un pays</option>${countryNames.map(name=>`<option value="${countryCodes[name]}">${name}</option>`).join("")}</select></label><button class="btn p" type="submit">Enregistrer l'entreprise</button><p class="err" id="business-error" role="status" aria-live="polite"></p></form></section>
    <section class="card settings-section" id="profil"><h2>Profil</h2><p class="mute">Gère le nom associé à ton compte. L'adresse e-mail reste celle utilisée pour te connecter.</p><form id="profile-form" class="settings-form"><label for="profile-name">Nom complet<input id="profile-name" name="full_name" autocomplete="name" maxlength="120" required></label><label for="profile-email">Adresse e-mail<input id="profile-email" name="email" type="email" autocomplete="email" readonly></label><button class="btn p" type="submit">Enregistrer le profil</button><p class="err" id="profile-error" role="status" aria-live="polite"></p></form></section>
    <section class="card settings-section" id="securite"><h2>Sécurité</h2><p class="mute">Ajoute une seconde étape pour mieux protéger ton compte.</p><p class="settings-status">Authentification à deux facteurs : <span class="tag warn" id="mfa-state">Vérification…</span></p><p class="settings-note" id="mfa-risk-note">La MFA est désactivée : avec le mot de passe seul, une personne qui le connaît peut se connecter. <a href="securite.html#mfa">Activer la MFA avec une application d'authentification</a></p><div class="settings-options">
-    <article class="settings-option"><h3>Code par e-mail</h3><p id="email-mfa-note">La MFA par e-mail nécessite une intégration serveur dédiée et n'est pas encore activée.</p><button class="btn" id="email-mfa" type="button" disabled aria-describedby="email-mfa-note">Activer par e-mail</button></article>
+    <article class="settings-option"><h3>Code par e-mail</h3><p id="email-mfa-note">À chaque nouvelle connexion, confirme ton identité avec un code envoyé à l’adresse e-mail de ton compte.</p><button class="btn" id="email-mfa" type="button" aria-describedby="email-mfa-note">Activer par e-mail</button><button class="btn" id="email-mfa-disable" type="button" hidden>Désactiver le code par e-mail</button><form id="email-mfa-form" hidden><label for="email-mfa-code">Code de vérification<input id="email-mfa-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required></label><button class="btn p" type="submit">Confirmer le code</button><button class="btn" id="email-mfa-cancel" type="button">Annuler</button></form><p class="err" id="email-mfa-error" role="status" aria-live="polite"></p></article>
     <article class="settings-option"><h3>Application d'authentification</h3><p>Utilise une application TOTP et un code temporaire à 6 chiffres.</p><a class="btn p" href="securite.html#mfa">Utiliser une application d'authentification</a></article>
-   </div><p class="settings-note" style="margin-top:14px">L'option e-mail est désactivée : l'activer sans vérification serveur ne protégerait pas réellement la connexion.</p><div class="settings-actions"><a class="btn" href="securite.html#sessions">Gérer les connexions</a><a class="btn" href="securite.html#mfa">Gérer la double authentification</a></div></section>
+   </div><p class="settings-note" style="margin-top:14px">Le code e-mail ajoute une vérification à la connexion. La configuration serveur Brevo est nécessaire pour envoyer les codes.</p><div class="settings-actions"><a class="btn" href="securite.html#sessions">Gérer les connexions</a><a class="btn" href="securite.html#mfa">Gérer la double authentification</a></div></section>
    <section class="card settings-section" id="frais"><h2>Frais</h2><p class="mute">Consulte les frais et informations de facturation disponibles pour ton compte.</p><a class="btn" href="facturation.html">Ouvrir la facturation</a></section>
    <section class="card settings-section" id="equipe"><h2>Équipe</h2><p class="mute">La gestion des membres et des rôles n'est pas encore configurée côté serveur.</p><a class="btn" href="equipe.html">Consulter l'équipe</a></section>
    <section class="card settings-section" id="mot-de-passe"><h2>Mot de passe</h2><p class="mute">Choisis un mot de passe différent et difficile à deviner.</p><form id="fpw"><label>Nouveau mot de passe<input name="b" type="password" autocomplete="new-password" minlength="8" required></label><button class="btn p" type="submit">Mettre à jour le mot de passe</button></form></section>
@@ -183,15 +183,12 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     if(userError||!userData.user)throw new Error("Session expirée. Reconnecte-toi puis réessaie.");
     const user=userData.user;
     const [{data:profile,error:profileError},{data:assurance,error:assuranceError}]=await Promise.all([
-     ABVS.client.from("merchant_profiles").select("kyc_status,kyc_rejection_reason,kyc_full_name,kyc_country,kyc_document_type").eq("user_id",user.id).maybeSingle(),
+     ABVS.client.from("merchant_profiles").select("kyc_status,kyc_rejection_reason,kyc_full_name,kyc_country,kyc_document_type,kyc_submitted_at,kyc_decided_at,kyc_decided_by,verified_at").eq("user_id",user.id).maybeSingle(),
      auth.mfa.getAuthenticatorAssuranceLevel()
     ]);
     if(profileError)throw new Error("Impossible de lire le statut KYC. Vérifie que schema.sql est appliqué.");
     if(!profile)throw new Error("Profil marchand introuvable. Vérifie que schema.sql est appliqué.");
     if(assuranceError)throw new Error("Impossible de vérifier le niveau de sécurité de la session.");
-    const [label,style]=kycStatuses[profile.kyc_status]||["Statut inconnu","err"];
-    status.textContent=label;status.className="tag "+style;
-    note.textContent=profile.kyc_status==="rejected"?`Dossier refusé : ${profile.kyc_rejection_reason||"consulte le support avant une nouvelle soumission."}`:profile.kyc_status==="pending"?"Ton dossier a été transmis ; sa validation n'est pas automatique.":profile.kyc_status==="verified"?"Ton identité a été vérifiée. Aucun nouveau document ne peut être ajouté.":"Aucun justificatif n'a encore été déposé.";
     document.getElementById("kyc-full-name").value=profile.kyc_full_name||"";
     document.getElementById("kyc-country").value=profile.kyc_country||"";
     document.getElementById("kyc-document-kind").value=profile.kyc_document_type||"";
@@ -200,13 +197,32 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     }
     const hasMfa=assurance.currentLevel==="aal2";
     mfaNote.hidden=hasMfa;
-    form.hidden=!hasMfa||profile.kyc_status==="verified";
-    if(!hasMfa){list.textContent="Active la MFA pour consulter les justificatifs.";return}
+    if(!hasMfa){
+     const needsConfirmation=profile.kyc_status==="verified";
+     const [label,style]=needsConfirmation?["À vérifier","err"]:kycStatuses[profile.kyc_status]||["Statut inconnu","err"];
+     status.textContent=label;status.className="tag "+style;
+     note.textContent=needsConfirmation?"Le statut ne peut pas être confirmé sans vérifier les justificatifs. Active la MFA avant de te fier à cette information.":"Active la MFA pour accéder au dossier KYC.";
+     form.hidden=true;
+     list.textContent="Active la MFA pour consulter les justificatifs.";
+     return;
+    }
     const {data:documents,error:documentsError}=await ABVS.client.from("merchant_kyc_documents").select("id,document_type,document_side,storage_path,created_at").order("created_at",{ascending:false});
     if(documentsError)throw new Error("Lecture des justificatifs refusée. Vérifie que schema_kyc.sql est appliqué et que ta MFA est active.");
     const records=documents||[];
     const hasIdentity=records.some(entry=>entry.document_type==="identity"&&entry.document_side==="front");
-    document.getElementById("kyc-submit-case").hidden=!hasIdentity||profile.kyc_status==="verified";
+    const hasApprovalEvidence=Boolean(profile.kyc_submitted_at&&profile.kyc_decided_at&&profile.kyc_decided_by&&profile.verified_at&&hasIdentity);
+    const inconsistentVerified=profile.kyc_status==="verified"&&!hasApprovalEvidence;
+    const displayStatus=inconsistentVerified?"none":profile.kyc_status;
+    const [label,style]=inconsistentVerified?["À vérifier","err"]:kycStatuses[displayStatus]||["Statut inconnu","err"];
+    status.textContent=label;status.className="tag "+style;
+    note.textContent=inconsistentVerified
+     ?"Ce compte est marqué comme vérifié sans justificatif ni preuve complète d'une décision manuelle. Il ne doit pas être considéré comme vérifié. La migration KYC doit être réappliquée par l'administrateur."
+     :displayStatus==="rejected"?`Dossier refusé : ${profile.kyc_rejection_reason||"consulte le support avant une nouvelle soumission."}`
+     :displayStatus==="pending"?"Ton dossier a été transmis ; sa validation n'est pas automatique."
+     :displayStatus==="verified"?"Ton identité a été vérifiée. Aucun nouveau document ne peut être ajouté."
+     :"Aucun dossier soumis. Tu peux commencer la vérification en renseignant tes informations et en déposant le recto de ta pièce d'identité.";
+    form.hidden=displayStatus==="verified";
+    document.getElementById("kyc-submit-case").hidden=!hasIdentity||displayStatus==="verified";
     const uploadButton=document.getElementById("kyc-submit");
     uploadButton.disabled=records.length>=8;
     if(records.length>=8){note.textContent="La limite de huit justificatifs est atteinte. Tu peux encore soumettre le dossier ou contacter le support."; }
@@ -332,6 +348,81 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     document.getElementById("mfa-risk-note").hidden=active;
    }catch(_){state.textContent="Vérification impossible";state.className="tag warn"}
   }
+  const emailMfaButton=document.getElementById("email-mfa");
+  const emailMfaDisable=document.getElementById("email-mfa-disable");
+  const emailMfaForm=document.getElementById("email-mfa-form");
+  const emailMfaError=document.getElementById("email-mfa-error");
+  let emailMfaAction="";
+  async function refreshEmailMfa(){
+   if(!auth){emailMfaButton.disabled=true;emailMfaError.textContent="Service d'authentification indisponible.";return}
+   const {data,error}=await ABVS.emailMfa("status");
+   if(error){
+    emailMfaButton.disabled=true;
+    emailMfaError.textContent=error.status===503
+     ?"Le service e-mail n'est pas encore configuré par l'administrateur."
+     :"Impossible de vérifier le statut e-mail. Réessaie plus tard.";
+    return;
+   }
+   if(!data.available){
+    emailMfaButton.disabled=true;
+    emailMfaError.textContent="L’administrateur doit terminer la configuration de sécurité et de l’envoi Brevo.";
+    return;
+   }
+   emailMfaButton.disabled=false;
+   emailMfaButton.hidden=data.enabled;
+   emailMfaDisable.hidden=!data.enabled;
+   document.getElementById("email-mfa-note").textContent=data.enabled
+    ?"La vérification par code e-mail est activée pour les nouvelles connexions."
+    :"Un code sera demandé après ton mot de passe à chaque nouvelle connexion.";
+   emailMfaError.textContent="";
+  }
+  async function startEmailMfa(action){
+   emailMfaAction=action;
+   emailMfaError.textContent="";
+   emailMfaButton.disabled=true;
+   emailMfaDisable.disabled=true;
+   const {error}=await ABVS.emailMfa("start_"+action);
+   emailMfaButton.disabled=false;
+   emailMfaDisable.disabled=false;
+   if(error){
+    emailMfaAction="";
+    emailMfaError.textContent=error.message;
+    return;
+   }
+   emailMfaForm.hidden=false;
+   document.getElementById("email-mfa-code").focus();
+   emailMfaError.textContent="Code envoyé à l’adresse confirmée de ton compte. Il expire dans 10 minutes.";
+  }
+  emailMfaButton.addEventListener("click",()=>startEmailMfa("enroll"));
+  emailMfaDisable.addEventListener("click",()=>startEmailMfa("disable"));
+  document.getElementById("email-mfa-cancel").addEventListener("click",()=>{
+   emailMfaAction="";
+   emailMfaForm.hidden=true;
+   emailMfaForm.reset();
+   emailMfaError.textContent="";
+  });
+  emailMfaForm.addEventListener("submit",async event=>{
+   event.preventDefault();
+   if(!emailMfaAction)return;
+   const button=emailMfaForm.querySelector('button[type="submit"]');
+   button.disabled=true;
+   emailMfaError.textContent="";
+   try{
+    const {error}=await ABVS.emailMfa("verify_"+emailMfaAction,document.getElementById("email-mfa-code").value.trim());
+    if(error)throw error;
+    const refreshed=await ABVS.refreshSession();
+    if(refreshed.error)throw refreshed.error;
+    emailMfaForm.hidden=true;
+    emailMfaForm.reset();
+    emailMfaError.textContent=emailMfaAction==="enroll"
+     ?"Code e-mail activé pour les prochaines connexions."
+     :"Code e-mail désactivé.";
+    emailMfaAction="";
+    await refreshEmailMfa();
+   }catch(error){
+    emailMfaError.textContent=error.message||"Le code n'a pas pu être vérifié.";
+   }finally{button.disabled=false}
+  });
   const settingsSections=[...document.querySelectorAll(".settings-content > .settings-section")];
   function showSettingsSection(id){
    const selected=settingsSections.find(section=>section.id===id)||null;
@@ -349,7 +440,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
   }));
   window.addEventListener("hashchange",()=>showSettingsSection(location.hash.slice(1)));
   showSettingsSection(location.hash.slice(1));
-  loadProfile();loadMfa();loadKyc();
+  loadProfile();loadMfa();loadKyc();refreshEmailMfa();
  })();
  </script>
  </body>

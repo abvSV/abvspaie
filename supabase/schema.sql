@@ -69,13 +69,5 @@ create trigger payment_links_live_guard
   before insert or update of mode on public.payment_links
   for each row execute function public.enforce_live_mode();
 
--- ───────────────────────────────────────────────────────────────
--- Pour valider une entreprise APRÈS vérification manuelle de ses documents
--- (ne l'activez qu'une fois le prestataire de paiement réellement branché) :
---
---   update public.merchant_profiles
---      set kyc_status = 'verified', live_enabled = true, verified_at = now()
---    where user_id = '<UUID de l''utilisateur>';
---
--- Pour retrouver l'UUID : Authentication > Users dans Supabase.
--- ───────────────────────────────────────────────────────────────
+-- Les décisions KYC doivent passer par le flux d'examen administratif de schema_kyc.sql.
+-- Ne définissez pas directement kyc_status = 'verified' ou live_enabled = true.

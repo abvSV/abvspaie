@@ -28,6 +28,17 @@
     try { localStorage.removeItem(KEY); } catch (_) {}
   }
   function ungate() { var g = document.getElementById("abvs-gate"); if (g) g.remove(); }
+  function emailMfaPending(session) {
+    try {
+      var parts = session.access_token.split(".");
+      var payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+      payload += "=".repeat((4 - payload.length % 4) % 4);
+      var claims = JSON.parse(atob(payload));
+      return claims.email_mfa_required === true && claims.email_mfa_verified !== true;
+    } catch (_) {
+      return false;
+    }
+  }
 
   async function signOut() {
     try { if (sb) await sb.auth.signOut(); } catch (_) {}
@@ -51,6 +62,7 @@
       if (!sb) throw new Error("client indisponible");
       var r = await sb.auth.getSession();
       if (!r.data || !r.data.session) return location.replace(LOGIN);
+      if (emailMfaPending(r.data.session)) return location.replace(LOGIN);
       if (idle()) return signOut();
       var a = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
       if (a.data && a.data.nextLevel === "aal2" && a.data.currentLevel !== "aal2") return location.replace(LOGIN);
@@ -70,6 +82,7 @@
       if (!sb) return false;
       var r = await sb.auth.getSession();
       if (!r.data || !r.data.session) return false;
+      if (emailMfaPending(r.data.session)) return false;
       if (idle()) return false;
       var a = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
       if (a.data && a.data.nextLevel === "aal2" && a.data.currentLevel !== "aal2") return false;
@@ -110,6 +123,37 @@
     return { ok: true };
   }
 
+  async function emailMfa(action, code) {
+    if (!sb) return { error: new Error("Service d'authentification indisponible.") };
+    var sessionResult = await sb.auth.getSession();
+    if (sessionResult.error || !sessionResult.data || !sessionResult.data.session) {
+      return { error: sessionResult.error || new Error("Session expirée.") };
+    }
+    try {
+      var response = await fetch("/api/auth/email-mfa", {
+        method: "POST",
+        headers: {
+          authorization: "Bearer " + sessionResult.data.session.access_token,
+          "content-type": "application/json"
+        },
+        body: JSON.stringify(code ? { action: action, code: code } : { action: action })
+      });
+      var result = await response.json();
+      if (!response.ok) {
+        var failure = new Error(result.error || "La vérification e-mail a échoué.");
+        failure.status = response.status;
+        return { error: failure };
+      }
+      return { data: result };
+    } catch (failure) {
+      return { error: failure };
+    }
+  }
+
+  async function refreshSession() {
+    return sb.auth.refreshSession();
+  }
+
   async function resetRequest(email) {
     return sb.auth.resetPasswordForEmail(email, { redirectTo: new URL("mot-de-passe-oublie.html", location.href).href });
   }
@@ -133,6 +177,6 @@
   }
 
   window.ABVS = { client: sb, ready: !!sb, requireSession: requireSession, hasSession: hasSession, signUp: signUp, signIn: signIn,
-    verifyMfa: verifyMfa, signOut: signOut, signOutAll: signOutAll, resetRequest: resetRequest, updatePassword: updatePassword,
+    verifyMfa: verifyMfa, emailMfa: emailMfa, refreshSession: refreshSession, signOut: signOut, signOutAll: signOutAll, resetRequest: resetRequest, updatePassword: updatePassword,
     onPasswordRecovery: onPasswordRecovery, msg: msg, touch: touch, clearTouch: clearTouch };
 })();
