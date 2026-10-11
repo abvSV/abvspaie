@@ -24,6 +24,7 @@
     button:disabled{opacity:.55;cursor:not-allowed}
     [role=status]{min-height:24px;margin-top:14px;color:#a33232;line-height:1.5}
     .security{font-size:12px;text-align:center;color:#718096;margin:18px 0 0}
+    .privacy-note{font-size:12px;color:#718096;line-height:1.5;margin:12px 0 0}
     [hidden]{display:none!important}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script>
@@ -49,8 +50,13 @@
         <option value="Wave">Wave</option>
         <option value="Carte">Carte bancaire</option>
       </select>
+      <label for="customer-name">Nom (facultatif)</label>
+      <input id="customer-name" name="customer-name" type="text" autocomplete="name" maxlength="120">
+      <label for="customer-email">E-mail (facultatif)</label>
+      <input id="customer-email" name="customer-email" type="email" autocomplete="email" maxlength="254">
       <label id="phone-label" for="phone">Numéro de téléphone</label>
       <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20">
+      <p class="privacy-note">Ces coordonnées permettent au marchand de retrouver votre paiement et votre fiche client. Ne saisissez que des informations que vous acceptez de lui transmettre.</p>
       <button id="submit" type="submit">Confirmer le paiement</button>
     </form>
     <p id="status" role="status" aria-live="polite"></p>
@@ -62,6 +68,8 @@
       const status = document.getElementById("status");
       const method = document.getElementById("method");
       const phone = document.getElementById("phone");
+      const customerEmail = document.getElementById("customer-email");
+      const customerName = document.getElementById("customer-name");
       const submit = document.getElementById("submit");
       let client = null;
       let clientError = null;
@@ -128,13 +136,18 @@
         if (!idempotencyKey) idempotencyKey = createIdempotencyKey();
 
         try {
+          if (method.value === "Carte" && !phone.value.trim() && !customerEmail.value.trim()) {
+            throw new Error("Pour un paiement par carte en mode test, indiquez un e-mail ou un téléphone.");
+          }
           const { data, error } = await client.rpc("create_payment", {
             p_slug: slug,
             p_method: method.value,
             p_phone: phone.value.trim() || null,
-            p_idempotency_key: idempotencyKey
+            p_idempotency_key: idempotencyKey,
+            p_customer_name: customerName.value.trim() || null,
+            p_customer_email: customerEmail.value.trim() || null
           });
-          if (error) throw new Error("Le paiement n'a pas pu être enregistré. Vérifiez les informations puis réessayez.");
+          if (error) throw new Error(error.message || "Le paiement n'a pas pu être enregistré. Vérifiez les informations puis réessayez.");
           if (!data || typeof data.reference !== "string"
               || !["succeeded", "pending"].includes(data.status)
               || !["test", "live"].includes(data.mode)) {

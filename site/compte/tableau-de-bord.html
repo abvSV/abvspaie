@@ -119,6 +119,27 @@ body main{max-width:1200px;margin:0 auto;padding-top:84px}
 .search-result .tag{flex:none}
 .search-empty{padding:18px;border:1px dashed var(--line);border-radius:14px;color:var(--mute);font-size:14px}
 @media(max-width:560px){.search-result{align-items:flex-start;flex-direction:column;gap:8px}}
+.clients-toolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.clients-toolbar h2{margin:0 0 5px;font-size:18px}
+.clients-toolbar .sub{margin:0}
+.client-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--in)}
+.client-form[hidden]{display:none}
+.client-form label{font-size:12px;color:var(--mute)}
+.client-form input{width:100%;margin-top:6px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--solid);color:var(--ink);font:14px Inter,sans-serif}
+.client-form-note,.client-message{grid-column:1/-1;margin:0;color:var(--mute);font-size:12px;line-height:1.5}
+.client-form-actions{grid-column:1/-1;display:flex;gap:8px}
+.client-form-actions .btn{width:auto;margin:0}
+.client-search-label{display:block;margin-top:22px;font-size:12px;color:var(--mute)}
+.client-list{overflow-x:auto}
+.client-list table{min-width:580px;text-align:left}
+.client-list td:first-child strong,.client-list td:first-child small{display:block}
+.client-list td:first-child small{margin-top:4px;color:var(--mute)}
+.client-row-action{border:0;background:none;color:var(--pri);font:600 12px Inter,sans-serif;cursor:pointer}
+.client-activity-list{display:grid;gap:8px}
+.client-activity-item{display:flex;justify-content:space-between;gap:12px;padding:12px;border-bottom:1px solid var(--line)}
+.client-activity-item small{display:block;margin-top:4px;color:var(--mute)}
+.client-activity-empty{padding:18px;border:1px dashed var(--line);border-radius:14px;color:var(--mute);font-size:14px}
+@media(max-width:560px){.clients-toolbar{align-items:stretch;flex-direction:column}.clients-toolbar .btn{align-self:flex-start}.client-form{grid-template-columns:1fr}.client-form-note,.client-form-actions,.client-message{grid-column:1}}
 @media(max-width:560px){.brand{top:10px;left:10px;padding:8px 10px;font-size:15px}.account-actions{top:10px;right:10px;gap:5px}.account-actions a,.account-actions button{min-height:38px;padding:8px 10px;border-radius:12px;font-size:12px}.account-actions .action-icon{font-size:15px}}
 .overview-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:22px}
 .overview-head,.overview-stat,.overview-panel{animation:overview-float 7s ease-in-out infinite}
@@ -369,6 +390,8 @@ document.querySelector("main").addEventListener("click",event=>{
  section.querySelectorAll(".section-subpanel").forEach(panel=>{panel.hidden=panel.id!==button.dataset.subpanel});
  if(button.dataset.subpanel==="hooks-setup")loadWebhookEndpoints();
  if(button.dataset.subpanel==="hooks-events")loadWebhookEvents();
+ if(button.dataset.subpanel==="clients-list")loadClients();
+ if(button.dataset.subpanel==="clients-activity")loadClientActivity();
 });
 let recentWebhook=null;
 function setWebhookMessage(id,message,isError=false){const target=$(id);target.textContent=message;target.dataset.error=String(isError)}
@@ -490,10 +513,53 @@ sec('sessions','Sessions de checkout','Les pages de paiement ouvertes par vos cl
  ["sessions-history","▤","Historique",`<div class="card"><p class="sub" style="margin:0">L'historique des sessions de checkout n'est pas encore connecté aux données du compte.</p></div>`]
 ]);
 
-sec('clients','Clients','Les personnes qui vous paient.',[
- ["clients-list","♧","Répertoire",`<div class="card"><p class="sub" style="margin:0">Le répertoire clients n'est pas encore connecté aux données de paiement.</p></div>`],
- ["clients-activity","↗","Activité",`<div class="card"><p class="sub" style="margin:0">L'activité des clients apparaîtra ici lorsque les données client seront disponibles.</p></div>`]
+sec('clients','Clients','Retrouvez les personnes qui vous paient et consultez leurs paiements.',[
+ ["clients-list","♧","Répertoire",`<div class="card"><div class="clients-toolbar"><div><h2>Vos clients</h2><p class="sub">Les fiches sont créées lors d'un paiement ou depuis ce répertoire.</p></div><button id="clientCreateToggle" class="btn" type="button">Nouveau client</button></div><form id="clientForm" class="client-form" hidden><label>Nom<input name="name" required maxlength="120" autocomplete="name"></label><label>E-mail<input name="email" type="email" maxlength="254" autocomplete="email"></label><label>Téléphone<input name="phone" type="tel" maxlength="20" autocomplete="tel"></label><p class="client-form-note">Indiquez au moins un e-mail ou un téléphone. Ces informations sont visibles uniquement dans votre compte.</p><p id="clientFormMessage" class="client-message" role="status" aria-live="polite"></p><div class="client-form-actions"><button id="clientSave" class="btn" type="submit">Enregistrer</button><button id="clientCancel" class="btn alt" type="button">Annuler</button></div></form><p id="clientMessage" class="client-message" role="status" aria-live="polite"></p><label class="client-search-label" for="clientSearch">Rechercher un client</label><input id="clientSearch" class="sq" type="search" autocomplete="off" placeholder="Nom, e-mail ou téléphone"><div id="clientList" class="client-list">Chargement des clients…</div></div>`],
+ ["clients-activity","↗","Activité",`<div class="card"><h2 id="clientActivityTitle">Activité des clients</h2><p class="sub">Sélectionnez « Voir l'activité » dans le répertoire pour afficher les paiements d'un client.</p><div id="clientActivityList" class="client-activity-list"><div class="client-activity-empty">Aucun client sélectionné.</div></div></div>`]
 ]);
+let CLIENTS=[];
+function renderClients(){
+ const list=$("clientList"),query=$("clientSearch").value.trim().toLocaleLowerCase("fr");
+ const filtered=CLIENTS.filter(client=>[client.name,client.email,client.phone].some(value=>(value||"").toLocaleLowerCase("fr").includes(query)));
+ if(!filtered.length){list.innerHTML=CLIENTS.length?"<div class='client-activity-empty'>Aucun client ne correspond à cette recherche.</div>":"<div class='client-activity-empty'>Aucun client pour l'instant. Une fiche sera créée à la première transaction avec un e-mail ou un téléphone, ou ajoutez-en une avec « Nouveau client ».</div>";return}
+ list.innerHTML="<table><thead><tr><th>Client</th><th>Coordonnées</th><th>Ajouté le</th><th></th></tr></thead><tbody>"+filtered.map(client=>`<tr><td><strong>${esc(client.name)}</strong><small>Identité de paiement</small></td><td>${esc(client.email||"—")}<br>${esc(client.phone||"—")}</td><td>${esc(new Date(client.created_at).toLocaleDateString("fr-FR"))}</td><td><button class="client-row-action" type="button" data-client-activity="${esc(client.id)}">Voir l'activité</button></td></tr>`).join("")+"</tbody></table>";
+}
+async function loadClients(){
+ const list=$("clientList");list.textContent="Chargement des clients…";$("clientMessage").textContent="";
+ if(!ABVS.ready){list.textContent="Service de compte indisponible.";return}
+ const {data,error}=await ABVS.client.from("clients").select("id,name,email,phone,created_at").order("created_at",{ascending:false}).limit(1000);
+ if(error){list.textContent="Lecture impossible. Appliquez supabase/schema_clients.sql au projet Supabase du site.";return}
+ CLIENTS=data||[];renderClients();
+}
+async function loadClientActivity(clientId){
+ const list=$("clientActivityList");
+ if(!ABVS.ready){list.textContent="Service de compte indisponible.";return}
+ if(!clientId){list.innerHTML="<div class='client-activity-empty'>Sélectionnez un client dans le répertoire pour consulter ses paiements.</div>";$("clientActivityTitle").textContent="Activité des clients";return}
+ const client=CLIENTS.find(item=>item.id===clientId);
+ $("clientActivityTitle").textContent=client?`Paiements de ${client.name}`:"Paiements du client";
+ list.textContent="Chargement des paiements…";
+ const {data,error}=await ABVS.client.from("transactions").select("reference,amount,currency,method,status,created_at").eq("client_id",clientId).order("created_at",{ascending:false}).limit(50);
+ if(error){list.textContent="Impossible de charger l'activité. Vérifiez que supabase/schema_clients.sql a été appliqué.";return}
+ if(!data.length){list.innerHTML="<div class='client-activity-empty'>Aucun paiement associé à ce client pour l'instant.</div>";return}
+ list.innerHTML=data.map(payment=>`<div class="client-activity-item"><div><strong>${esc(payment.reference)}</strong><small>${esc(payment.method)} · ${esc(new Date(payment.created_at).toLocaleString("fr-FR"))}</small></div><div><strong>${fmt(payment.amount)} ${esc(payment.currency)}</strong><small>${esc(L[payment.status]||payment.status)}</small></div></div>`).join("");
+}
+$("clientSearch").addEventListener("input",renderClients);
+$("clientCreateToggle").addEventListener("click",()=>{$("clientForm").hidden=!$("clientForm").hidden;if(!$("clientForm").hidden)$("clientForm").elements.name.focus()});
+$("clientCancel").addEventListener("click",()=>{$("clientForm").reset();$("clientForm").hidden=true;$("clientFormMessage").textContent=""});
+$("clientList").addEventListener("click",event=>{const button=event.target.closest("[data-client-activity]");if(!button)return;document.querySelector('#clients [data-subpanel="clients-activity"]').click();loadClientActivity(button.dataset.clientActivity)});
+$("clientForm").addEventListener("submit",async event=>{
+ event.preventDefault();const form=event.currentTarget,button=$("clientSave"),name=form.elements.name.value.trim(),email=form.elements.email.value.trim().toLowerCase(),rawPhone=form.elements.phone.value.trim(),phone=rawPhone.replace(/\D/g,"");
+ $("clientFormMessage").textContent="";button.disabled=true;
+ try{
+  if(!email&&!phone)throw new Error("Indiquez un e-mail ou un téléphone.");
+  if(phone&&(phone.length<8||phone.length>20||!/^[0-9+() -]{8,20}$/.test(rawPhone)))throw new Error("Vérifiez le numéro de téléphone.");
+  const identityKey=phone?"phone:"+phone:"email:"+email;
+  const {error}=await ABVS.client.from("clients").insert({identity_key:identityKey,name,email:email||null,phone:phone||null});
+  if(error)throw new Error(error.code==="23505"?"Une fiche existe déjà pour cet identifiant.":"Impossible d'enregistrer le client. Vérifiez le schéma puis réessayez.");
+  form.reset();form.hidden=true;$("clientMessage").textContent="Client enregistré.";await loadClients();
+ }catch(error){$("clientFormMessage").textContent=error.message||"Enregistrement impossible."}
+ finally{button.disabled=false}
+});
 sec('stats','Statistiques','Répartition de vos encaissements (30 jours).',[
  ["stats-overview","▦","Vue d'ensemble",`<div class="card"><p class="sub" style="margin:0">Les statistiques ne sont pas encore disponibles pour cette période.</p></div>`],
  ["stats-methods","◈","Moyens de paiement",`<div class="card"><p class="sub" style="margin:0">La répartition par moyen de paiement apparaîtra lorsque les données de statistiques seront connectées.</p></div>`]

@@ -19,11 +19,13 @@ abvspaie/
 ```
 
 ## Mise en route
-1. Supabase > SQL Editor : lancer `supabase/schema_paiements.sql`, puis `supabase/schema.sql`, puis `supabase/schema_webhooks.sql`. Si le schéma Webhooks a déjà été créé, relancer `schema_webhooks.sql` après toute mise à jour ; le script crée également l'index unique endpoint/livraison requis pour l'idempotence.
+1. Supabase > SQL Editor : lancer `supabase/schema_paiements.sql`, puis `supabase/schema.sql`, `supabase/schema_webhooks.sql` et `supabase/schema_clients.sql`. Le dernier script active les fiches clients et modifie la fonction `create_payment` ; il est requis pour utiliser **Clients** et les nouvelles coordonnées du formulaire de paiement.
 2. `site/assets/abvs-config.js` : renseigner l'URL et la clé publique (`anon` / publishable) du projet (Settings > Data API). Ne jamais y placer la clé `service_role`.
 3. Supabase > Authentication > URL Configuration : Site URL = adresse Vercel ; Redirect URLs = `.../public/inscription-connexion.html` et `.../public/mot-de-passe-oublie.html`.
 4. Vercel : importer le dépôt GitHub, Framework « Other », aucune commande de build. Les fonctions de `api/` sont déployées avec le site.
 5. Test local : VS Code + extension Live Server, en ouvrant le dossier `site/`.
+
+Les coordonnées recueillies au paiement servent à créer ou retrouver une fiche dans **Clients** ; le téléphone et l'e-mail ne sont jamais publiés. Les transactions antérieures à cette migration ne seront pas automatiquement rattachées : l'ancien flux ne conservait que le téléphone masqué.
 
 ## Webhooks entrants
 
