@@ -55,7 +55,8 @@
       var a = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
       if (a.data && a.data.nextLevel === "aal2" && a.data.currentLevel !== "aal2") return location.replace(LOGIN);
       touch(); ungate();
-      if (document.body) addLogoutButton(); else document.addEventListener("DOMContentLoaded", addLogoutButton);
+      if (document.body) { addLogoutButton(); initModeSwitch(); }
+      else document.addEventListener("DOMContentLoaded", function () { addLogoutButton(); initModeSwitch(); });
       var last = 0;
       ["pointerdown", "keydown", "scroll"].forEach(function (ev) {
         addEventListener(ev, function () { var n = Date.now(); if (n - last > 15000) { last = n; touch(); } }, { passive: true });
@@ -119,6 +120,76 @@
     sb.auth.onAuthStateChange(function (ev) { if (ev === "PASSWORD_RECOVERY") cb(); });
   }
 
+  // ───── Mode Test / Live ─────
+  // Le droit d'utiliser Live vient du SERVEUR (table merchant_profiles, lecture seule pour l'utilisateur),
+  // jamais du navigateur : localStorage ne sert qu'à mémoriser le choix déjà autorisé.
+  var MODE_KEY = "abvs_mode", profileP = null;
+
+  function loadProfile(force) {
+    if (!sb) return Promise.resolve(null);
+    if (force || !profileP) {
+      profileP = sb.auth.getUser().then(function (u) {
+        var id = u.data && u.data.user && u.data.user.id;
+        if (!id) return null;
+        return sb.from("merchant_profiles").select("kyc_status,live_enabled").eq("user_id", id).maybeSingle();
+      }).then(function (r) { return r && r.data ? r.data : null; }).catch(function () { return null; });
+    }
+    return profileP;
+  }
+  function getMode() { try { return localStorage.getItem(MODE_KEY) === "live" ? "live" : "test"; } catch (_) { return "test"; } }
+  function storeMode(m) { try { localStorage.setItem(MODE_KEY, m); } catch (_) {} }
+
+  function modeCss() {
+    if (document.getElementById("abvs-mode-css")) return;
+    var st = document.createElement("style"); st.id = "abvs-mode-css";
+    st.textContent =
+      "#abvs-live-banner{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);left:50%;transform:translateX(-50%);z-index:40;" +
+      "background:#d93a4a;color:#fff;font:700 12px Inter,system-ui,sans-serif;letter-spacing:.04em;padding:6px 14px;border-radius:99px;pointer-events:none}" +
+      "#abvs-toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:60;max-width:calc(100vw - 32px);text-align:center;" +
+      "background:var(--ink,#1b2430);color:var(--solid,#fff);font:600 13px Inter,system-ui,sans-serif;padding:11px 16px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.25)}";
+    document.head.appendChild(st);
+  }
+  function notify(msg) {
+    try {
+      modeCss();
+      var old = document.getElementById("abvs-toast"); if (old) old.remove();
+      var t = document.createElement("div"); t.id = "abvs-toast"; t.setAttribute("role", "status"); t.textContent = msg;
+      document.body.appendChild(t); setTimeout(function () { t.remove(); }, 4200);
+    } catch (_) {}
+  }
+  function paintMode() {
+    try {
+      var m = getMode();
+      Array.prototype.forEach.call(document.querySelectorAll(".mode span"), function (sp) {
+        var isLive = /live/i.test(sp.textContent);
+        sp.classList.toggle("on", isLive === (m === "live"));
+      });
+      var b = document.getElementById("abvs-live-banner");
+      if (m === "live" && !b) {
+        modeCss(); b = document.createElement("div"); b.id = "abvs-live-banner"; b.textContent = "● MODE LIVE";
+        document.body.appendChild(b);
+      } else if (m !== "live" && b) b.remove();
+    } catch (_) {}
+  }
+  function initModeSwitch() {
+    loadProfile(true).then(function (p) {
+      if (getMode() === "live" && !(p && p.live_enabled)) storeMode("test");
+      paintMode();
+    });
+  }
+  // Intercepte (phase de capture) les clics sur Test / Live : remplace les anciennes alertes « bientôt disponible ».
+  document.addEventListener("click", function (e) {
+    var sp = e.target && e.target.closest && e.target.closest(".mode span");
+    if (!sp || !sb) return;
+    e.preventDefault(); e.stopPropagation();
+    if (!/live/i.test(sp.textContent)) { storeMode("test"); paintMode(); return; }
+    loadProfile().then(function (p) {
+      if (p && p.live_enabled) { storeMode("live"); paintMode(); notify("Mode Live activé."); }
+      else if (p && p.kyc_status === "pending") notify("Vérification en cours : Live s'activera dès la validation de votre entreprise.");
+      else notify("Mode Live indisponible : votre entreprise doit d'abord être vérifiée.");
+    });
+  }, true);
+
   // Messages d'erreur en français.
   function msg(err) {
     var m = (err && err.message || "").toLowerCase(), s = err && err.status;
@@ -133,7 +204,7 @@
     return "Une erreur est survenue. Réessayez.";
   }
 
-  window.ABVS = { client: sb, ready: !!sb, requireSession: requireSession, hasSession: hasSession, signUp: signUp, signIn: signIn,
+  window.ABVS = { client: sb, ready: !!sb, requireSession: requireSession, hasSession: hasSession, mode: getMode, profile: loadProfile, signUp: signUp, signIn: signIn,
     verifyMfa: verifyMfa, signOut: signOut, resetRequest: resetRequest, updatePassword: updatePassword,
     onPasswordRecovery: onPasswordRecovery, msg: msg, touch: touch };
 })();
