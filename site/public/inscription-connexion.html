@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ABVSPAIE — Connexion et inscription</title>
+<meta name="description" content="Créez votre compte ABVSPAIE ou connectez-vous pour encaisser et payer en FCFA.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234a6283'/%3E%3Ctext x='32' y='45' font-size='36' text-anchor='middle' fill='%23fff' font-family='Arial%2Csans-serif' font-weight='800'%3EA%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#eef1f5" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#12171e" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website"><meta property="og:site_name" content="ABVSPAIE"><meta property="og:locale" content="fr_FR"><meta property="og:title" content="ABVSPAIE — Connexion et inscription"><meta property="og:description" content="Créez votre compte ABVSPAIE ou connectez-vous pour encaisser et payer en FCFA.">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap">
+  <style>
+    :root {
+      --bg: #eef1f5;
+      --solid: #fff;
+      --ink: #1b2430;
+      --mute: #6a7685;
+      --pri: #4a6283;
+      --grad: linear-gradient(135deg, #4a6283, #566f94);
+      --line: #dde3ea;
+      --ok: #14a46b;
+      --err: #d93a4a;
+      --in: #f7f9fb;
+      --sh: rgba(40, 60, 90, .14);
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px)
+    }
+
+    @media (prefers-color-scheme:dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #12171e;
+        --solid: #1b222c;
+        --ink: #edf1f5;
+        --mute: #9aa6b4;
+        --pri: #8fa8c4;
+        --line: #2b3541;
+        --in: #151b23;
+        --sh: rgba(0, 0, 0, .4)
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #12171e;
+      --solid: #1b222c;
+      --ink: #edf1f5;
+      --mute: #9aa6b4;
+      --pri: #8fa8c4;
+      --line: #2b3541;
+      --in: #151b23;
+      --sh: rgba(0, 0, 0, .4)
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      overflow-x: hidden;
+      display: grid;
+      place-items: center;
+      position: relative;
+      padding: 20px
+    }
+
+    body:before {
+      content: "";
+      position: fixed;
+      inset: -20% -10% auto auto;
+      width: 560px;
+      height: 560px;
+      border-radius: 50%;
+      background: #d3dbe6;
+      filter: blur(100px);
+      opacity: .6;
+      pointer-events: none
+    }
+
+    .wrap {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      z-index: 2
+    }
+
+    .logo {
+      text-align: center;
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -.03em;
+      margin-bottom: 22px
+    }
+
+    .logo span {
+      color: var(--pri)
+    }
+
+    .card {
+      background: var(--solid);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 24px 60px var(--sh)
+    }
+
+    h1 {
+      font-size: 26px;
+      margin: 0 0 20px;
+      letter-spacing: -.03em;
+      font-weight: 800;
+      text-align: center
+    }
+
+    h1 em {
+      font-family: Georgia, serif;
+      font-weight: 400;
+      color: var(--pri)
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: var(--in);
+      color: var(--ink);
+      border-radius: 12px;
+      font: 15px Inter, sans-serif;
+      margin-top: 12px
+    }
+
+    input:focus {
+      outline: 2px solid var(--pri);
+      outline-offset: 1px
+    }
+
+    .err {
+      color: var(--err);
+      font-size: 12px;
+      min-height: 14px;
+      margin-top: 4px
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: 16px;
+      background: var(--grad);
+      color: #fff;
+      border: 0;
+      padding: 14px;
+      border-radius: 12px;
+      font: 600 15px Inter, sans-serif;
+      cursor: pointer
+    }
+
+    .btn:hover {
+      filter: brightness(1.08)
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: wait
+    }
+
+    .swap {
+      text-align: center;
+      color: var(--mute);
+      font-size: 13px;
+      margin-top: 16px
+    }
+
+    .link {
+      color: var(--pri);
+      font-weight: 600;
+      cursor: pointer
+    }
+
+    select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: var(--in);
+      color: var(--ink);
+      border-radius: 12px;
+      font: 15px Inter, sans-serif;
+      margin-top: 12px
+    }
+
+    .dots {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin: -8px 0 8px
+    }
+
+    .dots i {
+      width: 28px;
+      height: 4px;
+      border-radius: 9px;
+      background: var(--line)
+    }
+
+    .dots i.on {
+      background: var(--pri)
+    }
+
+    .chk {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 13px;
+      color: var(--mute);
+      margin-top: 14px
+    }
+
+    .chk input {
+      width: auto;
+      margin-top: 2px
+    }
+
+    .hide {
+      display: none
+    }
+
+    .done {
+      text-align: center
+    }
+
+    .done .ic {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: #e3f8ee;
+      color: var(--ok);
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      margin: 0 auto 12px
+    }
+
+    .done p {
+      color: var(--mute);
+      margin: 8px 0 0;
+      font-size: 14px
+    }
+
+    .m {
+      position: absolute;
+      background: var(--solid);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 16px 36px var(--sh);
+      font-size: 12px;
+      animation: fl 6s ease-in-out infinite;
+      white-space: nowrap
+    }
+
+    .m small {
+      display: block;
+      color: var(--mute)
+    }
+
+    .m b {
+      font-size: 15px
+    }
+
+    .tag {
+      color: var(--ok);
+      font-weight: 600
+    }
+
+    .f1 {
+      right: calc(100% - 40px);
+      top: 30px;
+      --r: -6deg
+    }
+
+    .f2 {
+      left: calc(100% - 40px);
+      top: 120px;
+      --r: 5deg;
+      animation-delay: -2s
+    }
+
+    .f3 {
+      right: calc(100% - 60px);
+      bottom: 20px;
+      --r: 4deg;
+      animation-delay: -4s
+    }
+
+    @keyframes fl {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(var(--r))
+      }
+
+      50% {
+        transform: translateY(-10px) rotate(var(--r))
+      }
+    }
+
+    @media(max-width:820px) {
+      .m {
+        display: none
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      .m {
+        animation: none;
+        transform: rotate(var(--r))
+      }
+    }
+
+    .logo {
+      display: none
+    }
+
+    /* ===== Template bureau flottant ===== */
+    body {
+      background: radial-gradient(900px 500px at 12% 0, #dde5ee, transparent), radial-gradient(800px 500px at 92% 100%, #d3dbe7, transparent), var(--bg)
+    }
+
+    @media (prefers-color-scheme:dark) {
+      :root:not([data-theme="light"]) body {
+        background: radial-gradient(900px 500px at 12% 0, #1e2733, transparent), radial-gradient(800px 500px at 92% 100%, #1a2230, transparent), var(--bg)
+      }
+    }
+
+    :root[data-theme="dark"] body {
+      background: radial-gradient(900px 500px at 12% 0, #1e2733, transparent), radial-gradient(800px 500px at 92% 100%, #1a2230, transparent), var(--bg)
+    }
+
+    .brand {
+      position: fixed;
+      top: 16px;
+      left: 20px;
+      z-index: 30;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -.02em;
+      padding: 9px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--ink);
+      background: color-mix(in srgb, var(--solid, var(--card)) 80%, transparent);
+      backdrop-filter: blur(10px)
+    }
+
+    .brand span {
+      color: var(--pri)
+    }
+
+    .card,
+    .plan,
+    .est {
+      background: color-mix(in srgb, var(--solid, var(--card)) 84%, transparent) !important;
+      backdrop-filter: blur(12px)
+    }
+
+    .m {
+      backdrop-filter: blur(10px);
+      cursor: grab;
+      touch-action: none;
+      user-select: none
+    }
+
+    .m.drag {
+      animation: none !important;
+      cursor: grabbing;
+      transform: rotate(0) !important;
+      box-shadow: 0 34px 70px var(--sh, rgba(40, 60, 90, .2))
+    }
+
+    .pop {
+      position: fixed;
+      bottom: 90px;
+      z-index: 25;
+      background: var(--pri);
+      color: var(--solid, var(--card));
+      font: 600 12px Inter, sans-serif;
+      padding: 7px 12px;
+      border-radius: 99px;
+      box-shadow: 0 10px 24px rgba(40, 60, 90, .2);
+      animation: rise 4s ease-out forwards;
+      pointer-events: none;
+      white-space: nowrap
+    }
+
+    @keyframes rise {
+      0% {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      15% {
+        opacity: 1
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-260px)
+      }
+    }
+
+    @media(max-width:600px) {
+      .brand {
+        left: 12px;
+        top: 10px
+      }
+    }
+  .legal-bar{position:fixed;left:0;right:0;bottom:6px;text-align:center;font:500 11px Inter,system-ui,sans-serif;color:var(--mute);z-index:5;pointer-events:none}.legal-bar a{pointer-events:auto;color:var(--mute);text-decoration:none;margin:0 7px}.legal-bar a:hover{text-decoration:underline}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script><script src="../assets/abvs-config.js"></script><script src="../assets/abvs-auth.js"></script></head>
+
+<body>
+  <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
+
+  <div class="wrap">
+    <div class="m f1"><small>Paiement reçu</small><b>15 000 FCFA</b> <span class="tag">✓</span></div>
+    <div class="m f2"><small>Solde</small><b>5 320 000 FCFA</b></div>
+    <div class="m f3"><small>Lien de paiement</small><b>Prêt à partager</b></div>
+
+    <div class="logo">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></div>
+    <div class="card">
+      <div id="vSignup">
+        <h1>Créez votre <em>compte</em></h1>
+        <div class="dots"><i class="on"></i><i id="d2"></i></div>
+        <form id="fSignup" novalidate>
+          <div id="s1">
+            <input id="email" type="email" placeholder="E-mail" autocomplete="email">
+            <div class="err" data-for="email"></div>
+            <input id="pwd" type="password" placeholder="Mot de passe (8 caractères min.)" autocomplete="new-password">
+            <div class="err" data-for="pwd"></div>
+            <button class="btn" type="button" id="next">Continuer</button>
+          </div>
+          <div id="s2" class="hide">
+            <input id="company" placeholder="Entreprise" autocomplete="organization">
+            <div class="err" data-for="company"></div>
+            <select id="country">
+              <option value="">Pays</option>
+              <option>Côte d'Ivoire</option>
+              <option>Sénégal</option>
+              <option>Burkina Faso</option>
+              <option>Mali</option>
+              <option>Bénin</option>
+              <option>Togo</option>
+              <option>Niger</option>
+              <option>Guinée-Bissau</option>
+            </select>
+            <div class="err" data-for="country"></div>
+            <label class="chk"><input type="checkbox" id="cgu"> J'accepte les <a href="cgu-cgv.html" target="_blank" rel="noopener noreferrer">conditions générales d'utilisation et de vente</a>.</label>
+            <div class="err" data-for="cgu"></div>
+            <button class="btn" type="submit" id="submitSignup">Créer mon compte</button>
+            <div class="swap"><span class="link" id="back">← Retour</span></div>
+          </div>
+        </form>
+        <div class="swap">Déjà un compte ? <span class="link" id="toLogin">Connexion</span></div>
+      </div>
+
+      <div id="vLogin" class="hide">
+        <h1>Content de vous <em>revoir</em></h1>
+        <form id="fLogin" novalidate>
+          <input id="lemail" type="email" placeholder="E-mail" autocomplete="email">
+          <div class="err" data-for="lemail"></div>
+          <input id="lpwd" type="password" placeholder="Mot de passe" autocomplete="current-password">
+          <div class="err" data-for="lpwd"></div>
+          <div id="l2" class="hide">
+            <input id="lcode" type="text" inputmode="numeric" maxlength="6" placeholder="Code à 6 chiffres de votre application" autocomplete="one-time-code" aria-label="Code de double authentification">
+            <div class="err" data-for="lcode" role="alert"></div>
+          </div>
+          <button class="btn" type="submit">Se connecter</button>
+        </form>
+        <div class="swap"><span class="link" id="forgot">Mot de passe oublié ?</span> · <span class="link"
+            id="toSignup">Créer un compte</span></div>
+      </div>
+
+      <div id="vDone" class="done hide">
+        <div class="ic">✓</div>
+        <h1 id="doneTitle" style="font-size:22px;margin:0"></h1>
+        <p id="doneText"></p>
+        <a class="btn" id="goDash" href="../compte/tableau-de-bord.html"
+          style="display:none;text-decoration:none;text-align:center">Accéder au tableau de bord</a>
+      </div>
+    </div>
+  </div>
+  <div class="legal-bar"><a href="cgu-cgv.html">CGU/CGV</a><a href="confidentialite.html">Confidentialité</a><a href="mentions-legales.html">Mentions légales</a></div>
+<script>
+    const ISO = { "Côte d'Ivoire": 'CI', 'Sénégal': 'SN', 'Burkina Faso': 'BF', 'Mali': 'ML', 'Bénin': 'BJ', 'Togo': 'TG', 'Niger': 'NE', 'Guinée-Bissau': 'GW' };
+
+    const $ = id => document.getElementById(id);
+    const views = ['vSignup', 'vLogin', 'vDone'];
+    const show = v => views.forEach(x => $(x).classList.toggle('hide', x !== v));
+    $('toLogin').onclick = () => show('vLogin'); $('toSignup').onclick = () => show('vSignup');
+    const setErr = (k, m) => { document.querySelector('[data-for="' + k + '"]').textContent = m || ''; return !m };
+    const okMail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    const step = n => { $('s1').classList.toggle('hide', n !== 1); $('s2').classList.toggle('hide', n !== 2); $('d2').classList.toggle('on', n === 2) };
+    $('next').onclick = () => { const r = [setErr('email', okMail($('email').value) ? '' : 'E-mail invalide.'), setErr('pwd', $('pwd').value.length < 8 ? '8 caractères minimum.' : '')]; if (r.every(Boolean)) step(2) };
+    $('back').onclick = () => step(1);
+
+    // ───── Inscription : Supabase Auth ─────
+    $('fSignup').onsubmit = async e => {
+      e.preventDefault();
+      if ($('s2').classList.contains('hide')) { $('next').onclick(); return }
+      const r = [
+        setErr('company', $('company').value.trim().length < 2 ? "Indiquez votre entreprise." : ''),
+        setErr('country', $('country').value ? '' : 'Choisissez un pays.'),
+        setErr('cgu', $('cgu').checked ? '' : 'Acceptez les conditions.')
+      ];
+      if (!r.every(Boolean)) return;
+      if (!ABVS.ready) { setErr('cgu', 'Service indisponible. Réessayez plus tard.'); return }
+
+      const btn = $('submitSignup');
+      btn.disabled = true; btn.textContent = 'Création…';
+      try {
+        const res = await ABVS.signUp({
+          email: $('email').value.trim(), password: $('pwd').value,
+          company: $('company').value.trim(), country: ISO[$('country').value]
+        });
+        if (res.exists) { step(1); setErr('email', 'Cet e-mail existe déjà.'); return }
+        if (res.error) {
+          const m = ABVS.msg(res.error);
+          if (m === 'Cet e-mail existe déjà.') { step(1); setErr('email', m) }
+          else if (m === 'Mot de passe trop faible.') { step(1); setErr('pwd', m) }
+          else setErr('cgu', m);
+          return
+        }
+        $('doneTitle').textContent = 'Compte créé';
+        if (res.needsConfirm) {
+          $('doneText').textContent = 'Nous vous avons envoyé un e-mail de confirmation. Cliquez sur le lien, puis connectez-vous.';
+          $('goDash').style.display = 'none';
+        } else {
+          $('doneText').textContent = 'Votre compte est prêt.';
+          $('goDash').href = '../compte/onboarding.html'; $('goDash').textContent = 'Commencer la configuration';
+          $('goDash').style.display = 'block';
+        }
+        show('vDone');
+      } catch (err) {
+        setErr('cgu', 'Serveur injoignable. Réessayez plus tard.');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Créer mon compte';
+      }
+    };
+
+    // ───── Connexion : Supabase Auth (+ 2FA TOTP si activée) ─────
+    let mfaFactor = null;
+    const goDash = () => {
+      $('doneTitle').textContent = 'Connexion réussie';
+      $('doneText').textContent = 'Redirection vers votre tableau de bord…';
+      $('goDash').href = '../compte/tableau-de-bord.html'; $('goDash').textContent = 'Accéder au tableau de bord';
+      $('goDash').style.display = 'block';
+      show('vDone');
+      setTimeout(() => { location.href = '../compte/tableau-de-bord.html' }, 1400);
+    };
+    $('fLogin').onsubmit = async e => {
+      e.preventDefault();
+      const r = [setErr('lemail', okMail($('lemail').value) ? '' : 'E-mail invalide.'), setErr('lpwd', $('lpwd').value ? '' : 'Saisissez votre mot de passe.')];
+      if (!r.every(Boolean)) return;
+      if (!ABVS.ready) { setErr('lpwd', 'Service indisponible. Réessayez plus tard.'); return }
+      const btn = e.submitter || $('fLogin').querySelector('button[type=submit]');
+      btn.disabled = true;
+      try {
+        if (mfaFactor) {
+          const code = $('lcode').value.trim();
+          if (!/^\d{6}$/.test(code)) { setErr('lcode', 'Code invalide : 6 chiffres attendus.'); return }
+          const v = await ABVS.verifyMfa(mfaFactor, code);
+          if (v.error) { setErr('lcode', ABVS.msg(v.error)); return }
+          setErr('lcode', ''); goDash(); return
+        }
+        const res = await ABVS.signIn($('lemail').value.trim(), $('lpwd').value);
+        if (res.error) { setErr('lpwd', ABVS.msg(res.error)); return }
+        if (res.mfa) {
+          mfaFactor = res.factorId;
+          $('l2').classList.remove('hide'); $('lcode').focus();
+          setErr('lcode', "Double authentification : entrez le code de votre application d'authentification.");
+          return
+        }
+        goDash();
+      } catch (err) {
+        setErr('lpwd', 'Serveur injoignable. Réessayez plus tard.');
+      } finally { btn.disabled = false }
+    };
+    $('forgot').onclick = () => { location.href = 'mot-de-passe-oublie.html' };
+
+    // ───── Modules flottants déplaçables ─────
+    (() => {
+      let z = 10;
+      document.addEventListener("pointerdown", e => {
+        const m = e.target.closest(".m"); if (!m || getComputedStyle(m).display === "none") return;
+        const par = m.offsetParent || document.body, c = par.getBoundingClientRect(), dx = e.clientX - c.left - m.offsetLeft, dy = e.clientY - c.top - m.offsetTop;
+        m.style.left = m.offsetLeft + "px"; m.style.top = m.offsetTop + "px"; m.style.right = "auto"; m.style.bottom = "auto";
+        m.classList.add("drag"); m.style.zIndex = ++z; m.setPointerCapture(e.pointerId);
+        const mv = ev => { const cc = par.getBoundingClientRect(); m.style.left = (ev.clientX - cc.left - dx) + "px"; m.style.top = (ev.clientY - cc.top - dy) + "px" };
+        const up = () => { m.classList.remove("drag"); m.removeEventListener("pointermove", mv); m.removeEventListener("pointerup", up) };
+        m.addEventListener("pointermove", mv); m.addEventListener("pointerup", up)
+      })
+    })();
+    if (!matchMedia("(prefers-reduced-motion:reduce)").matches) setInterval(() => {
+      if (document.hidden || innerWidth < 700) return;
+      const p = document.createElement("div"); p.className = "pop"; const o = ["Orange Money", "Wave", "MTN MoMo", "Carte"][Math.floor(Math.random() * 4)], a = [5000, 8000, 15000, 22000, 42500][Math.floor(Math.random() * 5)];
+      p.textContent = "+" + a.toLocaleString("fr-FR") + " FCFA · " + o; p.style.left = (10 + Math.random() * 70) + "%"; document.body.appendChild(p); setTimeout(() => p.remove(), 4200)
+    }, 3500);
+  </script>
+</body>
+
+</html>
