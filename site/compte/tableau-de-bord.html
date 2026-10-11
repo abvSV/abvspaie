@@ -178,8 +178,32 @@ body main{max-width:1200px;margin:0 auto;padding-top:84px}
 .rubric-page>.btn{margin:0 auto 4px}
 .rubric-page .lkform{max-width:760px;margin:auto;text-align:left}
 .rubric-page #lkList{text-align:left}
+.link-rubric-nav{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin:26px 0}
+.link-rubric-nav button{display:inline-flex;align-items:center;gap:9px;padding:12px 18px;border:1px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--solid) 84%,transparent);color:var(--mute);font:600 14px Inter,sans-serif;box-shadow:0 10px 26px var(--sh);cursor:pointer;transition:transform .18s ease,border-color .18s ease,color .18s ease,background .18s ease}
+.link-rubric-nav button:hover{transform:translateY(-2px);border-color:var(--pri);color:var(--ink)}
+.link-rubric-nav button[aria-pressed="true"]{border-color:var(--pri);background:var(--grad);color:#fff}
+.link-rubric-nav button:focus-visible{outline:2px solid var(--pri);outline-offset:3px}
+.link-rubric-nav span{font-size:17px}
+.link-rubric-panel{max-width:900px;margin:0 auto}
+.link-rubric-panel[hidden]{display:none}
+.link-rubric-panel>.card{border-color:color-mix(in srgb,var(--pri) 18%,var(--line));border-radius:28px;background:radial-gradient(ellipse at 50% 0,color-mix(in srgb,var(--pri) 7%,transparent),transparent 68%),color-mix(in srgb,var(--solid) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 22px 54px var(--sh);animation:wallet-bob 7s ease-in-out infinite}
+.link-rubric-panel:nth-of-type(2)>.card{animation-delay:-2s}
+.section-subnav{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:26px 0}
+.section-subnav button{display:inline-flex;align-items:center;gap:9px;padding:11px 15px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--solid) 84%,transparent);color:var(--mute);font:600 13px Inter,sans-serif;box-shadow:0 8px 22px var(--sh);cursor:pointer;transition:transform .18s ease,border-color .18s ease,color .18s ease}
+.section-subnav button:hover{transform:translateY(-2px);border-color:var(--pri);color:var(--ink)}
+.section-subnav button[aria-pressed="true"]{border-color:var(--pri);background:var(--grad);color:#fff}
+.section-subnav button:focus-visible{outline:2px solid var(--pri);outline-offset:3px}
+.section-subpanel{max-width:900px;margin:0 auto}
+.section-subpanel[hidden]{display:none}
+.section-subpanel>.card{border-color:color-mix(in srgb,var(--pri) 18%,var(--line));border-radius:28px;background:radial-gradient(ellipse at 50% 0,color-mix(in srgb,var(--pri) 7%,transparent),transparent 68%),color-mix(in srgb,var(--solid) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 22px 54px var(--sh);animation:wallet-bob 7s ease-in-out infinite}
+.section-subpanel h2{text-align:center}
+.section-subpanel .wrap{text-align:left}
+.section-subpanel .wrap table{text-align:left}
+.rubric-page>.filters{justify-content:center}
+.rubric-page>#tx-table-wrap[hidden]{display:none}
 @media(max-width:600px){.rubric-page>.card{padding:18px;border-radius:24px}.rubric-page>.sub{margin-bottom:18px}}
 @media(prefers-reduced-motion:reduce){.rubric-page>.card{animation:none}}
+@media(prefers-reduced-motion:reduce){.link-rubric-nav button,.link-rubric-panel>.card,.section-subnav button,.section-subpanel>.card{transition:none;animation:none}}
 #home:not(.hide){display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:42px;row-gap:32px;align-items:start}
 #home>.overview-head,#home>#loadError{grid-column:2/span 10}
 #home>.overview-head{margin-bottom:0}
@@ -240,18 +264,18 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
 
   <section id="tx" class="hide rubric-page">
     <h1>Transactions</h1><p class="sub">Tous vos encaissements et paiements.</p>
-    <div class="filters" id="filters"><button class="on" data-f="all">Toutes</button><button data-f="succeeded">Réussies</button><button data-f="pending">En attente</button><button data-f="failed">Échouées</button></div>
-    <div class="card"><div class="wrap"><table id="tAll"></table></div></div>
+    <div class="filters" id="filters" aria-label="Rubriques des transactions"><button type="button" data-f="all" aria-pressed="false">Toutes</button><button type="button" data-f="succeeded" aria-pressed="false">Réussies</button><button type="button" data-f="pending" aria-pressed="false">En attente</button><button type="button" data-f="failed" aria-pressed="false">Échouées</button></div>
+    <div class="card" id="tx-table-wrap" hidden><div class="wrap"><table id="tAll"></table></div></div>
   </section>
 
   <section id="links" class="hide rubric-page">
-    <h1>Liens de paiement</h1><p class="sub">Créez un lien et partagez-le avec votre client.</p>
-    <a class="btn alt" href="../public/paiement.html" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;margin-bottom:14px">Aperçu de la page de paiement</a>
-    <div class="card"><form id="lkForm" class="lkform" novalidate>
-      <input id="lkAmt" type="number" min="1" placeholder="Montant (FCFA)">
-      <input id="lkDesc" placeholder="Description du paiement">
-      <button class="btn" type="submit">Créer le lien</button></form><div class="lkerr" id="lkErr"></div></div>
-    <div class="card" style="margin-top:14px"><b>Vos liens</b><div id="lkList"></div></div>
+    <h1>Liens de paiement</h1><p class="sub">Choisissez une rubrique pour créer ou consulter vos liens.</p>
+    <nav class="link-rubric-nav" aria-label="Rubriques des liens de paiement"><button type="button" data-link-rubric="link-create" aria-pressed="false"><span aria-hidden="true">＋</span>Nouveau lien</button><button type="button" data-link-rubric="link-list" aria-pressed="false"><span aria-hidden="true">🔗</span>Vos liens</button></nav>
+    <section class="link-rubric-panel" id="link-create" hidden><div class="card">
+      <h2>Créer un lien de paiement</h2><a class="btn alt" href="../public/paiement.html" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;margin:0 0 14px">Aperçu de la page de paiement</a>
+      <form id="lkForm" class="lkform" novalidate><input id="lkAmt" type="number" min="1" placeholder="Montant (FCFA)"><input id="lkDesc" placeholder="Description du paiement"><button class="btn" type="submit">Créer le lien</button></form><div class="lkerr" id="lkErr"></div>
+    </div></section>
+    <section class="link-rubric-panel" id="link-list" hidden><div class="card"><h2>Vos liens</h2><div id="lkList"></div></div></section>
   </section>
 
   <section id="pay" class="hide rubric-page">
@@ -260,8 +284,10 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
   </section>
 
   <section id="keys" class="hide rubric-page">
-    <h1>Développeurs</h1><p class="sub">Utilisez ces clés pour appeler l'API. Ne les partagez jamais.</p>
-    <div class="card"><b>Clés API</b><p class="sub" style="margin:10px 0 0">Les clés API seront disponibles prochainement.</p></div>
+    <h1>Développeur</h1><p class="sub">Choisissez une rubrique pour consulter les outils disponibles.</p>
+    <nav class="section-subnav" aria-label="Rubriques développeur"><button type="button" data-subpanel="keys-access" aria-pressed="false"><span aria-hidden="true">🔑</span>Clés API</button><button type="button" data-subpanel="keys-integration" aria-pressed="false"><span aria-hidden="true">⌘</span>Intégration</button></nav>
+    <section class="section-subpanel" id="keys-access" hidden><div class="card"><h2>Clés API</h2><p class="sub">Les clés API seront disponibles prochainement. Ne partagez jamais de clé secrète.</p></div></section>
+    <section class="section-subpanel" id="keys-integration" hidden><div class="card"><h2>Intégration</h2><p class="sub">Les outils d'intégration seront disponibles lorsque l'API sera configurée.</p></div></section>
   </section>
 </main>
 <style>.legal{margin:18px auto 90px;max-width:760px;padding:0 16px;text-align:center;font-size:12px;line-height:1.6;color:var(--mut,#6b7684)}.legal a{color:inherit;text-decoration:underline}</style>
@@ -274,7 +300,7 @@ const L={succeeded:"Réussi",pending:"En attente",failed:"Échoué"};
 const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt=n=>Number(n||0).toLocaleString("fr-FR");
 const rows=a=>"<tr><th>Référence</th><th>Méthode</th><th>Montant (FCFA)</th><th>Statut</th><th>Date</th></tr>"+(a.length?a.map(t=>`<tr><td>${esc(t[0])}</td><td>${esc(t[1])}</td><td><b>${esc(t[2])}</b></td><td><span class="tag ${t[3]}">${L[t[3]]}</span></td><td>${esc(t[4])}</td></tr>`).join(""):"<tr><td colspan='5'>Aucune transaction pour le moment.</td></tr>");
-let curF="all";
+let curF=null;
 function drawTx(){
  const succeeded=TX.filter(t=>t[3]==="succeeded");
  const volume=succeeded.reduce((total,t)=>total+(Number.isFinite(t[5])?t[5]:0),0);
@@ -284,11 +310,24 @@ function drawTx(){
  $("tAll").innerHTML=rows(curF==="all"?TX:TX.filter(t=>t[3]===curF));
 }
 drawTx();
-function go(v,updateLocation=true){const sections=[...document.querySelectorAll("main > section")];if(!sections.some(section=>section.id===v))return;document.querySelectorAll("#nav button").forEach(x=>{const active=x.dataset.v===v;x.classList.toggle("on",active);if(active)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current")});sections.forEach(e=>e.classList.toggle("hide",e.id!==v));if(updateLocation&&location.hash!=="#"+v)location.hash=v;scrollTo(0,0)}
+function resetSubsections(section){section.querySelectorAll("[data-subpanel]").forEach(button=>button.setAttribute("aria-pressed","false"));section.querySelectorAll(".section-subpanel").forEach(panel=>panel.hidden=true);section.querySelectorAll("[data-link-rubric]").forEach(button=>button.setAttribute("aria-pressed","false"));section.querySelectorAll(".link-rubric-panel").forEach(panel=>panel.hidden=true);if(section.id==="tx"){$("tx-table-wrap").hidden=true;curF=null;document.querySelectorAll("#filters button").forEach(button=>{button.classList.remove("on");button.setAttribute("aria-pressed","false")})}}
+function go(v,updateLocation=true){const sections=[...document.querySelectorAll("main > section")],selected=sections.find(section=>section.id===v);if(!selected)return;document.querySelectorAll("#nav button").forEach(x=>{const active=x.dataset.v===v;x.classList.toggle("on",active);if(active)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current")});sections.forEach(e=>e.classList.toggle("hide",e!==selected));resetSubsections(selected);if(updateLocation&&location.hash!=="#"+v)location.hash=v;scrollTo(0,0)}
 $("home").addEventListener("click",e=>{const target=e.target.closest("[data-section]");if(!target)return;e.preventDefault();go(target.dataset.section)});
-$("filters").onclick=e=>{const f=e.target.dataset.f;if(!f)return;
-  document.querySelectorAll("#filters button").forEach(x=>x.classList.toggle("on",x===e.target));
-  curF=f;drawTx();};
+$("filters").onclick=e=>{const button=e.target.closest("button[data-f]");if(!button)return;
+  document.querySelectorAll("#filters button").forEach(x=>{const active=x===button;x.classList.toggle("on",active);x.setAttribute("aria-pressed",String(active))});
+  curF=button.dataset.f;$("tx-table-wrap").hidden=false;drawTx();};
+document.querySelector("main").addEventListener("click",event=>{
+ const button=event.target.closest("button[data-subpanel]");if(!button)return;
+ const section=button.closest("main > section");if(!section)return;
+ section.querySelectorAll("[data-subpanel]").forEach(item=>item.setAttribute("aria-pressed",String(item===button)));
+ section.querySelectorAll(".section-subpanel").forEach(panel=>{panel.hidden=panel.id!==button.dataset.subpanel});
+});
+const linkRubrics=[...document.querySelectorAll("[data-link-rubric]")],linkPanels=[...document.querySelectorAll("#links .link-rubric-panel")];
+linkRubrics.forEach(button=>button.addEventListener("click",()=>{
+ const selected=button.dataset.linkRubric;
+ linkPanels.forEach(panel=>{panel.hidden=panel.id!==selected});
+ linkRubrics.forEach(item=>item.setAttribute("aria-pressed",String(item===button)));
+}));
 let LK=[];
 function drawLinks(){$("stat-links").textContent=fmt(LK.length);$("lkList").innerHTML=LK.map((l,i)=>`<div class="lk"><div><b>${esc(l.d)}</b><small>${esc(l.u)}</small></div><div class="r"><b>${fmt(l.a)} FCFA</b><span class="tag ${l.s==="succeeded"?"succeeded":"pending"}">${l.s==="succeeded"?"Payé":"En attente"}</span></div><div class="act"><button class="btn alt" data-c="${i}">Copier</button><a class="btn alt" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=${encodeURIComponent(l.d+" : "+fmt(l.a)+" FCFA - "+l.u)}">WhatsApp</a></div></div>`).join("")||"<div class='overview-empty'><strong>Aucun lien actif</strong>Créez un lien pour commencer à partager une demande de paiement.</div>"}
 drawLinks();
@@ -326,28 +365,58 @@ $("lkForm").onsubmit=async e=>{e.preventDefault();const a=parseInt($("lkAmt").va
 const tr=(a,h)=>"<tr>"+a.map(c=>h?"<th>"+c+"</th>":"<td>"+c+"</td>").join("")+"</tr>";
 const tbl=(h,r,id)=>"<div class='card'><div class='wrap'><table"+(id?" id='"+id+"'":"")+">"+tr(h,1)+r.map(x=>tr(x)).join("")+"</table></div></div>";
 const tg=(c,t)=>"<span class='tag "+c+"'>"+t+"</span>";
-const sec=(id,t,s,h)=>{const e=document.createElement("section");e.id=id;e.className="hide rubric-page";e.innerHTML="<h1>"+t+"</h1><p class='sub'>"+s+"</p>"+h;document.querySelector("main").appendChild(e)};
+const sec=(id,t,s,items)=>{const e=document.createElement("section");e.id=id;e.className="hide rubric-page";e.innerHTML="<h1>"+t+"</h1><p class='sub'>"+s+"</p><nav class='section-subnav' aria-label='Rubriques de "+t+"'>"+items.map(item=>"<button type='button' data-subpanel='"+item[0]+"' aria-pressed='false'><span aria-hidden='true'>"+item[1]+"</span>"+item[2]+"</button>").join("")+"</nav>"+items.map(item=>"<section class='section-subpanel' id='"+item[0]+"' hidden>"+item[3]+"</section>").join("");document.querySelector("main").appendChild(e)};
 const gap="<div style='margin-top:14px'></div>";
 
-sec('wallet','Wallet','Votre solde et vos mouvements.',`<div class="wallet-stage"><article class="wallet-bubble"><span class="wallet-orb" aria-hidden="true">◉</span><span class="wallet-status">Solde indisponible</span><h2>Vos mouvements apparaîtront ici</h2><p>Le solde et l'historique du wallet ne sont pas encore connectés aux données de votre compte.</p></article></div>`);
+sec('wallet','Wallet','Votre solde et vos mouvements.',[
+ ["wallet-balance","◉","Solde",`<div class="card"><div class="wallet-stage"><article class="wallet-bubble"><span class="wallet-orb" aria-hidden="true">◉</span><span class="wallet-status">Solde indisponible</span><h2>Votre solde apparaîtra ici</h2><p>Le solde du wallet n'est pas encore connecté aux données de votre compte.</p></article></div></div>`],
+ ["wallet-movements","↔","Mouvements",`<div class="card"><p class="sub" style="margin:0">L'historique des mouvements du wallet n'est pas encore connecté aux données du compte.</p></div>`]
+]);
 
-sec('sessions','Sessions de checkout','Les pages de paiement ouvertes par vos clients.',`<div class="card"><p class="sub" style="margin:0">Aucune session active pour le moment.</p></div>`);
+sec('sessions','Sessions de checkout','Les pages de paiement ouvertes par vos clients.',[
+ ["sessions-active","◷","Sessions actives",`<div class="card"><p class="sub" style="margin:0">Les sessions de checkout actives ne sont pas encore disponibles dans cet espace.</p></div>`],
+ ["sessions-history","▤","Historique",`<div class="card"><p class="sub" style="margin:0">L'historique des sessions de checkout n'est pas encore connecté aux données du compte.</p></div>`]
+]);
 
-sec('clients','Clients','Les personnes qui vous paient.',`<div class="card"><p class="sub" style="margin:0">Aucune donnée client disponible.</p></div>`);
-sec('stats','Statistiques','Répartition de vos encaissements (30 jours).',`<div class="card"><p class="sub" style="margin:0">Aucune statistique disponible.</p></div>`);
-sec('retraits','Retraits','Transférez votre solde vers votre compte.',`<div class="card"><p class="sub" style="margin:0">Le traitement des retraits n'est pas encore disponible.</p></div>`);
-sec('hooks','Webhooks','Recevez les événements en temps réel sur votre serveur.',`<div class="card"><p class="sub" style="margin:0">Aucun webhook configuré pour le moment.</p></div>`);
+sec('clients','Clients','Les personnes qui vous paient.',[
+ ["clients-list","♧","Répertoire",`<div class="card"><p class="sub" style="margin:0">Le répertoire clients n'est pas encore connecté aux données de paiement.</p></div>`],
+ ["clients-activity","↗","Activité",`<div class="card"><p class="sub" style="margin:0">L'activité des clients apparaîtra ici lorsque les données client seront disponibles.</p></div>`]
+]);
+sec('stats','Statistiques','Répartition de vos encaissements (30 jours).',[
+ ["stats-overview","▦","Vue d'ensemble",`<div class="card"><p class="sub" style="margin:0">Les statistiques ne sont pas encore disponibles pour cette période.</p></div>`],
+ ["stats-methods","◈","Moyens de paiement",`<div class="card"><p class="sub" style="margin:0">La répartition par moyen de paiement apparaîtra lorsque les données de statistiques seront connectées.</p></div>`]
+]);
+sec('retraits','Retraits','Transférez votre solde vers votre compte.',[
+ ["withdraw-request","＋","Demande de retrait",`<div class="card"><p class="sub" style="margin:0">Le traitement des retraits n'est pas encore disponible.</p></div>`],
+ ["withdraw-history","▤","Historique",`<div class="card"><p class="sub" style="margin:0">L'historique des retraits n'est pas encore connecté aux données du compte.</p></div>`]
+]);
+sec('hooks','Webhooks','Recevez les événements en temps réel sur votre serveur.',[
+ ["hooks-setup","⌘","Configuration",`<div class="card"><p class="sub" style="margin:0">La configuration des webhooks n'est pas encore disponible.</p></div>`],
+ ["hooks-events","↗","Événements",`<div class="card"><p class="sub" style="margin:0">Les événements de webhook apparaîtront ici lorsque l'intégration sera configurée.</p></div>`]
+]);
 const JL=[];
-sec("hooklog","Journal des webhooks","Chaque envoi et son résultat.",tbl([],[],"jlT"));
+sec("hooklog","Journal des webhooks","Chaque envoi et son résultat.",[
+ ["hooklog-all","▤","Tous les envois",tbl([],[],"jlT")],
+ ["hooklog-retry","↻","À relancer",`<div class="card"><p class="sub" style="margin:0">Aucun envoi à relancer n'est disponible.</p></div>`]
+]);
 const drawJl=()=>{$("jlT").innerHTML=tr(["Événement","Endpoint","Code","Tentatives","Date",""],1)+JL.map((j,i)=>tr([j[0],j[1],tg(j[2]==200?"succeeded":"failed",j[2]),j[3],j[4],j[2]==200?"":"<button class='btn alt' data-r='"+i+"'>Rejouer</button>"])).join("")};
 drawJl();
 $("jlT").onclick=e=>{const i=e.target.dataset.r;if(i===undefined)return;JL[i][2]=200;JL[i][3]++;drawJl()};
 
-sec("disputes","Litiges","Contestations de paiement à traiter.",tbl(["Référence","Montant (FCFA)","Motif","Statut","Échéance"],[]));
+sec("disputes","Litiges","Contestations de paiement à traiter.",[
+ ["disputes-open","◷","En cours",tbl(["Référence","Montant (FCFA)","Motif","Statut","Échéance"],[])],
+ ["disputes-closed","✓","Terminés",`<div class="card"><p class="sub" style="margin:0">L'historique des litiges terminés n'est pas encore connecté aux données du compte.</p></div>`]
+]);
 
-sec("pricing","Tarification","Vos frais par moyen de paiement.",`<div class="card"><small>Offre actuelle</small><div class="big">ABVSPAIE</div><span class="up">Tarification de votre compte</span></div>`+gap+tbl(["Moyen","Encaissement","Décaissement"],[["Orange Money","1,5 %","100 FCFA"],["Wave","1,5 %","100 FCFA"],["MTN MoMo","1,5 %","100 FCFA"],["Moov","1,5 %","100 FCFA"],["Carte bancaire","1,5 %","—"]]));
+sec("pricing","Tarification","Vos frais par moyen de paiement.",[
+ ["pricing-collection","↗","Encaissement",`<div class="card"><small>Offre actuelle</small><div class="big">ABVSPAIE</div><span class="up">Tarification de votre compte</span>${gap}${tbl(["Moyen","Frais d'encaissement"],[["Orange Money","1,5 %"],["Wave","1,5 %"],["MTN MoMo","1,5 %"],["Moov","1,5 %"],["Carte bancaire","1,5 %"]])}</div>`],
+ ["pricing-payout","↙","Décaissement",`<div class="card">${tbl(["Moyen","Frais de décaissement"],[["Orange Money","100 FCFA"],["Wave","100 FCFA"],["MTN MoMo","100 FCFA"],["Moov","100 FCFA"],["Carte bancaire","—"]])}</div>`]
+]);
 
-sec("support","Support","Contactez notre équipe en cas de besoin.","<div class='card'><p class='sub' style='margin:0'>Utilisez la page de contact pour joindre notre équipe.</p><a href='a-propos-contact.html'>Contacter le support</a></div>");
+sec("support","Support","Contactez notre équipe en cas de besoin.",[
+ ["support-contact","✉","Contacter le support",`<div class="card"><p class="sub" style="margin:0">Utilisez la page de contact pour joindre notre équipe.</p><a href="a-propos-contact.html">Contacter le support</a></div>`],
+ ["support-info","i","Informations",`<div class="card"><p class="sub" style="margin:0">Pour toute demande d'assistance, contactez notre équipe depuis la page de contact.</p></div>`]
+]);
 (async()=>{const sb=ABVS.ready?ABVS.client:null;
  async function loadAll(){
  const refresh=$("overview-refresh"),retry=$("loadError").querySelector("[data-retry]");
