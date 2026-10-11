@@ -40,6 +40,20 @@
     } catch (e) { location.replace(LOGIN); }
   }
 
+  // Session valide ET complète (2FA franchie, pas d'inactivité) : sert aux pages publiques
+  // (connexion, mot de passe oublié) pour rediriger un utilisateur déjà connecté.
+  async function hasSession() {
+    try {
+      if (!sb) return false;
+      var r = await sb.auth.getSession();
+      if (!r.data || !r.data.session) return false;
+      if (idle()) return false;
+      var a = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (a.data && a.data.nextLevel === "aal2" && a.data.currentLevel !== "aal2") return false;
+      return true;
+    } catch (_) { return false; }
+  }
+
   async function signUp(o) {
     var r = await sb.auth.signUp({
       email: o.email, password: o.password,
@@ -95,7 +109,7 @@
     return "Une erreur est survenue. Réessayez.";
   }
 
-  window.ABVS = { client: sb, ready: !!sb, requireSession: requireSession, signUp: signUp, signIn: signIn,
+  window.ABVS = { client: sb, ready: !!sb, requireSession: requireSession, hasSession: hasSession, signUp: signUp, signIn: signIn,
     verifyMfa: verifyMfa, signOut: signOut, resetRequest: resetRequest, updatePassword: updatePassword,
     onPasswordRecovery: onPasswordRecovery, msg: msg, touch: touch };
 })();
