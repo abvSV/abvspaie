@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -568,7 +568,7 @@
       $('goDash').href = '../compte/tableau-de-bord.html'; $('goDash').textContent = 'Accéder au tableau de bord';
       $('goDash').style.display = 'block';
       show('vDone');
-      setTimeout(() => { location.href = '../compte/tableau-de-bord.html' }, 1400);
+      setTimeout(() => { location.replace('../compte/tableau-de-bord.html'); }, 1400);
     };
     $('fLogin').onsubmit = async e => {
       e.preventDefault();
@@ -598,7 +598,7 @@
         setErr('lpwd', 'Serveur injoignable. Réessayez plus tard.');
       } finally { btn.disabled = false }
     };
-    $('forgot').onclick = () => { location.href = 'mot-de-passe-oublie.html' };
+    $('forgot').onclick = () => { location.replace('mot-de-passe-oublie.html'); };
 
     // ───── Modules flottants déplaçables ─────
     (() => {
