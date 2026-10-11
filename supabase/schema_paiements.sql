@@ -5,7 +5,7 @@
 alter table public.merchants add column if not exists test_mode boolean not null default true;
 
 -- ───────── Liens de paiement ─────────
-create table public.payment_links (
+create table if not exists public.payment_links (
   id          uuid primary key default gen_random_uuid(),
   merchant_id uuid not null default auth.uid() references public.merchants(id) on delete cascade,
   slug        text not null unique default substr(replace(gen_random_uuid()::text, '-', ''), 1, 8),
@@ -15,11 +15,14 @@ create table public.payment_links (
   active      boolean not null default true,
   created_at  timestamptz not null default now()
 );
-create index on public.payment_links (merchant_id, created_at desc);
+create index if not exists payment_links_merchant_idx on public.payment_links (merchant_id, created_at desc);
 alter table public.payment_links enable row level security;
 
+drop policy if exists links_select_own on public.payment_links;
 create policy links_select_own on public.payment_links for select to authenticated using (merchant_id = (select auth.uid()));
+drop policy if exists links_insert_own on public.payment_links;
 create policy links_insert_own on public.payment_links for insert to authenticated with check (merchant_id = (select auth.uid()));
+drop policy if exists links_update_own on public.payment_links;
 create policy links_update_own on public.payment_links for update to authenticated
   using (merchant_id = (select auth.uid())) with check (merchant_id = (select auth.uid()));
 
@@ -29,7 +32,7 @@ grant insert (title, amount) on public.payment_links to authenticated;
 grant update (active) on public.payment_links to authenticated;
 
 -- ───────── Transactions ─────────
-create table public.transactions (
+create table if not exists public.transactions (
   id          uuid primary key default gen_random_uuid(),
   reference   text not null unique default 'TX-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8)),
   merchant_id uuid not null references public.merchants(id) on delete cascade,
@@ -41,9 +44,10 @@ create table public.transactions (
   status      text not null default 'pending' check (status in ('pending','succeeded','failed')),
   created_at  timestamptz not null default now()
 );
-create index on public.transactions (merchant_id, created_at desc);
+create index if not exists transactions_merchant_idx on public.transactions (merchant_id, created_at desc);
 alter table public.transactions enable row level security;
 
+drop policy if exists tx_select_own on public.transactions;
 create policy tx_select_own on public.transactions for select to authenticated using (merchant_id = (select auth.uid()));
 
 -- Lecture seule pour le marchand ; les écritures passent uniquement par create_payment() ou le serveur.
