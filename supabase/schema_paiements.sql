@@ -40,11 +40,13 @@ create table if not exists public.transactions (
   amount      integer not null check (amount > 0),
   currency    text not null default 'XOF',
   method      text not null check (method in ('Orange Money','MTN MoMo','Moov','Wave','Carte')),
-  payer       text,                       -- numéro masqué (••••123), jamais de numéro de carte
+  payer       text,
   status      text not null default 'pending' check (status in ('pending','succeeded','failed')),
+  idempotency_key text,
   created_at  timestamptz not null default now()
 );
 create index if not exists transactions_merchant_idx on public.transactions (merchant_id, created_at desc);
+create index if not exists tx_idempotency_idx on public.transactions (idempotency_key);
 alter table public.transactions enable row level security;
 
 drop policy if exists tx_select_own on public.transactions;
@@ -62,16 +64,30 @@ returns jsonb language sql security definer stable set search_path = '' as $$
   where pl.slug = p_slug and pl.active
 $$;
 
-create or replace function public.create_payment(p_slug text, p_method text, p_phone text default null)
+create or replace function public.create_payment(p_slug text, p_method text, p_phone text default null, p_idempotency_key text default null)
 returns jsonb language plpgsql security definer set search_path = '' as $$
 declare
   l record; v_test boolean; v_payer text; v_ref text; v_status text;
 begin
+  if p_slug is null or length(trim(p_slug)) = 0 then
+    raise exception 'slug invalide';
+  end if;
+
   if p_method not in ('Orange Money','MTN MoMo','Moov','Wave','Carte') then
     raise exception 'Moyen de paiement invalide';
   end if;
+
+  if p_idempotency_key is not null and exists (
+    select 1 from public.transactions where idempotency_key = p_idempotency_key
+  ) then
+    raise exception 'Demande déjà traitée';
+  end if;
+
   select pl.id, pl.merchant_id, pl.amount, pl.currency into l
-    from public.payment_links pl where pl.slug = p_slug and pl.active;
+    from public.payment_links pl
+    where pl.slug = p_slug and pl.active
+    for update;
+
   if not found then raise exception 'Lien introuvable'; end if;
   select mm.test_mode into v_test from public.merchants mm where mm.id = l.merchant_id;
 
@@ -84,13 +100,14 @@ begin
   end if;
 
   -- Mode test : réussi tout de suite. Mode réel : "pending" jusqu'à confirmation de l'opérateur (webhook).
-  insert into public.transactions (merchant_id, link_id, amount, currency, method, payer, status)
+  insert into public.transactions (merchant_id, link_id, amount, currency, method, payer, status, idempotency_key)
   values (l.merchant_id, l.id, l.amount, l.currency, p_method, v_payer,
-          case when v_test then 'succeeded' else 'pending' end)
+          case when v_test then 'succeeded' else 'pending' end,
+          p_idempotency_key)
   returning reference, status into v_ref, v_status;
 
   return jsonb_build_object('reference', v_ref, 'status', v_status);
 end $$;
 
-revoke execute on function public.get_payment_link(text), public.create_payment(text, text, text) from public;
-grant execute on function public.get_payment_link(text), public.create_payment(text, text, text) to anon, authenticated;
+revoke execute on function public.get_payment_link(text), public.create_payment(text, text, text, text) from public;
+grant execute on function public.get_payment_link(text), public.create_payment(text, text, text, text) to anon, authenticated;
