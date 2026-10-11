@@ -203,6 +203,44 @@ body main{max-width:1200px;margin:0 auto;padding-top:84px}
 .section-subpanel h2{text-align:center}
 .section-subpanel .wrap{text-align:left}
 .section-subpanel .wrap table{text-align:left}
+#hooks .webhook-card{max-width:760px;margin:0 auto;text-align:left}
+.webhook-heading{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px}
+.webhook-icon{display:grid;place-items:center;width:52px;height:52px;border:1px solid color-mix(in srgb,var(--pri) 20%,var(--line));border-radius:17px;background:color-mix(in srgb,var(--pri) 9%,var(--solid));color:var(--pri);font-size:23px}
+.webhook-eyebrow{color:var(--pri);font-size:10px;font-weight:750;letter-spacing:.1em}
+.webhook-heading h2{margin:5px 0;font-size:18px;text-align:left}
+.webhook-heading p,.webhook-note{margin:0;color:var(--mute);font-size:13px;line-height:1.6}
+.webhook-badge{padding:7px 11px;border:1px solid var(--line);border-radius:99px;background:var(--in);color:var(--mute);font-size:11px;font-weight:650;white-space:nowrap}
+.webhook-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:24px}
+.webhook-step{min-width:0;padding:14px;border:1px solid var(--line);border-radius:15px;background:color-mix(in srgb,var(--solid) 70%,var(--in))}
+.webhook-step-index{display:grid;place-items:center;width:26px;height:26px;margin-bottom:10px;border-radius:9px;background:color-mix(in srgb,var(--pri) 10%,var(--solid));color:var(--pri);font-size:12px;font-weight:700}
+.webhook-step strong{display:block;font-size:12px}
+.webhook-step small{margin-top:5px;font-size:11px;line-height:1.5}
+.webhook-note{margin-top:16px;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:var(--in)}
+.webhook-empty{display:grid;justify-items:center;padding:22px 12px 4px;text-align:center}
+.webhook-empty-icon{display:grid;place-items:center;width:62px;height:62px;margin-bottom:13px;border:1px solid color-mix(in srgb,var(--pri) 20%,var(--line));border-radius:21px;background:color-mix(in srgb,var(--pri) 8%,var(--solid));color:var(--pri);font-size:26px}
+.webhook-empty h2{margin:0 0 7px;font-size:17px}
+.webhook-empty p{max-width:390px;margin:0;color:var(--mute);font-size:13px;line-height:1.6}
+.webhook-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin:20px 0}
+.webhook-form input{min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:11px;background:var(--in);color:var(--ink);font:14px Inter,sans-serif}
+.webhook-message{min-height:20px;color:var(--mute);font-size:12px;line-height:1.5}
+.webhook-message[data-error="true"]{color:var(--err)}
+.webhook-endpoint{display:grid;gap:10px;padding:14px 0;border-top:1px solid var(--line);text-align:left}
+.webhook-endpoint-head,.webhook-endpoint-url{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.webhook-endpoint-head strong{font-size:13px}
+.webhook-endpoint-url code{min-width:0;overflow-wrap:anywhere;color:var(--pri);font-size:12px}
+.webhook-endpoint-actions{display:flex;flex-wrap:wrap;gap:8px}
+.webhook-small-button{padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--solid);color:var(--ink);font:600 11px Inter,sans-serif;cursor:pointer}
+.webhook-small-button:disabled,.webhook-form button:disabled{opacity:.6;cursor:wait}
+.webhook-secret{margin:16px 0;padding:15px;border:1px solid color-mix(in srgb,var(--warn) 35%,var(--line));border-radius:14px;background:color-mix(in srgb,var(--warn) 7%,var(--solid));text-align:left}
+.webhook-secret strong{display:block;margin-bottom:8px;font-size:13px}
+.webhook-secret code{display:block;overflow-wrap:anywhere;padding:9px;border-radius:8px;background:var(--in);color:var(--pri);user-select:all}
+.webhook-secret p{margin:10px 0;color:var(--mute);font-size:12px;line-height:1.5}
+.webhook-event{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--solid) 75%,var(--in));text-align:left}
+.webhook-event summary{display:flex;justify-content:space-between;gap:12px;cursor:pointer;font-size:12px;font-weight:650}
+.webhook-event time{color:var(--mute);font-size:11px;font-weight:400}
+.webhook-event pre{overflow:auto;max-height:360px;margin:12px 0 0;padding:12px;border-radius:10px;background:var(--in);color:var(--ink);font:12px/1.55 ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:560px){.webhook-heading{grid-template-columns:auto minmax(0,1fr);gap:12px}.webhook-badge{grid-column:1/-1;justify-self:start}.webhook-flow{grid-template-columns:1fr;margin-top:18px}.webhook-step{display:grid;grid-template-columns:30px minmax(0,1fr);column-gap:10px;align-items:center;padding:11px 12px}.webhook-step-index{grid-row:span 2;margin:0}.webhook-step small{margin-top:3px}}
+@media(max-width:560px){.webhook-form{grid-template-columns:1fr}.webhook-endpoint-url{align-items:flex-start;flex-direction:column}.webhook-event summary{flex-direction:column}}
 .rubric-page>.filters{justify-content:center}
 .rubric-page>#tx-table-wrap[hidden]{display:none}
 @media(max-width:600px){.rubric-page>.card{padding:18px;border-radius:24px}.rubric-page>.sub{margin-bottom:18px}}
@@ -329,6 +367,72 @@ document.querySelector("main").addEventListener("click",event=>{
  const section=button.closest("main > section");if(!section)return;
  section.querySelectorAll("[data-subpanel]").forEach(item=>item.setAttribute("aria-pressed",String(item===button)));
  section.querySelectorAll(".section-subpanel").forEach(panel=>{panel.hidden=panel.id!==button.dataset.subpanel});
+ if(button.dataset.subpanel==="hooks-setup")loadWebhookEndpoints();
+ if(button.dataset.subpanel==="hooks-events")loadWebhookEvents();
+});
+let recentWebhook=null;
+function setWebhookMessage(id,message,isError=false){const target=$(id);target.textContent=message;target.dataset.error=String(isError)}
+async function webhookToken(){const {data,error}=await ABVS.client.auth.getSession();if(error||!data.session)throw new Error("Votre session a expiré. Reconnectez-vous.");return data.session.access_token}
+async function webhookRequest(path,options={}){const token=await webhookToken();const response=await fetch(path,{...options,headers:{"Authorization":`Bearer ${token}`,...(options.headers||{})}});const result=await response.json();if(!response.ok)throw new Error(result.error||"La requête webhook a échoué.");return result}
+async function loadWebhookEndpoints(){
+ const list=$("hookEndpointList");list.textContent="Chargement des endpoints…";setWebhookMessage("hookSetupMessage","");
+ if(!ABVS.ready){list.textContent="Service de compte indisponible.";return}
+ const {data,error}=await ABVS.client.from("webhook_endpoints").select("id,name,endpoint_url,is_active,created_at").order("created_at",{ascending:false});
+ if(error){list.textContent="Lecture impossible. Vérifiez la migration schema_webhooks.sql et les politiques RLS.";setWebhookMessage("hookSetupMessage","Impossible de charger les endpoints.",true);return}
+ if(!data.length){list.innerHTML="<p class='webhook-note'>Aucun endpoint. Créez-en un pour recevoir le premier événement.</p>";return}
+ list.innerHTML=data.map(endpoint=>`<div class="webhook-endpoint"><div class="webhook-endpoint-head"><strong>${esc(endpoint.name)}</strong><span class="webhook-badge">${endpoint.is_active?"Actif":"Désactivé"}</span></div><div class="webhook-endpoint-url"><code>${esc(endpoint.endpoint_url)}</code><div class="webhook-endpoint-actions"><button type="button" class="webhook-small-button" data-hook-copy-url="${esc(endpoint.id)}">Copier l'URL</button>${endpoint.is_active?`<button type="button" class="webhook-small-button" data-hook-disable="${esc(endpoint.id)}">Désactiver</button>`:""}</div></div></div>`).join("");
+}
+async function loadWebhookEvents(){
+ const list=$("hookEventsList");list.textContent="Chargement des événements…";setWebhookMessage("hookEventsMessage","");
+ if(!ABVS.ready){list.textContent="Service de compte indisponible.";return}
+ const {data,error}=await ABVS.client.from("webhook_events").select("id,endpoint_id,delivery_id,event_type,payload,received_at").order("received_at",{ascending:false}).limit(10);
+ if(error){list.textContent="Lecture impossible. Vérifiez la migration schema_webhooks.sql et les politiques RLS.";setWebhookMessage("hookEventsMessage","Impossible de charger les événements.",true);return}
+ if(!data.length){list.innerHTML="<div class='webhook-empty'><span class='webhook-empty-icon' aria-hidden='true'>⌁</span><h2>Aucune donnée reçue</h2><p>Envoyez une requête de test depuis la rubrique Configuration ; son JSON apparaîtra ici.</p></div>";return}
+ list.innerHTML=data.map(item=>`<details class="webhook-event"><summary><span>${esc(item.event_type||"Événement sans type")} · ${esc(item.delivery_id)}</span><time datetime="${esc(item.received_at)}">${esc(new Date(item.received_at).toLocaleString("fr-FR"))}</time></summary><pre>${esc(JSON.stringify(item.payload,null,2))}</pre></details>`).join("");
+}
+async function signWebhookBody(secret,timestamp,body){
+ const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
+ const signature=await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(`${timestamp}.${body}`));
+ return Array.from(new Uint8Array(signature),byte=>byte.toString(16).padStart(2,"0")).join("");
+}
+async function testWebhook(){
+ if(!recentWebhook){setWebhookMessage("hookSetupMessage","Le secret n'est disponible qu'immédiatement après sa création. Créez un nouvel endpoint pour refaire un test.",true);return}
+ const button=$("hookTestButton");button.disabled=true;setWebhookMessage("hookSetupMessage","Envoi du test…");
+ try{
+  const body=JSON.stringify({event:"test.webhook",data:{message:"Test ABVSPAIE",amount:12500,currency:"XOF"},test:true});
+  const timestamp=String(Math.floor(Date.now()/1000)),signature=await signWebhookBody(recentWebhook.secret,timestamp,body),deliveryId=`test-${crypto.randomUUID()}`;
+  const response=await fetch(recentWebhook.endpoint.endpoint_url,{method:"POST",headers:{"Content-Type":"application/json","X-ABVS-Timestamp":timestamp,"X-ABVS-Signature":`sha256=${signature}`,"X-ABVS-Delivery":deliveryId},body});
+  const result=await response.json();
+  if(!response.ok)throw new Error(result.error||`Réponse HTTP ${response.status}`);
+  setWebhookMessage("hookSetupMessage",`Test reçu (HTTP ${response.status}, livraison ${result.delivery_id}). Consultez la rubrique « Données reçues ».`);
+  await loadWebhookEvents();
+ }catch(error){setWebhookMessage("hookSetupMessage",error.message||"Test impossible.",true)}
+ finally{button.disabled=false}
+}
+document.querySelector("main").addEventListener("submit",async event=>{
+ if(event.target.id!=="hookEndpointForm")return;
+ event.preventDefault();const button=$("hookCreateButton");button.disabled=true;setWebhookMessage("hookSetupMessage","Création de l'endpoint…");
+ try{
+  const result=await webhookRequest("/api/webhooks/endpoints",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("hookEndpointName").value.trim()})});
+  recentWebhook={endpoint:result.endpoint,secret:result.secret};
+  $("hookSecretReveal").hidden=false;
+  $("hookSecretReveal").innerHTML=`<strong>Copiez ce secret maintenant : il ne sera plus affiché.</strong><code>${esc(result.secret)}</code><p>Conservez-le dans les variables secrètes de l'application qui envoie les requêtes. Ne le partagez jamais dans le code source ni dans un navigateur public.</p><div class="webhook-endpoint-actions"><button type="button" class="webhook-small-button" id="hookCopySecret">Copier le secret</button><button type="button" class="webhook-small-button" id="hookTestButton">Envoyer un test fictif</button></div>`;
+  $("hookEndpointName").value="";setWebhookMessage("hookSetupMessage","Endpoint créé. Copiez son secret avant de quitter cette page.");
+  $("hookCopySecret").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(result.secret);setWebhookMessage("hookSetupMessage","Secret copié.")}catch(_){setWebhookMessage("hookSetupMessage","Copie refusée par le navigateur. Sélectionnez le secret et copiez-le.",true)}});
+  $("hookTestButton").addEventListener("click",testWebhook);
+  await loadWebhookEndpoints();
+ }catch(error){setWebhookMessage("hookSetupMessage",error.message||"Création impossible.",true)}
+ finally{button.disabled=false}
+});
+document.querySelector("main").addEventListener("click",async event=>{
+ const refresh=event.target.closest("#hookEventsRefresh");if(refresh){loadWebhookEvents();return}
+ const copy=event.target.closest("[data-hook-copy-url]");
+ if(copy&&!copy.closest("#hookEndpointList"))return;
+ if(copy){const endpoint=await ABVS.client.from("webhook_endpoints").select("endpoint_url").eq("id",copy.dataset.hookCopyUrl).single();if(endpoint.error){setWebhookMessage("hookSetupMessage","URL introuvable.",true);return}try{await navigator.clipboard.writeText(endpoint.data.endpoint_url);setWebhookMessage("hookSetupMessage","URL copiée.")}catch(_){setWebhookMessage("hookSetupMessage","Copie refusée par le navigateur.",true)}return}
+ const disable=event.target.closest("#hookEndpointList [data-hook-disable]");if(!disable)return;
+ disable.disabled=true;
+ try{await webhookRequest(`/api/webhooks/endpoints?id=${encodeURIComponent(disable.dataset.hookDisable)}`,{method:"DELETE"});setWebhookMessage("hookSetupMessage","Endpoint désactivé ; son secret a été supprimé.");await loadWebhookEndpoints()}
+ catch(error){setWebhookMessage("hookSetupMessage",error.message||"Désactivation impossible.",true);disable.disabled=false}
 });
 const linkRubrics=[...document.querySelectorAll("[data-link-rubric]")],linkPanels=[...document.querySelectorAll("#links .link-rubric-panel")];
 linkRubrics.forEach(button=>button.addEventListener("click",()=>{
@@ -399,8 +503,8 @@ sec('retraits','Retraits','Transférez votre solde vers votre compte.',[
  ["withdraw-history","▤","Historique",`<div class="card"><p class="sub" style="margin:0">L'historique des retraits n'est pas encore connecté aux données du compte.</p></div>`]
 ]);
 sec('hooks','Webhooks','Recevez les événements en temps réel sur votre serveur.',[
- ["hooks-setup","⌘","Configuration",`<div class="card"><p class="sub" style="margin:0">La configuration des webhooks n'est pas encore disponible.</p></div>`],
- ["hooks-events","↗","Événements",`<div class="card"><p class="sub" style="margin:0">Les événements de webhook apparaîtront ici lorsque l'intégration sera configurée.</p></div>`]
+ ["hooks-setup","⌘","Configuration",`<div class="card"><article class="webhook-card"><div class="webhook-heading"><span class="webhook-icon" aria-hidden="true">⌘</span><div><span class="webhook-eyebrow">RÉCEPTION SÉCURISÉE</span><h2>Créer un endpoint</h2><p>Générez une URL publique et une clé de signature pour votre application.</p></div><span class="webhook-badge">POST · JSON · HMAC-SHA256</span></div><form id="hookEndpointForm" class="webhook-form"><input id="hookEndpointName" required minlength="2" maxlength="80" placeholder="Nom (ex. Mon application)" aria-label="Nom de l'endpoint"><button id="hookCreateButton" class="btn" type="submit">Créer l'endpoint</button></form><p id="hookSetupMessage" class="webhook-message" role="status" aria-live="polite"></p><div id="hookSecretReveal" class="webhook-secret" hidden></div><div id="hookEndpointList"></div><p class="webhook-note">Chaque requête doit contenir un horodatage récent et une signature HMAC-SHA256. Le secret n'est affiché qu'une seule fois ; gardez-le dans les variables secrètes de votre application.</p></article></div>`],
+ ["hooks-events","↗","Données reçues",`<div class="card"><article class="webhook-card"><div class="webhook-heading"><span class="webhook-icon" aria-hidden="true">↗</span><div><span class="webhook-eyebrow">RÉCEPTION</span><h2>Données reçues</h2><p>Inspectez le JSON reçu par les endpoints de votre compte.</p></div><button id="hookEventsRefresh" class="webhook-small-button" type="button">Actualiser</button></div><p id="hookEventsMessage" class="webhook-message" role="status" aria-live="polite"></p><div id="hookEventsList" class="webhook-events-list"></div></article></div>`]
 ]);
 const JL=[];
 sec("hooklog","Journal des webhooks","Chaque envoi et son résultat.",[
