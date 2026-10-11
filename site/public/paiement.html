@@ -1,46 +1,165 @@
--- ABVSPAIE — migration 02 : ajoute le nom du bénéficiaire aux décaissements.
--- À exécuter APRÈS migration_01_production.sql (Supabase > SQL Editor > Run).
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="description" content="Paiement sécurisé via ABVSPAIE.">
+  <title>Paiement sécurisé · ABVSPAIE</title>
+  <style>
+    :root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:#152235;background:#f4f7fb;font-synthesis:none}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}
+    main{width:min(100%,480px);background:#fff;border:1px solid #e3eaf2;border-radius:20px;padding:28px;box-shadow:0 18px 48px #17304a12}
+    .brand{font-weight:800;letter-spacing:.04em;color:#152235;text-decoration:none}
+    h1{font-size:24px;margin:28px 0 6px}
+    .muted{color:#66758a;line-height:1.55}
+    .summary{margin:22px 0;padding:18px;border-radius:14px;background:#f4f7fb}
+    .summary small{display:block;color:#66758a}
+    .amount{font-size:28px;font-weight:750;margin-top:6px}
+    label{display:block;font-size:14px;font-weight:650;margin-top:16px}
+    input,select,button{font:inherit}
+    input,select{display:block;width:100%;margin-top:7px;padding:12px;border:1px solid #cdd7e3;border-radius:10px;background:#fff}
+    button{width:100%;margin-top:22px;padding:13px;border:0;border-radius:10px;background:#193a59;color:white;font-weight:700;cursor:pointer}
+    button:disabled{opacity:.55;cursor:not-allowed}
+    [role=status]{min-height:24px;margin-top:14px;color:#a33232;line-height:1.5}
+    .security{font-size:12px;text-align:center;color:#718096;margin:18px 0 0}
+    [hidden]{display:none!important}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script>
+  <script src="../assets/abvs-config.js"></script>
+</head>
+<body>
+  <main>
+    <a class="brand" href="../index.html">ABVSPAIE</a>
+    <h1>Paiement sécurisé</h1>
+    <p class="muted">Vérifiez les détails avant de continuer.</p>
+    <section id="summary" class="summary" hidden aria-live="polite">
+      <small id="merchant"></small>
+      <div id="title" class="muted"></div>
+      <div id="amount" class="amount"></div>
+    </section>
+    <p id="mode-note" class="muted" hidden></p>
+    <form id="payment-form" hidden>
+      <label for="method">Moyen de paiement</label>
+      <select id="method" name="method" required>
+        <option value="Orange Money">Orange Money</option>
+        <option value="MTN MoMo">MTN MoMo</option>
+        <option value="Moov">Moov</option>
+        <option value="Wave">Wave</option>
+        <option value="Carte">Carte bancaire</option>
+      </select>
+      <label id="phone-label" for="phone">Numéro de téléphone</label>
+      <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20">
+      <button id="submit" type="submit">Confirmer le paiement</button>
+    </form>
+    <p id="status" role="status" aria-live="polite"></p>
+    <p class="security">Connexion sécurisée · ABVSPAIE ne stocke pas vos données de carte.</p>
+  </main>
+  <script>
+    (() => {
+      const form = document.getElementById("payment-form");
+      const status = document.getElementById("status");
+      const method = document.getElementById("method");
+      const phone = document.getElementById("phone");
+      const submit = document.getElementById("submit");
+      let client = null;
+      let clientError = null;
+      try {
+        if (window.supabase && window.ABVS_CONFIG) {
+          client = window.supabase.createClient(window.ABVS_CONFIG.url, window.ABVS_CONFIG.anonKey);
+        }
+      } catch (error) {
+        clientError = "La configuration du service de paiement est invalide.";
+      }
+      const slug = new URLSearchParams(location.search).get("l");
+      let idempotencyKey = null;
 
-alter table public.payouts
-  add column if not exists beneficiary text
-  check (beneficiary is null or char_length(beneficiary) between 2 and 120);
+      function createIdempotencyKey() {
+        if (window.crypto && typeof window.crypto.randomUUID === "function") {
+          return window.crypto.randomUUID();
+        }
+        if (window.crypto && typeof window.crypto.getRandomValues === "function") {
+          return Array.from(window.crypto.getRandomValues(new Uint8Array(16)))
+            .map(value => value.toString(16).padStart(2, "0")).join("");
+        }
+        throw new Error("Impossible de sécuriser cette demande dans ce navigateur.");
+      }
 
-drop function if exists public.request_payout(integer, text, text);
+      function updatePhoneRequirement() {
+        const needsPhone = method.value !== "Carte";
+        phone.required = needsPhone;
+        phone.hidden = !needsPhone;
+        document.getElementById("phone-label").hidden = !needsPhone;
+      }
 
-create or replace function public.request_payout(
-  p_amount integer, p_method text, p_destination text, p_beneficiary text default null)
-returns jsonb language plpgsql security definer set search_path = '' as $$
-declare
-  v_uid uuid := auth.uid(); m record; v_avail bigint; v_ref text; v_benef text;
-begin
-  if v_uid is null then raise exception 'Non connecté'; end if;
-  if coalesce(auth.jwt()->>'aal', '') <> 'aal2' then
-    raise exception 'Double authentification requise';
-  end if;
+      method.addEventListener("change", updatePhoneRequirement);
+      updatePhoneRequirement();
 
-  -- Verrou sur la ligne du marchand : deux retraits simultanés ne peuvent pas dépasser le solde.
-  select mm.kyc_status, mm.test_mode into m from public.merchants mm where mm.id = v_uid for update;
-  if not found then raise exception 'Marchand introuvable'; end if;
-  if m.kyc_status <> 'verified' then raise exception 'Vérification d''identité requise'; end if;
-  if m.test_mode then raise exception 'Retraits indisponibles en mode test'; end if;
+      async function loadPaymentLink() {
+        if (!client) {
+          throw new Error(clientError || "Le service de paiement est indisponible.");
+        }
+        if (!slug || slug.length > 128) throw new Error("Ce lien de paiement est invalide.");
+        const { data, error } = await client.rpc("get_payment_link", { p_slug: slug });
+        if (error) throw new Error("Impossible de charger les détails du paiement.");
+        if (!data) throw new Error("Ce lien de paiement est introuvable ou désactivé.");
 
-  if p_method not in ('Orange Money','MTN MoMo','Moov','Wave') then raise exception 'Moyen invalide'; end if;
-  if p_destination is null or p_destination !~ '^[0-9+() -]{8,20}$' then raise exception 'Numéro invalide'; end if;
-  if p_amount is null or p_amount < 1000 then raise exception 'Montant minimum : 1 000 FCFA'; end if;
+        document.getElementById("merchant").textContent = data.merchant_name || "";
+        document.getElementById("title").textContent = data.title;
+        document.getElementById("amount").textContent =
+          Number(data.amount).toLocaleString("fr-FR") + " " + data.currency;
+        if (data.mode === "test") {
+          const note = document.getElementById("mode-note");
+          note.textContent = "Mode test : aucun paiement réel ni transfert de fonds ne sera effectué.";
+          note.hidden = false;
+        } else if (data.mode !== "live") {
+          throw new Error("Le mode de paiement de ce lien est invalide.");
+        }
+        document.getElementById("summary").hidden = false;
+        form.hidden = false;
+      }
 
-  v_benef := nullif(trim(coalesce(p_beneficiary, '')), '');
-  if v_benef is not null and char_length(v_benef) < 2 then raise exception 'Bénéficiaire invalide'; end if;
-  v_benef := left(v_benef, 120);
+      form.addEventListener("submit", async event => {
+        event.preventDefault();
+        status.textContent = "";
+        submit.disabled = true;
+        submit.textContent = "Traitement en cours…";
+        if (!idempotencyKey) idempotencyKey = createIdempotencyKey();
 
-  select b.available into v_avail from public.merchant_balance b where b.merchant_id = v_uid;
-  if p_amount > coalesce(v_avail, 0) then raise exception 'Solde insuffisant'; end if;
+        try {
+          const { data, error } = await client.rpc("create_payment", {
+            p_slug: slug,
+            p_method: method.value,
+            p_phone: phone.value.trim() || null,
+            p_idempotency_key: idempotencyKey
+          });
+          if (error) throw new Error("Le paiement n'a pas pu être enregistré. Vérifiez les informations puis réessayez.");
+          if (!data || typeof data.reference !== "string"
+              || !["succeeded", "pending"].includes(data.status)
+              || !["test", "live"].includes(data.mode)) {
+            throw new Error("Le service a renvoyé une réponse de paiement invalide.");
+          }
+          status.style.color = "#286247";
+          status.textContent = data.mode === "test"
+            ? "Paiement de test simulé : aucun fonds n'a été transféré. Référence : " + data.reference
+            : data.status === "succeeded"
+              ? "Paiement confirmé. Référence : " + data.reference
+              : "Demande reçue. Référence : " + data.reference + " — le paiement reste en attente de confirmation.";
+          submit.textContent = "Paiement enregistré";
+          form.querySelectorAll("input,select,button").forEach(control => { control.disabled = true; });
+        } catch (error) {
+          status.style.color = "#a33232";
+          status.textContent = error.message;
+          submit.disabled = false;
+          submit.textContent = "Réessayer";
+        }
+      });
 
-  insert into public.payouts (merchant_id, amount, method, destination, beneficiary)
-  values (v_uid, p_amount, p_method, trim(p_destination), v_benef)
-  returning reference into v_ref;
-
-  return jsonb_build_object('reference', v_ref, 'status', 'pending');
-end $$;
-
-revoke execute on function public.request_payout(integer, text, text, text) from public, anon;
-grant execute on function public.request_payout(integer, text, text, text) to authenticated;
+      loadPaymentLink().catch(error => {
+        status.textContent = error.message;
+      });
+    })();
+  </script>
+</body>
+</html>

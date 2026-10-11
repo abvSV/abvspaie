@@ -99,29 +99,22 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 <div class="stp">
     <div class="txt"><div class="num">1</div><h3>Créez votre compte</h3><p>Inscrivez-vous, vérifiez votre entreprise et récupérez vos clés API dans le tableau de bord.</p></div>
     <div class="stage">
-      <div class="m a"><small>Clé API</small><b>sk_8f3a••••••21</b><span class="btn p s" style="margin-top:8px">Copier</span></div>
-      <div class="m b"><small>Compte</small><b>Mon SaaS</b><span class="tag">Vérifié</span></div>
+      
     </div>
   </div><div class="stp">
     <div class="txt"><div class="num">2</div><h3>Intégrez l'API</h3><p>Une seule intégration pour tous les opérateurs : mobile money et cartes.</p></div>
     <div class="stage">
-      <div class="m a"><code>POST /v1/payments
-{ "amount": 15000,
-  "currency": "XOF",
-  "method": "mobile_money" }</code></div>
-      <div class="m b"><small>Réponse</small><b>201 Created</b><span class="tag">pending</span></div>
+      
     </div>
   </div><div class="stp">
     <div class="txt"><div class="num">3</div><h3>Encaissez partout</h3><p>Vos clients paient avec leur moyen préféré. Vous recevez un webhook dès que le paiement est confirmé.</p></div>
     <div class="stage">
-      <div class="m a"><small>Paiement reçu</small><b>15 000 FCFA</b><small>Mobile money · à l'instant</small><span class="tag">Réussi</span></div>
-      <div class="m b"><small>Webhook</small><b>payment.succeeded</b></div>
+      
     </div>
   </div><div class="stp">
     <div class="txt"><div class="num">4</div><h3>Retirez ou payez</h3><p>Transférez votre solde vers votre compte ou payez vos bénéficiaires, à l'unité ou en masse.</p></div>
     <div class="stage">
-      <div class="m a"><small>Solde disponible</small><span class="big">5 320 000</span> FCFA<br><span class="btn p s" style="margin-top:8px">Transférer</span></div>
-      <div class="m b"><small>Paiement en masse</small><b>24 bénéficiaires</b><span class="tag">Envoyé</span></div>
+      
     </div>
   </div></div>
 <div class="foot"><a href="fonctionnalites.html">Fonctionnalités</a><a href="etapes.html">Comment ça marche</a><a href="tarifs.html">Tarifs</a><a href="blog.html">Blog</a><a href="a-propos-contact.html">Contact</a><a href="../public/cgu-cgv.html">CGU/CGV</a><a href="../public/confidentialite.html">Confidentialité</a><a href="../public/mentions-legales.html">Mentions légales</a></div>
@@ -135,13 +128,7 @@ document.addEventListener('click',e=>{
  const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
  const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
 $$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
-$$('form[data-demo]').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();
- const tb=f.dataset.add&&$('#'+f.dataset.add);
- if(tb){const tr=document.createElement('tr');tb.dataset.cols.split(',').forEach(n=>{const td=document.createElement('td');td.textContent=f.elements[n].value;tr.appendChild(td)});
-  if(f.dataset.link){const td=document.createElement('td'),b=document.createElement('button');b.className='btn s';b.type='button';b.textContent='Copier le lien';b.dataset.copy='https://pay.abvspaie.com/l/'+Math.random().toString(36).slice(2,8);td.appendChild(b);tr.appendChild(td)}
-  if(f.dataset.tag){const td=document.createElement('td');td.innerHTML='<span class="tag">'+f.dataset.tag+'</span>';tr.appendChild(td)}
-  tb.tBodies[0].prepend(tr)}
- toast(f.dataset.demo);f.reset()}));
+
 })();
 (()=>{let z=10;
 document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
@@ -151,9 +138,7 @@ document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m
  const mv=ev=>{const cc=par.getBoundingClientRect();m.style.left=(ev.clientX-cc.left-dx)+"px";m.style.top=(ev.clientY-cc.top-dy)+"px"};
  const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
  m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
-if(!matchMedia("(prefers-reduced-motion:reduce)").matches&&document.querySelector(".m"))setInterval(()=>{if(document.hidden||innerWidth<700)return;
- const p=document.createElement("div");p.className="pop";const o=["Orange Money","Wave","MTN MoMo","Carte"][Math.floor(Math.random()*4)],a=[5000,8000,15000,22000,42500][Math.floor(Math.random()*5)];
- p.textContent="+"+a.toLocaleString("fr-FR")+" FCFA · "+o;p.style.left=(10+Math.random()*70)+"%";document.body.appendChild(p);setTimeout(()=>p.remove(),4200)},3500);
+
 </script>
 </body>
 </html>

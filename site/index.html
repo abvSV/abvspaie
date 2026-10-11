@@ -166,31 +166,28 @@ small{display:block;color:var(--mute);font-size:12px}
     <p class="sub">Mobile money et cartes, une seule API.</p>
     <div class="btns"><a class="btn lg" href="public/inscription-connexion.html">Commencer →</a></div>
     
-    <p class="mobhint">👆 Touchez « Valider » sur le téléphone</p>
   </div>
 
   <!-- Téléphone -->
   <div class="mod" id="phoneMod" style="left:6%;top:12%"><div class="px" style="--d:26">
     <div class="phone f" id="phone" style="--r:-5deg"><div class="screen">
-      <div class="who">Ma Boutique SaaS</div>
-      <div class="amt">15 000<i>FCFA</i></div>
-      <small>Abonnement Pro</small>
-      <div class="v vask on" id="vAsk"><div class="pin"><i></i><i></i><i></i><i></i></div><button class="go" id="go" type="button">Valider</button></div>
-      <div class="v" id="vWait"><div class="spin"></div></div>
-      <div class="v vok" id="vOk"><div class="ok">✓</div><b>Payé</b></div>
+      <div class="who">Paiement ABVSPAIE</div>
+      <div class="amt">—<i>FCFA</i></div>
+      <small>Montant défini par le marchand</small>
+      <div class="v vask on"><div class="pin"><i></i><i></i><i></i><i></i></div><span class="go">Paiement sécurisé</span></div>
     </div></div>
   </div></div>
 
   <!-- Pièce -->
   <div class="mod coin-mod" id="coinMod" data-l="25%" data-t="60%" style="left:25%;top:60%"><div class="px" style="--d:40">
-    <div class="f" style="--r:8deg;--dl:-2s"><div class="coin" aria-label="Pièce de 15 000 FCFA"><div><b>15 000</b><span>FCFA</span></div></div></div>
+    <div class="f" style="--r:8deg;--dl:-2s"><div class="coin" aria-label="Pièce"><div><b>—</b><span>FCFA</span></div></div></div>
     <div class="chint"><i>←</i> faites-moi glisser sur le téléphone</div>
   </div></div>
 
   <!-- Solde -->
   <div class="mod" id="walletMod" style="left:72%;top:9%"><div class="px" style="--d:18">
     <div class="c wallet" id="wallet" style="--r:3deg;--dl:-1s">
-      <small>Solde disponible</small><div class="big"><span id="bal">5 320 000</span> <i>FCFA</i></div><span class="up">+12 % cette semaine</span>
+      <small>Solde disponible</small><div class="big"><span id="bal">—</span> <i>FCFA</i></div><span class="up">À venir</span>
       <svg viewBox="0 0 200 64" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a6283" stop-opacity=".35"/><stop offset="1" stop-color="#4a6283" stop-opacity="0"/></linearGradient></defs>
         <path d="M0 52 L33 44 L66 48 L100 30 L133 36 L166 20 L200 6 L200 64 L0 64Z" fill="url(#ga)"/><path d="M0 52 L33 44 L66 48 L100 30 L133 36 L166 20 L200 6" fill="none" stroke="#4a6283" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="200" cy="6" r="4.5" fill="#4a6283"/></svg>
     </div>
@@ -198,12 +195,12 @@ small{display:block;color:var(--mute);font-size:12px}
 
   <!-- Carte bancaire -->
   <div class="mod" style="left:76%;top:42%"><div class="px" style="--d:34">
-    <div class="bcard f" style="--r:-6deg;--dl:-3s"><span class="lg">ᗩᗷᐯᔕᑭᗩIᗴ</span><div class="chip"></div><div class="n">•••• •••• •••• 4521</div><div class="t"><span>Carte bancaire</span><span>12/28</span></div></div>
+    <div class="bcard f" style="--r:-6deg;--dl:-3s"><span class="lg">ᗩᗷᐯᔕᑭᗩIᗴ</span><div class="chip"></div><div class="n">Paiement sécurisé</div><div class="t"><span>Carte bancaire</span><span></span></div></div>
   </div></div>
 
   <!-- Code -->
   <div class="mod" style="left:69%;top:70%"><div class="px" style="--d:12">
-    <div class="code f" style="--r:2deg;--dl:-4s"><div class="d"><i></i><i></i><i></i></div><span class="k">POST</span> /v1/payments<br><span class="k">{</span> <span class="k">"amount"</span>: <span class="s">15000</span> <span class="k">}</span><br>→ <span class="s">201</span> <span class="tag w" style="font-family:Inter,sans-serif">pending</span></div>
+    <div class="code f" style="--r:2deg;--dl:-4s"><div class="d"><i></i><i></i><i></i></div><span class="k">API</span><br>Traitement sécurisé<br>des paiements</div>
   </div></div>
 
   <!-- Opérateurs -->
@@ -214,8 +211,6 @@ small{display:block;color:var(--mute);font-size:12px}
 <footer class="foot"><nav aria-label="Pied de page"><a href="public/cgu-cgv.html">CGU/CGV</a><a href="public/confidentialite.html">Confidentialité</a><a href="public/mentions-legales.html">Mentions légales</a></nav><p>© 2026 ABVSPAIE · Abidjan, Côte d'Ivoire</p></footer>
 
 
-<div class="toast glass" id="toast" role="status" aria-live="polite"><div class="dot">✓</div><div><b>payment.succeeded</b><small>+15 000 FCFA · Mobile money</small></div></div>
-
 <nav class="dock glass" aria-label="Navigation">
   <a href="public/paiement.html" data-t="Voir la page de paiement" aria-label="Voir la page de paiement"><span>💳</span></a>
   <a href="public/inscription-connexion.html" data-t="Connexion" aria-label="Connexion"><span>🔑</span></a>
@@ -224,14 +219,7 @@ small{display:block;color:var(--mute);font-size:12px}
 
 <script>
 const $=id=>document.getElementById(id),stage=$("stage"),mq=matchMedia("(max-width:900px)"),calm=matchMedia("(prefers-reduced-motion:reduce)");
-let bal=5320000,busy=false,z=10,tt;
-const fmt=n=>n.toLocaleString("fr-FR");
-const view=v=>["vAsk","vWait","vOk"].forEach(i=>$(i).classList.toggle("on",i===v));
-function count(a,b){const t0=performance.now();(function s(t){const k=Math.min(1,(t-t0)/700);$("bal").textContent=fmt(Math.round(a+(b-a)*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(s)})(t0)}
-function pay(){if(busy)return;busy=true;view("vWait");
-  setTimeout(()=>{view("vOk");count(bal,bal+15000);bal+=15000;$("toast").classList.add("show");clearTimeout(tt);tt=setTimeout(()=>$("toast").classList.remove("show"),3200)},1100);
-  setTimeout(()=>{view("vAsk");busy=false},3700)}
-$("go").onclick=pay;
+let z=10;
 
 /* Parallaxe */
 addEventListener("pointermove",e=>{if(mq.matches||calm.matches||e.pointerType==="touch")return;
@@ -247,7 +235,7 @@ stage.addEventListener("pointerdown",e=>{const m=e.target.closest(".mod");if(!m|
     m.style.left=Math.max(0,Math.min(c.width-m.offsetWidth,ev.clientX-c.left-dx))+"px";m.style.top=Math.max(0,Math.min(c.height-m.offsetHeight,ev.clientY-c.top-dy))+"px";
     if(coin)$("phone").classList.toggle("hot",hit())};
   const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up);m.removeEventListener("pointercancel",up);
-    if(coin){const ok=hit();$("phone").classList.remove("hot");m.classList.add("snap");m.style.left=m.dataset.l;m.style.top=m.dataset.t;if(ok)pay()}};
+    if(coin){hit();$("phone").classList.remove("hot");m.classList.add("snap");m.style.left=m.dataset.l;m.style.top=m.dataset.t}};
   m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up);m.addEventListener("pointercancel",up)});
 </script>
 <script>

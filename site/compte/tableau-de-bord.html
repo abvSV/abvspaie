@@ -119,12 +119,9 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
 <main>
   <section id="home">
-    <h1>Bonjour 👋</h1><p class="sub">Déplacez les modules où vous voulez.</p>
+    <h1>Bonjour 👋</h1><p class="sub">Vos données de compte.</p><p id="loadError" class="lkerr" role="status" aria-live="polite"></p>
     <div class="canvas" id="cv">
-      <div class="mod" style="left:2%;top:20px;width:330px;--r:-2deg"><small>Solde disponible</small><div class="big" id="homeBal">0 <span style="font-size:14px;font-weight:600;color:var(--mute)">FCFA</span></div><span class="up">Encaissements réussis</span>
-        <div class="bars"><i style="height:40%"></i><i style="height:55%"></i><i style="height:35%"></i><i style="height:70%"></i><i style="height:50%"></i><i style="height:62%"></i><i style="height:92%"></i></div></div>
-      <div class="mod" style="left:41%;top:0;width:190px;--r:3deg"><small>Paiements (7 j)</small><div class="big" id="p7">0</div><span class="up">sur 7 jours</span></div>
-      <div class="mod" style="left:41%;top:140px;width:190px;--r:-3deg"><small>Taux de réussite</small><div class="big" id="rate">—</div><span class="up">paiements réussis</span></div>
+      <div class="mod" style="left:2%;top:20px;width:330px;--r:-2deg"><small>Indicateurs</small><p class="sub" style="margin:8px 0 0">Les statistiques agrégées ne sont pas encore disponibles.</p></div>
       <div class="mod" style="right:1%;top:20px;width:310px;--r:2deg"><b>Dernières transactions</b><div id="tHome"></div></div>
       <div class="mod" style="left:14%;top:330px;width:250px;--r:2deg"><small>Action rapide</small><b style="display:block;margin:4px 0 12px">Créer un lien de paiement</b><button class="btn" onclick="go('links')">Créer</button></div>
       
@@ -142,30 +139,14 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
     <a class="btn alt" href="../public/paiement.html" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;margin-bottom:14px">Aperçu de la page de paiement</a>
     <div class="card"><form id="lkForm" class="lkform" novalidate>
       <input id="lkAmt" type="number" min="1" placeholder="Montant (FCFA)">
-      <input id="lkDesc" placeholder="Description (ex : Facture 043)">
+      <input id="lkDesc" placeholder="Description du paiement">
       <button class="btn" type="submit">Créer le lien</button></form><div class="lkerr" id="lkErr"></div></div>
     <div class="card" style="margin-top:14px"><b>Vos liens</b><div id="lkList"></div></div>
   </section>
 
   <section id="pay" class="hide">
-    <h1>Décaissements</h1><p class="sub">Envoyez de l'argent vers du mobile money, à l'unité ou en masse.</p>
-    <div class="card">
-      <div class="ptabs" id="ptabs"><button class="on" data-pt="one">Un paiement</button><button data-pt="bulk">En masse</button></div>
-      <form id="poOne" class="pform" novalidate>
-        <input id="poName" placeholder="Nom du bénéficiaire">
-        <select id="poOp"><option>Orange Money</option><option>MTN MoMo</option><option>Moov</option><option>Wave</option></select>
-        <input id="poPhone" type="tel" placeholder="Numéro de téléphone">
-        <input id="poAmt" type="number" min="1" placeholder="Montant (FCFA)">
-        <button class="btn full" type="submit">Envoyer</button>
-      </form>
-      <div id="poBulk" class="hide">
-        <textarea id="poCsv" placeholder="Un bénéficiaire par ligne : nom;numéro;montant&#10;Awa Koné;0701020304;25000"></textarea>
-        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center"><input type="file" id="poFile" accept=".csv,.txt" style="font-size:12px;max-width:230px"><button class="btn alt" id="poPrev" type="button">Prévisualiser</button><button class="btn" id="poSend" type="button" disabled>Envoyer le lot</button></div>
-        <div class="sum hide" id="poSum"></div>
-      </div>
-      <div class="lkerr" id="poErr"></div>
-    </div>
-    <div class="card" style="margin-top:14px"><b>Historique des paiements</b><div class="wrap"><table id="poList"></table></div></div>
+    <h1>Décaissements</h1>    <p class="sub">Le traitement des décaissements n'est pas encore disponible.</p>
+    <div class="card"><p class="sub" style="margin:0">Cette fonction sera activée après l'intégration d'un prestataire de paiement et la mise en place de ses contrôles côté serveur.</p></div>
   </section>
 
   <section id="keys" class="hide">
@@ -201,99 +182,47 @@ $("lkForm").onsubmit=async e=>{e.preventDefault();const a=parseInt($("lkAmt").va
   const {error}=await ABVS.client.from("payment_links").insert({title:d,amount:a});
   if(error){$("lkErr").textContent="Création impossible. Réessayez.";return}
   $("lkErr").textContent="";$("lkAmt").value="";$("lkDesc").value="";if(window.__reload)window.__reload()};
-let BAL=0,PEND=0;
-function drawBal(){const h=document.getElementById("homeBal"),w=document.getElementById("wBal"),p=document.getElementById("wPend");
-  if(h)h.innerHTML=fmt(BAL)+' <span style="font-size:14px;font-weight:600;color:var(--mute)">FCFA</span>';if(w)w.textContent=fmt(BAL);if(p)p.textContent=fmt(PEND)}
-function addMove(l,a){const t=document.querySelector("#wallet table");if(!t)return;const r=t.insertRow(1);r.innerHTML="<td>"+esc(l)+"</td><td><b>\u2212"+fmt(a)+"</b></td><td>\u00c0 l'instant</td>"}
-const PO=[{n:"B. Soro",m:"Wave",a:50000,s:"succeeded",d:"Hier"},{n:"C. N'Guessan",m:"Orange Money",a:75000,s:"succeeded",d:"08/10"}];
-const drawPay=()=>{$("poList").innerHTML="<tr><th>Bénéficiaire</th><th>Méthode</th><th>Montant (FCFA)</th><th>Statut</th><th>Date</th></tr>"+PO.map(t=>`<tr><td>${esc(t.n)}</td><td>${esc(t.m)}</td><td><b>${fmt(t.a)}</b></td><td><span class="tag ${t.s}">${t.s==="succeeded"?"Envoyé":"En cours"}</span></td><td>${t.d}</td></tr>`).join("")};
-const pushPay=(n,m,a)=>{const o={n,m,a,s:"pending",d:"À l'instant"};BAL-=a;PEND+=a;drawBal();addMove("Décaissement "+n,a);PO.unshift(o);drawPay();setTimeout(()=>{o.s="succeeded";PEND-=a;drawBal();drawPay()},2500)};
-drawPay();
-$("ptabs").onclick=e=>{const t=e.target.dataset.pt;if(!t)return;$("poErr").textContent="";
-  document.querySelectorAll("#ptabs button").forEach(b=>b.classList.toggle("on",b===e.target));
-  $("poOne").classList.toggle("hide",t!=="one");$("poBulk").classList.toggle("hide",t!=="bulk")};
-$("poOne").onsubmit=e=>{e.preventDefault();const n=$("poName").value.trim(),ph=$("poPhone").value.replace(/[\s+()-]/g,""),a=parseInt($("poAmt").value,10);
-  if(n.length<2)return $("poErr").textContent="Indiquez le nom du bénéficiaire.";
-  if(!/^\d{8,}$/.test(ph))return $("poErr").textContent="Numéro invalide.";
-  if(!(a>0))return $("poErr").textContent="Montant invalide.";
-  if(a>BAL)return $("poErr").textContent="Solde insuffisant.";
-  $("poErr").textContent="";pushPay(n,$("poOp").value,a);["poName","poPhone","poAmt"].forEach(i=>$(i).value="")};
-let batch=[];
-const parseCsv=()=>{const ok=[];let bad=0;$("poCsv").value.split(/\r?\n/).filter(l=>l.trim()).forEach(l=>{const c=l.split(/[;,]/).map(x=>x.trim()),a=parseInt(c[2],10);
-  if(c.length>=3&&/^\d{8,}$/.test(c[1].replace(/[\s+()-]/g,""))&&a>0)ok.push({n:c[0],a});else bad++});return{ok,bad}};
-$("poFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$("poCsv").value=r.result};r.readAsText(f)};
-$("poPrev").onclick=()=>{const{ok,bad}=parseCsv();batch=ok;const tot=ok.reduce((x,y)=>x+y.a,0);
-  $("poSum").classList.remove("hide");$("poSum").innerHTML=`<b>${ok.length}</b> bénéficiaire(s) valide(s) · total <b>${fmt(tot)} FCFA</b>`+(bad?` · <span style="color:var(--err)">${bad} ligne(s) ignorée(s)</span>`:"");
-  $("poErr").textContent=tot>BAL?"Solde insuffisant pour ce lot.":"";$("poSend").disabled=!ok.length||tot>BAL};
-$("poSend").onclick=()=>{const tot=batch.reduce((x,y)=>x+y.a,0);if(tot>BAL){$("poErr").textContent="Solde insuffisant pour ce lot.";$("poSend").disabled=true;return}pushPay("Lot de "+batch.length+" bénéficiaires","Mixte",tot);
-  batch=[];$("poCsv").value="";$("poSum").classList.add("hide");$("poSend").disabled=true};
 const tr=(a,h)=>"<tr>"+a.map(c=>h?"<th>"+c+"</th>":"<td>"+c+"</td>").join("")+"</tr>";
 const tbl=(h,r,id)=>"<div class='card'><div class='wrap'><table"+(id?" id='"+id+"'":"")+">"+tr(h,1)+r.map(x=>tr(x)).join("")+"</table></div></div>";
 const tg=(c,t)=>"<span class='tag "+c+"'>"+t+"</span>";
 const sec=(id,t,s,h)=>{const e=document.createElement("section");e.id=id;e.className="hide";e.innerHTML="<h1>"+t+"</h1><p class='sub'>"+s+"</p>"+h;document.querySelector("main").appendChild(e)};
 const gap="<div style='margin-top:14px'></div>";
 
-sec("wallet","Wallet","Votre solde et vos mouvements.","<div class='grid'><div class='card'><small>Disponible</small><div class='big' id='wBal'>0</div><span class='up'>FCFA</span></div><div class='card'><small>En attente</small><div class='big' id='wPend'>120 000</div></div><div class='card'><small>Encaissé (30 j)</small><div class='big'>8 940 000</div></div></div>"+tbl(["Mouvement","Montant (FCFA)","Date"],[["Paiement TX-1048","<b>+15 000</b>","Aujourd'hui"],["Paiement TX-1044","<b>+42 500</b>","09/10"],["Retrait vers Orange Money","<b>−200 000</b>","Hier"],["Frais ABVSPAIE","<b>−638</b>","09/10"]]));
+sec('wallet','Wallet','Votre solde et vos mouvements.',`<div class="card"><p class="sub" style="margin:0">Aucun mouvement pour le moment.</p></div>`);
 
-sec("sessions","Sessions de checkout","Les pages de paiement ouvertes par vos clients.",tbl(["Session","Montant (FCFA)","Statut","Créée"],[["cs_7a1","15 000",tg("succeeded","Complétée"),"10/10 09:12"],["cs_7a0","8 000",tg("succeeded","Complétée"),"10/10 08:40"],["cs_79f","22 000",tg("pending","Ouverte"),"09/10 18:05"],["cs_79e","5 000",tg("failed","Expirée"),"09/10 16:30"]]));
+sec('sessions','Sessions de checkout','Les pages de paiement ouvertes par vos clients.',`<div class="card"><p class="sub" style="margin:0">Aucune session active pour le moment.</p></div>`);
 
-const CL=[["A. Kouassi","a.kouassi@exemple.com",12,"184 000"],["M. Traoré","m.traore@exemple.com",5,"67 500"],["S. Koné","s.kone@exemple.com",3,"44 000"],["Y. Bamba","y.bamba@exemple.com",2,"15 000"],["F. Diallo","f.diallo@exemple.com",9,"120 000"],["K. Yao","k.yao@exemple.com",4,"60 000"]];
-sec("clients","Clients","Les personnes qui vous paient.","<input id='clQ' class='sq' placeholder='Rechercher un client'>"+tbl([],[],"clT"));
-const drawCl=()=>{const q=$("clQ").value.toLowerCase();$("clT").innerHTML=tr(["Client","E-mail","Paiements","Total (FCFA)"],1)+CL.filter(c=>(c[0]+c[1]).toLowerCase().includes(q)).map(c=>tr(c)).join("")};
-$("clQ").oninput=drawCl;drawCl();
-
-sec("stats","Statistiques","Répartition de vos encaissements (30 jours).","<div class='grid'><div class='card'><small>Paiements</small><div class='big'>742</div></div><div class='card'><small>Panier moyen</small><div class='big'>12 050</div></div><div class='card'><small>Réussite</small><div class='big'>97,3 %</div></div></div><div class='card'><b>Par moyen de paiement</b>"+[["Orange Money",38],["Wave",29],["MTN MoMo",18],["Carte",10],["Moov",5]].map(m=>"<div class='sb'><span>"+m[0]+"</span><u style='width:"+m[1]*2.4+"%'></u><b>"+m[1]+" %</b></div>").join("")+"</div>");
-
-const RT=[["200 000","Orange Money •• 0304","succeeded","Hier"]];
-sec("retraits","Retraits","Transférez votre solde vers votre compte.","<div class='card'><form id='rtF' class='pform' novalidate><input id='rtA' type='number' min='1' placeholder='Montant (FCFA)'><select id='rtD'><option>Orange Money •• 0304</option><option>Compte bancaire •• 4521</option></select><button class='btn full' type='submit'>Demander le retrait</button></form><div class='lkerr' id='rtE'></div></div>"+gap+tbl([],[],"rtT"));
-const drawRt=()=>{$("rtT").innerHTML=tr(["Montant (FCFA)","Destination","Statut","Date"],1)+RT.map(r=>tr(["<b>"+r[0]+"</b>",r[1],tg(r[2],r[2]==="succeeded"?"Envoyé":"En cours"),r[3]])).join("")};
-drawRt();
-$("rtF").onsubmit=e=>{e.preventDefault();const a=parseInt($("rtA").value,10);
-  if(!(a>0))return $("rtE").textContent="Montant invalide.";
-  if(a>BAL)return $("rtE").textContent="Solde insuffisant.";
-  $("rtE").textContent="";BAL-=a;PEND+=a;drawBal();addMove("Retrait vers "+$("rtD").value,a);const r=[fmt(a),$("rtD").value,"pending","À l'instant"];RT.unshift(r);drawRt();setTimeout(()=>{r[2]="succeeded";PEND-=a;drawBal();drawRt()},2500);$("rtA").value=""};
-
-const HK=[["https://monsite.com/webhooks/abvspaie","Tous les événements","whsec_9c1f••••b27"]];
-sec("hooks","Webhooks","Recevez les événements en temps réel sur votre serveur.","<div class='card'><form id='hkF' class='pform' novalidate><input id='hkU' class='full' placeholder='https://votre-site.com/webhooks'><select id='hkE'><option>Tous les événements</option><option>payment.succeeded</option><option>payment.failed</option><option>payout.succeeded</option></select><button class='btn' type='submit'>Ajouter</button></form><div class='lkerr' id='hkEr'></div></div>"+gap+tbl([],[],"hkT"));
-const drawHk=()=>{$("hkT").innerHTML=tr(["URL","Événements","Clé de signature","Statut"],1)+HK.map(h=>tr([esc(h[0]),esc(h[1]),"<code>"+h[2]+"</code>",tg("succeeded","Actif")])).join("")};
-drawHk();
-$("hkF").onsubmit=e=>{e.preventDefault();const u=$("hkU").value.trim();
-  if(!/^https:\/\/[^\s]+\.[^\s]+$/.test(u))return $("hkEr").textContent="Saisissez une URL en https://.";
-  $("hkEr").textContent="";HK.unshift([u,$("hkE").value,"whsec_"+Math.random().toString(16).slice(2,6)+"••••"+Math.random().toString(16).slice(2,5)]);drawHk();$("hkU").value=""};
-
-const JL=[["payment.succeeded","monsite.com/webhooks/abvspaie",200,1,"09:12"],["payment.succeeded","monsite.com/webhooks/abvspaie",200,1,"08:40"],["payout.failed","monsite.com/webhooks/abvspaie",500,3,"Hier"]];
+sec('clients','Clients','Les personnes qui vous paient.',`<div class="card"><p class="sub" style="margin:0">Aucune donnée client disponible.</p></div>`);
+sec('stats','Statistiques','Répartition de vos encaissements (30 jours).',`<div class="card"><p class="sub" style="margin:0">Aucune statistique disponible.</p></div>`);
+sec('retraits','Retraits','Transférez votre solde vers votre compte.',`<div class="card"><p class="sub" style="margin:0">Le traitement des retraits n'est pas encore disponible.</p></div>`);
+sec('hooks','Webhooks','Recevez les événements en temps réel sur votre serveur.',`<div class="card"><p class="sub" style="margin:0">Aucun webhook configuré pour le moment.</p></div>`);
+const JL=[];
 sec("hooklog","Journal des webhooks","Chaque envoi et son résultat.",tbl([],[],"jlT"));
 const drawJl=()=>{$("jlT").innerHTML=tr(["Événement","Endpoint","Code","Tentatives","Date",""],1)+JL.map((j,i)=>tr([j[0],j[1],tg(j[2]==200?"succeeded":"failed",j[2]),j[3],j[4],j[2]==200?"":"<button class='btn alt' data-r='"+i+"'>Rejouer</button>"])).join("")};
 drawJl();
 $("jlT").onclick=e=>{const i=e.target.dataset.r;if(i===undefined)return;JL[i][2]=200;JL[i][3]++;drawJl()};
 
-sec("disputes","Litiges","Contestations de paiement à traiter.",tbl(["Référence","Montant (FCFA)","Motif","Statut","Échéance"],[["dp_31","15 000","Paiement non reconnu",tg("pending","À répondre"),"20/10"],["dp_2f","42 500","Service non reçu",tg("succeeded","Gagné"),"—"]]));
+sec("disputes","Litiges","Contestations de paiement à traiter.",tbl(["Référence","Montant (FCFA)","Motif","Statut","Échéance"],[]));
 
-sec("pricing","Tarification","Vos frais par moyen de paiement.","<div class='card'><small>Offre actuelle</small><div class='big'>Démarrage</div><span class='up'>1,5 % par paiement réussi</span></div>"+gap+tbl(["Moyen","Encaissement","Décaissement"],[["Orange Money","1,5 %","100 FCFA"],["Wave","1,5 %","100 FCFA"],["MTN MoMo","1,5 %","100 FCFA"],["Moov","1,5 %","100 FCFA"],["Carte bancaire","1,5 %","—"]])+"<p class='sub' style='margin-top:12px'>Tarifs indicatifs, donnés à titre d'exemple.</p>");
+sec("pricing","Tarification","Vos frais par moyen de paiement.",`<div class="card"><small>Offre actuelle</small><div class="big">ABVSPAIE</div><span class="up">Tarification de votre compte</span></div>`+gap+tbl(["Moyen","Encaissement","Décaissement"],[["Orange Money","1,5 %","100 FCFA"],["Wave","1,5 %","100 FCFA"],["MTN MoMo","1,5 %","100 FCFA"],["Moov","1,5 %","100 FCFA"],["Carte bancaire","1,5 %","—"]]));
 
-sec("support","Support","Une question ? On vous répond rapidement.","<div class='card'><form id='suF' class='pform' novalidate><select id='suS' class='full'><option>Question sur un paiement</option><option>Problème technique</option><option>Facturation</option><option>Autre</option></select><textarea id='suM' class='full' placeholder='Décrivez votre problème'></textarea><button class='btn full' type='submit'>Envoyer</button></form><div class='lkerr' id='suE'></div></div>"+gap+"<div class='card'><b>Questions fréquentes</b><details><summary>Comment recevoir mes fonds ?</summary><p>Demandez un retrait depuis la page Retraits vers votre mobile money ou votre compte.</p></details></div>");
-$("suF").onsubmit=e=>{e.preventDefault();const ok=$("suM").value.trim().length>=10;
-  $("suE").style.color=ok?"var(--ok)":"var(--err)";$("suE").textContent=ok?"Message envoyé ✓ Nous revenons vers vous rapidement.":"Décrivez votre problème en quelques mots (10 caractères min.).";if(ok)$("suM").value=""};
-
+sec("support","Support","Contactez notre équipe en cas de besoin.","<div class='card'><p class='sub' style='margin:0'>Utilisez la page de contact pour joindre notre équipe.</p><a href='a-propos-contact.html'>Contacter le support</a></div>");
 (async()=>{if(!ABVS.ready)return;const sb=ABVS.client;
  async function loadAll(){
   const [t,l]=await Promise.all([
    sb.from("transactions").select("reference,created_at,amount,method,status,link_id").order("created_at",{ascending:false}).limit(200),
    sb.from("payment_links").select("id,slug,title,amount").eq("active",true).order("created_at",{ascending:false})]);
-  if(t.error||l.error)return;
+  if(t.error||l.error){$("loadError").textContent="Impossible de charger les données du compte. Réessayez plus tard.";return;}
+  $("loadError").textContent="";
   const dt=x=>new Date(x).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}).replace(",","");
   TX=t.data.map(x=>[x.reference,x.method,fmt(x.amount),x.status,dt(x.created_at)]);
   const paid=new Set(t.data.filter(x=>x.status==="succeeded").map(x=>x.link_id));
   const base=new URL("../public/paiement.html",location.href).href;
   LK=l.data.map(x=>({d:x.title,a:x.amount,u:base+"?l="+encodeURIComponent(x.slug),s:paid.has(x.id)?"succeeded":"pending"}));
-  BAL=t.data.filter(x=>x.status==="succeeded").reduce((n,x)=>n+x.amount,0);
-  PEND=t.data.filter(x=>x.status==="pending").reduce((n,x)=>n+x.amount,0);
-  drawTx();drawLinks();drawBal();
-  const wk=Date.now()-7*864e5;$("p7").textContent=t.data.filter(x=>new Date(x.created_at)>wk).length;
-  const done=t.data.filter(x=>x.status!=="pending"),ok=done.filter(x=>x.status==="succeeded").length;
-  $("rate").textContent=done.length?(Math.round(1000*ok/done.length)/10).toLocaleString("fr-FR")+" %":"—";}
+  drawTx();drawLinks();
+}
  window.__reload=loadAll;await loadAll();})();
-const NAV=[["home","🏠","Tableau de bord"],["wallet","👛","Wallet"],["tx","↔️","Transactions"],["links","🔗","Liens de paiement"],["sessions","🧾","Sessions de checkout"],["clients","👥","Clients"],["stats","📈","Statistiques"],["retraits","🏦","Retraits"],["pay","💸","Décaissements"],["keys","🔑","Développeurs"],["hooks","🪝","Webhooks"],["hooklog","📜","Journal des webhooks"],["disputes","⚖️","Litiges"],["pricing","🏷️","Tarification"],["support","💬","Support"]];
+const NAV=[["home","🏠","Tableau de bord"],["wallet","👛","Wallet"],["tx","↔️","Transactions"],["links","🔗","Liens de paiement"],["sessions","🧾","Sessions de checkout"],["clients","👥","Clients"],["stats","📈","Statistiques"],["retraits","🏦","Retraits"],["pay","💸","Décaissements"],["keys","🔑","Développeurs"],["hooks","🪝",""],["hooklog","📜","Journal des webhooks"],["disputes","⚖️","Litiges"],["pricing","🏷️","Tarification"],["support","💬","Support"]];
 $("nav").innerHTML=NAV.map((n,i)=>"<button title='"+n[2]+"' aria-label='"+n[2]+"' data-v='"+n[0]+"'"+(i?"":" class='on'")+"><span>"+n[1]+"</span>"+n[2]+"</button>").join("");
 $("nav").insertAdjacentHTML("beforeend",[["onboarding.html","🚀","Configuration du compte"],["rapprochement.html","🧮","Rapprochement"],["equipe.html","🤝","Équipe"],["facturation.html","💳","Facturation"],["parametres.html","⚙️","Paramètres"],["securite.html","🛡️","Sécurité"],["../public/fonctionnalites.html","📚","Découvrir ABVSPAIE"]].map(n=>"<a href='"+n[0]+"' title='"+n[2]+"' aria-label='"+n[2]+"'><span>"+n[1]+"</span></a>").join(""));
 $("nav").insertAdjacentHTML("beforeend","<a href='#' data-logout title='Se déconnecter' aria-label='Se déconnecter'><span>🚪</span></a>");
@@ -307,13 +236,7 @@ cv.addEventListener("pointerdown",e=>{const m=e.target.closest(".mod");if(!m||mq
   const mv=ev=>{const cc=cv.getBoundingClientRect();m.style.left=Math.max(0,Math.min(cc.width-m.offsetWidth,ev.clientX-cc.left-dx))+"px";m.style.top=Math.max(0,Math.min(cc.height-m.offsetHeight,ev.clientY-cc.top-dy))+"px"};
   const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
   m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)});
-if(!matchMedia("(prefers-reduced-motion:reduce)").matches)setInterval(()=>{if(document.hidden||$("home").classList.contains("hide")||mq.matches)return;
-  const p=document.createElement("div");p.className="pop";const o=["Orange Money","Wave","MTN MoMo","Carte"][Math.floor(Math.random()*4)],a=[5000,8000,15000,22000,42500][Math.floor(Math.random()*5)];
-  p.textContent="+"+fmt(a)+" FCFA · "+o;p.style.left=(8+Math.random()*70)+"%";cv.appendChild(p);setTimeout(()=>p.remove(),4200)},3200)})();
-drawBal();
-</script>
-<script>
-["wallet","sessions","clients","stats","retraits","pay","hooks","hooklog","disputes"].forEach(id=>{const e=document.querySelector("#"+id+" .sub");if(e)e.textContent+=" — Données d'exemple.";});
+})();
 </script>
 </body>
 </html>

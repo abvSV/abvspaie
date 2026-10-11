@@ -16,8 +16,15 @@ abvspaie/
 ```
 
 ## Mise en route
-1. Supabase > SQL Editor : lancer `supabase/schema.sql`, puis `supabase/schema_paiements.sql`.
-2. `site/assets/abvs-config.js` : remplacer `VOTRE-PROJET` par l'URL du projet (Settings > Data API).
+1. Supabase > SQL Editor : lancer `supabase/schema_paiements.sql`, puis `supabase/schema.sql`.
+2. `site/assets/abvs-config.js` : renseigner l'URL et la clé publique (`anon` / publishable) du projet (Settings > Data API). Ne jamais y placer la clé `service_role`.
 3. Supabase > Authentication > URL Configuration : Site URL = adresse Vercel ; Redirect URLs = `.../public/inscription-connexion.html` et `.../public/mot-de-passe-oublie.html`.
 4. Vercel : importer le dépôt GitHub, Framework « Other », aucune commande de build.
 5. Test local : VS Code + extension Live Server, en ouvrant le dossier `site/`.
+
+## Avant la mise en production
+- Appliquer et vérifier les deux scripts SQL d'abord sur un projet Supabase de test.
+- Le mode test confirme automatiquement les paiements : ne pas le présenter comme un encaissement réel.
+- Aucun prestataire de paiement ni webhook opérateur n'est intégré ici. Ne pas activer `test_mode = false`, `live_enabled` ou des liens `mode = 'live'` avant l'intégration et les tests de bout en bout du prestataire.
+- Les écrans de gestion des API/webhooks, de l'équipe, du profil, des notifications, des décaissements et du KYC restent indisponibles tant que leurs services serveur ne sont pas implémentés.
+- Vérifier les politiques RLS, les URL de redirection Auth et le parcours de paiement avec de vrais comptes de test avant le déploiement.

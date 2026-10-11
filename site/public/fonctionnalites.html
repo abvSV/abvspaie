@@ -77,7 +77,7 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-<div class="wrap"><div class="m f2"><small>Paiement reçu</small><b>15 000 FCFA ✓</b></div><div class="head"><span class="pill">Fonctionnalités</span><h1>Tout pour <em>encaisser</em> et payer</h1><p class="sub">Un seul outil, du premier paiement aux gros volumes.</p></div><div class="grid"><div class="card"><div class="ic">🌍</div><h3>Encaissement multi-opérateurs</h3><p class="mute">Orange Money, MTN MoMo, Moov, Wave et cartes via une seule intégration.</p></div><div class="card"><div class="ic">🔗</div><h3>Liens de paiement</h3><p class="mute">Créez un lien ou un QR code en quelques secondes, sans écrire de code.</p></div><div class="card"><div class="ic">⚙️</div><h3>API et webhooks</h3><p class="mute">Une API simple et des notifications en temps réel à chaque changement de statut.</p></div><div class="card"><div class="ic">💸</div><h3>Décaissements en masse</h3><p class="mute">Payez vos bénéficiaires à l'unité ou par fichier, avec double validation.</p></div><div class="card"><div class="ic">🧾</div><h3>Rapprochement automatique</h3><p class="mute">Faites correspondre paiements et relevés, et exportez pour votre comptable.</p></div><div class="card"><div class="ic">🔒</div><h3>Sécurité</h3><p class="mute">Clés hachées, double authentification et journal d'audit.</p></div><div class="card"><div class="ic">👥</div><h3>Équipe et droits</h3><p class="mute">Propriétaire, administrateur, développeur, comptable : chacun son niveau d'accès.</p></div></div><p style="text-align:center;margin-top:28px"><a class="btn p" href="../public/inscription-connexion.html">Commencer</a> <a class="btn" href="tarifs.html">Voir les tarifs</a></p></div><div class="foot"><a href="fonctionnalites.html">Fonctionnalités</a><a href="etapes.html">Comment ça marche</a><a href="tarifs.html">Tarifs</a><a href="blog.html">Blog</a><a href="a-propos-contact.html">Contact</a><a href="../public/cgu-cgv.html">CGU/CGV</a><a href="../public/confidentialite.html">Confidentialité</a><a href="../public/mentions-legales.html">Mentions légales</a></div>
+<div class="wrap"><div class="head"><span class="pill">Fonctionnalités</span><h1>Tout pour <em>encaisser</em> et payer</h1><p class="sub">Un seul outil, du premier paiement aux gros volumes.</p></div><div class="grid"><div class="card"><div class="ic">🌍</div><h3>Encaissement multi-opérateurs</h3><p class="mute">Orange Money, MTN MoMo, Moov, Wave et cartes via une seule intégration.</p></div><div class="card"><div class="ic">🔗</div><h3>Liens de paiement</h3><p class="mute">Créez un lien ou un QR code en quelques secondes, sans écrire de code.</p></div><div class="card"><div class="ic">⚙️</div><h3>API et webhooks</h3><p class="mute">Une API simple et des notifications en temps réel à chaque changement de statut.</p></div><div class="card"><div class="ic">💸</div><h3>Décaissements en masse</h3><p class="mute">Payez vos bénéficiaires à l'unité ou par fichier, avec double validation.</p></div><div class="card"><div class="ic">🧾</div><h3>Rapprochement automatique</h3><p class="mute">Faites correspondre paiements et relevés, et exportez pour votre comptable.</p></div><div class="card"><div class="ic">🔒</div><h3>Sécurité</h3><p class="mute">Clés hachées, double authentification et journal d'audit.</p></div><div class="card"><div class="ic">👥</div><h3>Équipe et droits</h3><p class="mute">Propriétaire, administrateur, développeur, comptable : chacun son niveau d'accès.</p></div></div><p style="text-align:center;margin-top:28px"><a class="btn p" href="../public/inscription-connexion.html">Commencer</a> <a class="btn" href="tarifs.html">Voir les tarifs</a></p></div><div class="foot"><a href="fonctionnalites.html">Fonctionnalités</a><a href="etapes.html">Comment ça marche</a><a href="tarifs.html">Tarifs</a><a href="blog.html">Blog</a><a href="a-propos-contact.html">Contact</a><a href="../public/cgu-cgv.html">CGU/CGV</a><a href="../public/confidentialite.html">Confidentialité</a><a href="../public/mentions-legales.html">Mentions légales</a></div>
 
 <script>
 (()=>{
@@ -89,13 +89,7 @@ document.addEventListener('click',e=>{
  const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
  const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
 $$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
-$$('form[data-demo]').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();
- const tb=f.dataset.add&&$('#'+f.dataset.add);
- if(tb){const tr=document.createElement('tr');tb.dataset.cols.split(',').forEach(n=>{const td=document.createElement('td');td.textContent=f.elements[n].value;tr.appendChild(td)});
-  if(f.dataset.link){const td=document.createElement('td'),b=document.createElement('button');b.className='btn s';b.type='button';b.textContent='Copier le lien';b.dataset.copy='https://pay.abvspaie.com/l/'+Math.random().toString(36).slice(2,8);td.appendChild(b);tr.appendChild(td)}
-  if(f.dataset.tag){const td=document.createElement('td');td.innerHTML='<span class="tag">'+f.dataset.tag+'</span>';tr.appendChild(td)}
-  tb.tBodies[0].prepend(tr)}
- toast(f.dataset.demo);f.reset()}));
+
 })();
 (()=>{let z=10;
 document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
@@ -105,9 +99,7 @@ document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m
  const mv=ev=>{const cc=par.getBoundingClientRect();m.style.left=(ev.clientX-cc.left-dx)+"px";m.style.top=(ev.clientY-cc.top-dy)+"px"};
  const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
  m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
-if(!matchMedia("(prefers-reduced-motion:reduce)").matches&&document.querySelector(".m"))setInterval(()=>{if(document.hidden||innerWidth<700)return;
- const p=document.createElement("div");p.className="pop";const o=["Orange Money","Wave","MTN MoMo","Carte"][Math.floor(Math.random()*4)],a=[5000,8000,15000,22000,42500][Math.floor(Math.random()*5)];
- p.textContent="+"+a.toLocaleString("fr-FR")+" FCFA · "+o;p.style.left=(10+Math.random()*70)+"%";document.body.appendChild(p);setTimeout(()=>p.remove(),4200)},3500);
+
 </script>
 </body>
 </html>

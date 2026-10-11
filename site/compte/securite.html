@@ -76,47 +76,33 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-<div class="app"><div class="m f2"><small>Session</small><b>🔒 Protégée</b></div><main>
+<div class="app"><main>
 <div class="head l"><span class="pill">Sécurité</span><h1>Sécurité et conformité</h1><p class="sub">Protégez votre compte, vérifiez votre entreprise et gardez la trace de chaque action.</p></div>
 
-<div class="card"><h2>🪪 Vérification de l'entreprise (KYC)</h2><p class="mute">Obligatoire pour retirer de l'argent. Vos documents servent uniquement à cette vérification.</p>
-<p>Statut : <span class="tag warn" id="kst">À compléter</span></p>
-<form id="kyc"><div class="row"><label>Raison sociale<input name="rs" type="text" required></label><label>N° RCCM / NINEA<input name="rc" type="text" required></label></div>
-<div class="row"><label>Pièce d'identité du dirigeant<input name="id" type="file" accept=".pdf,.jpg,.jpeg,.png" required></label><label>Justificatif d'activité (RCCM, patente)<input name="doc" type="file" accept=".pdf,.jpg,.jpeg,.png" required></label></div>
-<label>Justificatif de domicile ou d'adresse de l'entreprise<input name="adr" type="file" accept=".pdf,.jpg,.jpeg,.png" required></label>
-<button class="btn p" style="margin-top:12px" id="kbtn">Envoyer pour vérification</button></form>
-<div id="kdemo" hidden class="note" style="margin:14px 0 0">Démo : sans serveur, la vérification ne peut pas être faite par notre équipe. <button class="btn s" type="button" id="kok">Simuler la validation</button></div></div>
+<div class="card"><h2>🪪 Vérification de l'entreprise (KYC)</h2><p class="mute">La vérification KYC n'est pas disponible tant qu'un service sécurisé de dépôt et de traitement des documents n'est pas configuré. N'envoyez pas de documents sur cette page.</p>
+<p>Statut : <span class="tag warn">Non configuré</span></p></div>
 
-<div class="card"><h2>🔐 Double authentification (2FA)</h2><p class="mute">Un code à 6 chiffres est demandé à la connexion et avant chaque retrait.</p>
+<div class="card"><h2>🔐 Double authentification (2FA)</h2><p class="mute">Utilisez une application d'authentification pour générer un code à 6 chiffres.</p>
 <p>Statut : <span class="tag err" id="tst">Désactivée</span></p>
+<div class="err" id="t-err" role="status" aria-live="polite"></div>
 <button class="btn p" id="t-on">Activer la 2FA</button>
-<form id="t-form" hidden style="margin-top:12px"><label>Code reçu par SMS<input id="t-code" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="6 chiffres" required></label><div class="err" id="t-err"></div><button class="btn p">Confirmer</button></form>
+<form id="t-form" hidden style="margin-top:12px"><div id="totpSetup" hidden><p>Scannez ce QR code dans votre application, puis saisissez le code affiché.</p><img id="totpQr" alt="QR code de configuration 2FA" style="max-width:220px"><p>Clé manuelle : <code id="totpSecret"></code></p></div><label for="t-code">Code à 6 chiffres<input id="t-code" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code" required></label><button class="btn p">Confirmer</button><button class="btn" id="t-cancel" type="button">Annuler</button></form>
 <button class="btn" id="t-off" hidden>Désactiver</button></div>
 
 <div class="card"><h2>🔑 Clés API</h2><p class="mute">Les clés API seront disponibles prochainement.</p></div>
 
-<div class="card"><h2>💻 Sessions actives</h2><div class="tw"><table id="sess"><thead><tr><th>Appareil</th><th>Lieu</th><th>Dernière activité</th><th></th></tr></thead><tbody>
-<tr><td>Cet appareil</td><td>Abidjan, CI</td><td>En ligne</td><td><span class="tag">Actuelle</span></td></tr>
-<tr><td>Chrome · Windows</td><td>Dakar, SN</td><td>Il y a 2 jours</td><td><button class="btn s" data-kill>Déconnecter</button></td></tr>
-<tr><td>Safari · iPhone</td><td>Abidjan, CI</td><td>Il y a 6 jours</td><td><button class="btn s" data-kill>Déconnecter</button></td></tr></tbody></table></div>
+<div class="card"><h2>💻 Session active</h2><div class="tw"><table id="sess"><thead><tr><th>Session</th><th>Statut</th></tr></thead><tbody>
+<tr><td>Cette session</td><td><span class="tag">Active</span></td></tr></tbody></table></div>
 <p class="mute" style="margin-top:12px">Votre session expire après 30 minutes d'inactivité.</p>
-<div class="bar" style="margin:12px 0 0"><button class="btn" id="kall">Déconnecter tous les autres appareils</button><button class="btn p" id="lout" data-logout>Se déconnecter</button></div></div>
+<div class="bar" style="margin:12px 0 0"><button class="btn p" id="lout" data-logout>Se déconnecter</button></div></div>
 
 <div class="card"><h2>🔔 Alertes de sécurité</h2>
-<label class="chk"><input type="checkbox" checked><span><b>Nouvelle connexion</b><br><span class="mute">E-mail si votre compte s'ouvre sur un nouvel appareil</span></span></label>
-<label class="chk"><input type="checkbox" checked><span><b>Retrait ou décaissement</b><br><span class="mute">SMS à chaque sortie d'argent</span></span></label>
-<label class="chk"><input type="checkbox" checked><span><b>Litige ou rétrofacturation</b><br><span class="mute">E-mail dès qu'un client conteste un paiement</span></span></label>
-<label class="chk"><input type="checkbox"><span><b>Changement de clé API ou de rôle</b><br><span class="mute">E-mail à tous les administrateurs</span></span></label></div>
+<p class="mute">Les alertes ne sont pas disponibles tant que les services de notification ne sont pas configurés.</p></div>
 
-<div class="card"><h2>📜 Journal d'activité</h2><p class="mute">Qui a fait quoi, quand. Conservé 12 mois.</p>
-<div class="tw"><table id="log"><thead><tr><th>Date</th><th>Utilisateur</th><th>Action</th><th>Appareil</th></tr></thead><tbody>
-<tr><td>Aujourd'hui 09:12</td><td>Vous</td><td>Connexion</td><td>Chrome · Abidjan</td></tr>
-<tr><td>Hier 17:40</td><td>Vous</td><td>Création d'un lien de paiement</td><td>Chrome · Abidjan</td></tr>
-<tr><td>Hier 11:05</td><td>Vous</td><td>Régénération d'une clé API</td><td>Chrome · Abidjan</td></tr>
-<tr><td>Il y a 3 jours</td><td>Équipe</td><td>Invitation d'un collaborateur</td><td>Safari · Abidjan</td></tr></tbody></table></div></div>
+<div class="card"><h2>📜 Journal d'activité</h2><p class="mute">Le journal d'activité n'est pas encore relié au serveur.</p>
+<div class="tw"><table id="log"><thead><tr><th>Date</th><th>Utilisateur</th><th>Action</th><th>Appareil</th></tr></thead><tbody><tr><td colspan="4">Aucune activité disponible.</td></tr></tbody></table></div></div>
 
-<div class="card"><h2>📤 Exports comptables</h2><p class="mute">Téléchargez vos données pour votre comptable.</p>
-<div class="bar"><button class="btn" data-csv="journal">Journal d'activité (CSV)</button><button class="btn" data-csv="releve">Relevé du mois (CSV)</button></div></div>
+<div class="card"><h2>📤 Exports comptables</h2><p class="mute">Les exports seront disponibles après connexion des données comptables au serveur.</p></div>
 </main></div><nav class="dock" aria-label="Navigation"><a href="tableau-de-bord.html" title="Tableau de bord" aria-label="Tableau de bord">🏠</a><a href="transactions.html" title="Transactions" aria-label="Transactions">↔️</a><a href="liens-de-paiement.html" title="Liens de paiement" aria-label="Liens de paiement">🔗</a><a href="decaissements.html" title="Décaissements" aria-label="Décaissements">💸</a><a href="developpeurs.html" title="Développeurs" aria-label="Développeurs">🔑</a><a href="rapprochement.html" title="Rapprochement" aria-label="Rapprochement">🧾</a><a href="equipe.html" title="Équipe" aria-label="Équipe">👥</a><a href="facturation.html" title="Facturation" aria-label="Facturation">🏷️</a><a href="parametres.html" title="Paramètres" aria-label="Paramètres">⚙️</a><a href="securite.html" title="Sécurité" aria-label="Sécurité" class=on>🛡️</a><a href="#" data-logout title="Se déconnecter" aria-label="Se déconnecter">🚪</a><a href="../public/fonctionnalites.html" title="Découvrir ABVSPAIE" aria-label="Découvrir ABVSPAIE">📚</a></nav>
 <script>
 (()=>{
@@ -128,13 +114,7 @@ document.addEventListener('click',e=>{
  const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
  const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
 $$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
-$$('form[data-demo]').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();
- const tb=f.dataset.add&&$('#'+f.dataset.add);
- if(tb){const tr=document.createElement('tr');tb.dataset.cols.split(',').forEach(n=>{const td=document.createElement('td');td.textContent=f.elements[n].value;tr.appendChild(td)});
-  if(f.dataset.link){const td=document.createElement('td'),b=document.createElement('button');b.className='btn s';b.type='button';b.textContent='Copier le lien';b.dataset.copy='https://pay.abvspaie.com/l/'+Math.random().toString(36).slice(2,8);td.appendChild(b);tr.appendChild(td)}
-  if(f.dataset.tag){const td=document.createElement('td');td.innerHTML='<span class="tag">'+f.dataset.tag+'</span>';tr.appendChild(td)}
-  tb.tBodies[0].prepend(tr)}
- toast(f.dataset.demo);f.reset()}));
+
 })();
 (()=>{let z=10;
 document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
@@ -150,22 +130,79 @@ document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m
 s.addEventListener("change",()=>{if(s.value==="English"){s.value="Français";toast("Version anglaise bientôt disponible")}})})();
 </script>
 <script>
-(()=>{const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const g=k=>{try{return localStorage.getItem(k)}catch(_){return null}},p=(k,v)=>{try{localStorage.setItem(k,v)}catch(_){}};
-function kyc(){const v=g("abvs_kyc");const st=$("#kst"),fk=$("#fk");
- if(v==="ok"){st.textContent="Vérifié";st.className="tag"}else if(v==="pending"){st.textContent="En cours d'examen";st.className="tag warn"}else{st.textContent="À compléter";st.className="tag warn"}
- $("#kdemo").hidden=v!=="pending";fk.textContent=v==="ok"?"Vérifié":v==="pending"?"En examen":"À compléter";}
-function tfa(){const on=g("abvs_2fa")==="1";$("#tst").textContent=on?"Activée":"Désactivée";$("#tst").className="tag "+(on?"":"err");$("#t-on").hidden=on;$("#t-off").hidden=!on;$("#t-form").hidden=true}
-$("#kyc").addEventListener("submit",e=>{e.preventDefault();p("abvs_kyc","pending");kyc();toast("Documents envoyés · vérification sous 48 h");e.target.reset()});
-$("#t-on").onclick=()=>{$("#t-on").hidden=true;$("#t-form").hidden=false;toast("Code envoyé par SMS")};
-$("#t-form").addEventListener("submit",e=>{e.preventDefault();if(!/^[0-9]{6}$/.test($("#t-code").value)){$("#t-err").textContent="Entrez les 6 chiffres reçus.";return}p("abvs_2fa","1");$("#t-code").value="";$("#t-err").textContent="";tfa();toast("2FA activée")});
-$("#t-off").onclick=()=>{if(confirm("Désactiver la double authentification ?")){p("abvs_2fa","0");tfa();toast("2FA désactivée")}};
-document.addEventListener("click",e=>{const k=e.target.closest("[data-kill]");if(k){k.closest("tr").remove();toast("Appareil déconnecté")}});
-$("#kall").onclick=()=>{$$("[data-kill]").forEach(b=>b.closest("tr").remove());toast("Tous les autres appareils ont été déconnectés")};
-const csv={journal:()=>[["Date","Utilisateur","Action","Appareil"],...$$("#log tbody tr").map(r=>[...r.cells].map(c=>c.textContent))],releve:()=>[["Date","Référence","Moyen","Montant FCFA","Frais FCFA"],["01/10","TX-1001","Orange Money","15000","225"],["03/10","TX-1002","Wave","8000","120"],["05/10","TX-1003","Carte","42500","638"]]};
-$$("[data-csv]").forEach(b=>b.onclick=()=>{const t=csv[b.dataset.csv]().map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(";")).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download=b.dataset.csv+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});
-$("#kok").onclick=()=>{p("abvs_kyc","ok");kyc();toast("Entreprise vérifiée · retraits débloqués")};
-kyc();tfa()})();
+(()=>{
+const $=s=>document.querySelector(s),auth=ABVS.ready?ABVS.client.auth:null;
+let factorId=null,pendingFactorId=null;
+const error=t=>{$("#t-err").textContent=t};
+function showFactor(active){
+ $("#tst").textContent=active?"Activée":"Désactivée";
+ $("#tst").className="tag "+(active?"":"err");
+ $("#t-on").hidden=active;
+ $("#t-off").hidden=!active;
+}
+async function loadFactors(){
+ if(!auth){error("Service d'authentification indisponible.");return}
+ try{
+  const {data,error:failure}=await auth.mfa.listFactors();
+  if(failure||!data){error("Impossible de charger le statut de la 2FA.");return}
+  const active=(data.totp||[]).find(f=>f.status==="verified");
+  factorId=active?active.id:null;
+  showFactor(!!factorId);
+ }catch(_){error("Impossible de joindre le service d'authentification.");}
+}
+$("#t-on").onclick=async()=>{
+ if(!auth)return error("Service d'authentification indisponible.");
+ $("#t-on").disabled=true;error("");
+ try{
+  const {data,error:failure}=await auth.mfa.enroll({factorType:"totp",friendlyName:"ABVSPAIE"});
+  if(failure||!data||!data.totp){error("Impossible de démarrer la configuration 2FA.");return}
+  pendingFactorId=data.id;
+  $("#totpQr").src=data.totp.qr_code;
+  $("#totpSecret").textContent=data.totp.secret;
+  $("#totpSetup").hidden=false;
+  $("#t-form").hidden=false;
+  $("#t-code").focus();
+ }catch(_){error("Impossible de joindre le service d'authentification.");}
+ finally{$("#t-on").disabled=false}
+};
+$("#t-cancel").onclick=async()=>{
+ $("#t-form").hidden=true;$("#totpSetup").hidden=true;$("#t-code").value="";error("");
+ if(auth&&pendingFactorId){
+  try{
+   const {error:failure}=await auth.mfa.unenroll({factorId:pendingFactorId});
+   if(failure)error("Configuration annulée, mais le facteur temporaire n'a pas pu être supprimé.");
+  }catch(_){error("Configuration annulée, mais le facteur temporaire n'a pas pu être supprimé.");}
+ }
+ pendingFactorId=null;
+};
+$("#t-form").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const code=$("#t-code").value.trim();
+ if(!/^[0-9]{6}$/.test(code)){error("Saisissez le code à 6 chiffres de votre application.");return}
+ if(!pendingFactorId){error("Recommencez la configuration 2FA.");return}
+ try{
+  const {data:challenge,error:challengeError}=await auth.mfa.challenge({factorId:pendingFactorId});
+  if(challengeError||!challenge){error("Impossible de vérifier le code. Réessayez.");return}
+  const {error:verifyError}=await auth.mfa.verify({factorId:pendingFactorId,challengeId:challenge.id,code});
+  if(verifyError){error("Code invalide ou expiré.");return}
+  factorId=pendingFactorId;pendingFactorId=null;
+  $("#t-code").value="";$("#t-form").hidden=true;$("#totpSetup").hidden=true;error("");
+  await loadFactors();
+ }catch(_){error("Impossible de joindre le service d'authentification.");}
+});
+$("#t-off").onclick=async()=>{
+ if(!auth||!factorId)return error("Aucune authentification 2FA active.");
+ if(!confirm("Désactiver la double authentification ?"))return;
+ $("#t-off").disabled=true;
+ try{
+  const {error:failure}=await auth.mfa.unenroll({factorId});
+  if(failure){error("Impossible de désactiver la 2FA.");return}
+  factorId=null;error("");showFactor(false);
+ }catch(_){error("Impossible de joindre le service d'authentification.");}
+ finally{$("#t-off").disabled=false}
+};
+loadFactors();
+})();
 </script>
 <script>document.addEventListener("click",e=>{if(e.target.closest("[data-logout]")){e.preventDefault();ABVS.signOut()}});</script>
 </body>

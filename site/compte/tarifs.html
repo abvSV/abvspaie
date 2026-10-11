@@ -99,8 +99,7 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
 <div class="wrap">
-  <div class="m f1"><small>Sans abonnement</small><b>0 FCFA / mois</b></div>
-  <div class="m f2"><small>Paiement reçu</small><b>15 000 FCFA ✓</b></div>
+
 
   <div class="head">
     <span class="pill">Tarifs</span>
@@ -111,7 +110,7 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
   <div class="plans">
     <div class="card plan"><h2>Démarrage</h2><div class="tagl">Pour lancer votre SaaS</div>
       <div class="price">1,5 %<span> par paiement réussi</span></div>
-      <ul><li>Mobile money et cartes</li><li>Environnement de test illimité</li><li>Liens de paiement</li><li>Webhooks</li></ul>
+      <ul><li>Mobile money et cartes</li><li>Environnement de test illimité</li><li>Liens de paiement</li><li></li></ul>
       <a class="btn" href="../public/inscription-connexion.html">Commencer</a></div>
     <div class="card plan hot"><h2>Croissance</h2><div class="tagl">Pour les volumes en hausse</div>
       <div class="price">1,2 %<span> par paiement réussi</span></div>
@@ -120,7 +119,7 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
     <div class="card plan"><h2>Entreprise</h2><div class="tagl">Pour les gros volumes</div>
       <div class="price">Sur mesure</div>
       <ul><li>Tarifs négociés</li><li>Gestionnaire dédié</li><li>Engagement de service (SLA)</li><li>Intégrations sur demande</li></ul>
-      <a class="btn" href="a-propos-contact.html?sujet=demo">Nous contacter</a></div>
+      <a class="btn" href="a-propos-contact.html">Nous contacter</a></div>
   </div>
 
   <div class="card est">
@@ -129,7 +128,7 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
     <input type="range" id="r" min="500000" max="50000000" step="500000" value="5000000" aria-label="Volume mensuel">
     <div class="res"><div><small>Démarrage (1,5 %)</small><b id="a"></b></div><div><small>Croissance (1,2 %)</small><b id="b"></b></div></div>
   </div>
-  <p class="pnote">Tarifs indicatifs, donnés à titre d'exemple.</p>
+
 </div>
 <div class="foot"><a href="fonctionnalites.html">Fonctionnalités</a><a href="etapes.html">Comment ça marche</a><a href="tarifs.html">Tarifs</a><a href="blog.html">Blog</a><a href="a-propos-contact.html">Contact</a><a href="../public/cgu-cgv.html">CGU/CGV</a><a href="../public/confidentialite.html">Confidentialité</a><a href="../public/mentions-legales.html">Mentions légales</a></div>
 <script>
@@ -142,13 +141,7 @@ document.addEventListener('click',e=>{
  const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
  const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
 $$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
-$$('form[data-demo]').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();
- const tb=f.dataset.add&&$('#'+f.dataset.add);
- if(tb){const tr=document.createElement('tr');tb.dataset.cols.split(',').forEach(n=>{const td=document.createElement('td');td.textContent=f.elements[n].value;tr.appendChild(td)});
-  if(f.dataset.link){const td=document.createElement('td'),b=document.createElement('button');b.className='btn s';b.type='button';b.textContent='Copier le lien';b.dataset.copy='https://pay.abvspaie.com/l/'+Math.random().toString(36).slice(2,8);td.appendChild(b);tr.appendChild(td)}
-  if(f.dataset.tag){const td=document.createElement('td');td.innerHTML='<span class="tag">'+f.dataset.tag+'</span>';tr.appendChild(td)}
-  tb.tBodies[0].prepend(tr)}
- toast(f.dataset.demo);f.reset()}));
+
 })();
 (()=>{let z=10;
 document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
@@ -158,9 +151,7 @@ document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m
  const mv=ev=>{const cc=par.getBoundingClientRect();m.style.left=(ev.clientX-cc.left-dx)+"px";m.style.top=(ev.clientY-cc.top-dy)+"px"};
  const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
  m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
-if(!matchMedia("(prefers-reduced-motion:reduce)").matches&&document.querySelector(".m"))setInterval(()=>{if(document.hidden||innerWidth<700)return;
- const p=document.createElement("div");p.className="pop";const o=["Orange Money","Wave","MTN MoMo","Carte"][Math.floor(Math.random()*4)],a=[5000,8000,15000,22000,42500][Math.floor(Math.random()*5)];
- p.textContent="+"+a.toLocaleString("fr-FR")+" FCFA · "+o;p.style.left=(10+Math.random()*70)+"%";document.body.appendChild(p);setTimeout(()=>p.remove(),4200)},3500);
+
 </script>
 <script>
 const f=n=>Math.round(n).toLocaleString("fr-FR")+" FCFA",$=id=>document.getElementById(id);

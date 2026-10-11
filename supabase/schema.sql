@@ -1,5 +1,6 @@
--- ABVSPAIE — Migration « mode Live » (étape 1)
+-- ABVSPAIE — Migration « mode Live » (étape 2)
 -- À exécuter dans Supabase > SQL Editor. Additive : ne supprime ni ne modifie vos données existantes.
+-- À lancer APRÈS schema_paiements.sql.
 -- Recommandé : essayez d'abord sur une copie / un projet de test.
 
 -- 1) Profil marchand : c'est ICI que le serveur décide si Live est autorisé.
@@ -18,8 +19,9 @@ drop policy if exists "merchant_profiles_select_own" on public.merchant_profiles
 create policy "merchant_profiles_select_own" on public.merchant_profiles
   for select to authenticated using (user_id = auth.uid());
 
--- Le client ne peut ni créer, ni modifier, ni supprimer les profils marchands.
-revoke insert, update, delete on public.merchant_profiles from anon, authenticated;
+-- Le client ne peut que lire son profil ; seule l'administration peut le modifier.
+revoke all on public.merchant_profiles from anon, authenticated;
+grant select on public.merchant_profiles to authenticated;
 
 -- 2) Un profil est créé automatiquement à chaque inscription.
 create or replace function public.handle_new_merchant()

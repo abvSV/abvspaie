@@ -77,10 +77,10 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-<div class="wrap"><div class="m f1"><small>Support</small><b>Réponse sous 24 h</b></div><div class="m f2"><small>Opérateurs</small><b>Mobile money · Carte</b></div><div class="head"><span class="pill">À propos</span><h1>Des paiements <em>simples</em> pour l'Afrique de l'Ouest</h1><p class="sub">Nous aidons les SaaS et commerces à encaisser en FCFA, partout.</p></div><div class="grid two"><div class="card"><h2>Notre mission</h2><p>Rendre l'encaissement aussi simple que possible : un seul contrat, une seule API, tous les moyens de paiement locaux.</p><h3>Nos engagements</h3><p class="mute">Transparence des prix, sécurité des fonds et support réactif.</p><h3>Coordonnées</h3><p class="mute">Abidjan, Côte d'Ivoire<br>contact@abvspaie.com</p></div><div class="card"><h2>Écrivez-nous</h2><form data-demo="Message envoyé. Nous répondons sous 24 h."><label>Nom<input name="nom" type="text" placeholder="" required></label><label>E-mail<input name="email" type="email" placeholder="" required></label><label>Sujet<select name="sujet"><option>Question générale</option><option>Demande de démo (Entreprise)</option><option>Support technique</option></select></label><label>Message<textarea name="message" required></textarea></label><button class="btn p w">Envoyer le message</button></form></div></div></div><div class="foot"><a href="fonctionnalites.html">Fonctionnalités</a><a href="etapes.html">Comment ça marche</a><a href="tarifs.html">Tarifs</a><a href="blog.html">Blog</a><a href="a-propos-contact.html">Contact</a><a href="../public/cgu-cgv.html">CGU/CGV</a><a href="../public/confidentialite.html">Confidentialité</a><a href="../public/mentions-legales.html">Mentions légales</a></div>
+<div class="wrap"><div class="head"><span class="pill">À propos</span><h1>Des paiements <em>simples</em> pour l'Afrique de l'Ouest</h1><p class="sub">Nous aidons les SaaS et commerces à encaisser en FCFA, partout.</p></div><div class="grid two"><div class="card"><h2>Notre mission</h2><p>Rendre l'encaissement aussi simple que possible : un seul contrat, une seule API, tous les moyens de paiement locaux.</p><h3>Nos engagements</h3><p class="mute">Transparence des prix, sécurité des fonds et support réactif.</p><h3>Coordonnées</h3><p class="mute">Abidjan, Côte d'Ivoire<br>contact@abvspaie.com</p></div><div class="card"><h2>Écrivez-nous</h2><form><label>Nom<input name="nom" type="text" placeholder="" required></label><label>E-mail<input name="email" type="email" placeholder="" required></label><label>Sujet<select name="sujet"><option>Question générale</option><option>Support technique</option></select></label><label>Message<textarea name="message" required></textarea></label><button class="btn p w">Envoyer le message</button></form></div></div></div><div class="foot"><a href="fonctionnalites.html">Fonctionnalités</a><a href="etapes.html">Comment ça marche</a><a href="tarifs.html">Tarifs</a><a href="blog.html">Blog</a><a href="a-propos-contact.html">Contact</a><a href="../public/cgu-cgv.html">CGU/CGV</a><a href="../public/confidentialite.html">Confidentialité</a><a href="../public/mentions-legales.html">Mentions légales</a></div>
 
 <script>
-(()=>{if(new URLSearchParams(location.search).get("sujet")==="demo"){const o=document.querySelector("select[name=sujet]");if(o)o.selectedIndex=1}})();
+(()=>{const s=new URLSearchParams(location.search).get("sujet");const o=document.querySelector("select[name=sujet]");if(s&&o){const i=[...o.options].findIndex(opt=>opt.value===s);if(i>=0)o.selectedIndex=i;}})();
 (()=>{
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 window.toast=t=>{const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)};
@@ -90,13 +90,7 @@ document.addEventListener('click',e=>{
  const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
  const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
 $$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
-$$('form[data-demo]').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();
- const tb=f.dataset.add&&$('#'+f.dataset.add);
- if(tb){const tr=document.createElement('tr');tb.dataset.cols.split(',').forEach(n=>{const td=document.createElement('td');td.textContent=f.elements[n].value;tr.appendChild(td)});
-  if(f.dataset.link){const td=document.createElement('td'),b=document.createElement('button');b.className='btn s';b.type='button';b.textContent='Copier le lien';b.dataset.copy='https://pay.abvspaie.com/l/'+Math.random().toString(36).slice(2,8);td.appendChild(b);tr.appendChild(td)}
-  if(f.dataset.tag){const td=document.createElement('td');td.innerHTML='<span class="tag">'+f.dataset.tag+'</span>';tr.appendChild(td)}
-  tb.tBodies[0].prepend(tr)}
- toast(f.dataset.demo);f.reset()}));
+
 })();
 (()=>{let z=10;
 document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
@@ -106,9 +100,7 @@ document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m
  const mv=ev=>{const cc=par.getBoundingClientRect();m.style.left=(ev.clientX-cc.left-dx)+"px";m.style.top=(ev.clientY-cc.top-dy)+"px"};
  const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
  m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
-if(!matchMedia("(prefers-reduced-motion:reduce)").matches&&document.querySelector(".m"))setInterval(()=>{if(document.hidden||innerWidth<700)return;
- const p=document.createElement("div");p.className="pop";const o=["Orange Money","Wave","MTN MoMo","Carte"][Math.floor(Math.random()*4)],a=[5000,8000,15000,22000,42500][Math.floor(Math.random()*5)];
- p.textContent="+"+a.toLocaleString("fr-FR")+" FCFA · "+o;p.style.left=(10+Math.random()*70)+"%";document.body.appendChild(p);setTimeout(()=>p.remove(),4200)},3500);
+
 </script>
 </body>
 </html>
