@@ -103,11 +103,12 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 <div class="card" id="mfa"><h2>🔐 Double authentification (2FA)</h2><p class="mute">Utilisez une application d'authentification pour générer un code à 6 chiffres.</p>
 <p>Statut : <span class="tag err" id="tst">Désactivée</span></p>
 <div class="err" id="t-err" role="status" aria-live="polite"></div>
+<p id="t-login-wrap" hidden><a class="btn" href="../public/inscription-connexion.html">Se reconnecter</a></p>
 <button class="btn p" id="t-on">Activer la 2FA</button>
 <form id="t-form" hidden style="margin-top:12px"><div id="totpSetup" hidden><p>Scannez ce QR code dans votre application, puis saisissez le code affiché.</p><img id="totpQr" alt="QR code de configuration 2FA" style="max-width:220px"><p>Clé manuelle : <code id="totpSecret"></code></p></div><label for="t-code">Code à 6 chiffres<input id="t-code" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code" required></label><button class="btn p">Confirmer</button><button class="btn" id="t-cancel" type="button">Annuler</button></form>
 <button class="btn" id="t-off" hidden>Désactiver</button></div>
 
-<div class="card"><h2>🔑 Clés API</h2><p class="mute">Les clés API seront disponibles prochainement.</p></div>
+<div class="card"><h2>🔑 Clés API</h2><p class="mute">Aucune clé API marchand n'est actuellement proposée. Consultez la rubrique Développeur pour connaître les modes d'intégration disponibles. Ne placez jamais de clé Supabase service_role dans le navigateur.</p></div>
 
 <section class="card session-card" id="sessions" aria-labelledby="session-heading">
 <header class="session-head">
@@ -164,7 +165,18 @@ s.addEventListener("change",()=>{if(s.value==="English"){s.value="Français";toa
 (()=>{
 const $=s=>document.querySelector(s),auth=ABVS.ready?ABVS.client.auth:null;
 let factorId=null,pendingFactorId=null;
-const error=t=>{$("#t-err").textContent=t};
+let sessionRequired=false,enrolling=false;
+const error=(t,needsLogin=false)=>{
+ sessionRequired=needsLogin;$("#t-err").textContent=t;$("#t-login-wrap").hidden=!needsLogin;
+ if(needsLogin)$("#t-on").disabled=true;
+ else if(!enrolling)$("#t-on").disabled=false;
+};
+function authFailureMessage(failure,fallback){
+ const message=String(failure&&failure.message||"");
+ if(/auth session missing|session.*(missing|expired|not found)/i.test(message))return "Votre session a expiré. Reconnectez-vous pour configurer la 2FA.";
+ if(failure&&failure.status===403)return "Supabase a refusé cette opération MFA. Vérifiez que TOTP est activé dans les fournisseurs d'authentification du projet, puis reconnectez-vous.";
+ return message?`${fallback} (${message})`:fallback;
+}
 const dateTime=value=>value?new Date(value).toLocaleString("fr-FR"):"Indisponible";
 async function loadSession(){
  const message=$("#session-error");
@@ -203,27 +215,35 @@ function showFactor(active){
 async function loadFactors(){
  if(!auth){error("Service d'authentification indisponible.");return}
  try{
+  const {data:sessionData,error:sessionError}=await auth.getSession();
+  if(sessionError){error(authFailureMessage(sessionError,"Impossible de vérifier la session"),true);return}
+  if(!sessionData||!sessionData.session){error("Votre session a expiré ou n'est pas disponible dans cette page. Reconnectez-vous pour vérifier le statut 2FA.",true);return}
+  $("#t-on").disabled=false;
   const {data,error:failure}=await auth.mfa.listFactors();
-  if(failure||!data){error("Impossible de charger le statut de la 2FA.");return}
+  if(failure||!data){error(authFailureMessage(failure,"Impossible de charger le statut de la 2FA"));return}
   const active=(data.totp||[]).find(f=>f.status==="verified");
   factorId=active?active.id:null;
   showFactor(!!factorId);
- }catch(_){error("Impossible de joindre le service d'authentification.");}
+  error("");
+ }catch(failure){error(authFailureMessage(failure,"Impossible de joindre le service d'authentification."));}
 }
 $("#t-on").onclick=async()=>{
  if(!auth)return error("Service d'authentification indisponible.");
- $("#t-on").disabled=true;error("");
+ $("#t-on").disabled=true;enrolling=true;error("");
  try{
+  const {data:sessionData,error:sessionError}=await auth.getSession();
+  if(sessionError||!sessionData||!sessionData.session){error(authFailureMessage(sessionError,"Votre session a expiré. Reconnectez-vous."),true);return}
   const {data,error:failure}=await auth.mfa.enroll({factorType:"totp",friendlyName:"ABVSPAIE"});
-  if(failure||!data||!data.totp){error("Impossible de démarrer la configuration 2FA.");return}
+  if(failure){error(authFailureMessage(failure,"Impossible de démarrer la configuration 2FA."));return}
+  if(!data||!data.totp||!data.id){error("Supabase n'a pas renvoyé les informations nécessaires pour démarrer la configuration 2FA.");return}
   pendingFactorId=data.id;
   $("#totpQr").src=data.totp.qr_code;
   $("#totpSecret").textContent=data.totp.secret;
   $("#totpSetup").hidden=false;
   $("#t-form").hidden=false;
   $("#t-code").focus();
- }catch(_){error("Impossible de joindre le service d'authentification.");}
- finally{$("#t-on").disabled=false}
+ }catch(failure){error(authFailureMessage(failure,"Impossible de joindre le service d'authentification."));}
+ finally{enrolling=false;$("#t-on").disabled=sessionRequired}
 };
 $("#t-cancel").onclick=async()=>{
  $("#t-form").hidden=true;$("#totpSetup").hidden=true;$("#t-code").value="";error("");

@@ -560,11 +560,41 @@
 
     // ───── Connexion : Supabase Auth (+ 2FA TOTP si activée) ─────
     let mfaFactor = null;
+    let loginAudioContext = null;
+    const prepareLoginSound = () => {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      try {
+        if (!loginAudioContext) loginAudioContext = new AudioContextClass();
+        if (loginAudioContext.state === 'suspended') loginAudioContext.resume().catch(() => {});
+      } catch (_) {
+        loginAudioContext = null;
+      }
+    };
+    const playLoginSound = () => {
+      if (!loginAudioContext || loginAudioContext.state !== 'running') return;
+      const start = loginAudioContext.currentTime;
+      [784, 1046].forEach((frequency, index) => {
+        const oscillator = loginAudioContext.createOscillator();
+        const volume = loginAudioContext.createGain();
+        const noteStart = start + index * 0.12;
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(frequency, noteStart);
+        volume.gain.setValueAtTime(0.0001, noteStart);
+        volume.gain.exponentialRampToValueAtTime(0.12, noteStart + 0.015);
+        volume.gain.exponentialRampToValueAtTime(0.0001, noteStart + 0.2);
+        oscillator.connect(volume);
+        volume.connect(loginAudioContext.destination);
+        oscillator.start(noteStart);
+        oscillator.stop(noteStart + 0.21);
+      });
+    };
     const goDash = () => {
       $('doneTitle').textContent = 'Connexion réussie';
       $('doneText').textContent = 'Redirection vers votre tableau de bord…';
       $('goDash').href = '../compte/tableau-de-bord.html'; $('goDash').textContent = 'Accéder au tableau de bord';
       $('goDash').style.display = 'block';
+      playLoginSound();
       show('vDone');
       setTimeout(() => { location.replace('../compte/tableau-de-bord.html'); }, 1400);
     };
@@ -575,6 +605,7 @@
       if (!ABVS.ready) { setErr('lpwd', 'Service indisponible. Réessayez plus tard.'); return }
       const btn = e.submitter || $('fLogin').querySelector('button[type=submit]');
       btn.disabled = true;
+      prepareLoginSound();
       try {
         if (mfaFactor) {
           const code = $('lcode').value.trim();

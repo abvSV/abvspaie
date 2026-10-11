@@ -140,6 +140,62 @@ body main{max-width:1200px;margin:0 auto;padding-top:84px}
 .client-activity-item small{display:block;margin-top:4px;color:var(--mute)}
 .client-activity-empty{padding:18px;border:1px dashed var(--line);border-radius:14px;color:var(--mute);font-size:14px}
 @media(max-width:560px){.clients-toolbar{align-items:stretch;flex-direction:column}.clients-toolbar .btn{align-self:flex-start}.client-form{grid-template-columns:1fr}.client-form-note,.client-form-actions,.client-message{grid-column:1}}
+.stats-card{width:min(100%,920px);margin:0 auto;text-align:left}
+.stats-card h2{margin:0 0 6px;font-size:18px}
+.stats-card>.sub{margin-bottom:18px}
+.stats-refresh-row{display:flex;justify-content:flex-end;margin-bottom:12px}
+.stats-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0 22px}
+.stats-kpi{padding:15px;border:1px solid var(--line);border-radius:15px;background:color-mix(in srgb,var(--solid) 76%,var(--in))}
+.stats-kpi span{display:block;color:var(--mute);font-size:12px}
+.stats-kpi strong{display:block;margin-top:8px;font-size:clamp(18px,3vw,24px);overflow-wrap:anywhere}
+.stats-kpi small{display:block;margin-top:4px;color:var(--mute);font-size:11px}
+.stats-chart{display:grid;grid-template-columns:repeat(30,minmax(3px,1fr));align-items:end;gap:5px;height:190px;padding:18px 8px 0;border-bottom:1px solid var(--line)}
+.stats-bar{position:relative;min-width:3px;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.stats-bar i{display:block;width:min(100%,18px);min-height:3px;border-radius:5px 5px 0 0;background:linear-gradient(180deg,var(--pri),color-mix(in srgb,var(--pri) 55%,var(--solid)))}
+.stats-bar-empty i{height:3px!important;background:var(--line)}
+.stats-axis{display:grid;grid-template-columns:repeat(6,1fr);margin:7px 0 0;color:var(--mute);font-size:10px}
+.stats-axis span:last-child{text-align:right}
+.stats-legend{display:flex;align-items:center;gap:8px;margin:12px 0 0;color:var(--mute);font-size:12px}
+.stats-legend i{width:9px;height:9px;border-radius:3px;background:var(--pri)}
+.stats-breakdown{display:grid;gap:13px}
+.stats-method{display:grid;grid-template-columns:minmax(100px,1fr) minmax(80px,2fr) auto;align-items:center;gap:12px;font-size:13px}
+.stats-method-name{overflow-wrap:anywhere}
+.stats-method-track{height:9px;overflow:hidden;border-radius:99px;background:var(--line)}
+.stats-method-track i{display:block;height:100%;border-radius:inherit;background:var(--pri)}
+.stats-method-value{text-align:right;color:var(--mute);white-space:nowrap}
+.stats-message{padding:16px;border:1px dashed var(--line);border-radius:14px;color:var(--mute);font-size:13px;line-height:1.6}
+.stats-message[data-error="true"]{color:var(--err);border-color:color-mix(in srgb,var(--err) 40%,var(--line))}
+@media(max-width:560px){.stats-kpis{grid-template-columns:1fr}.stats-chart{gap:2px;height:150px}.stats-method{grid-template-columns:minmax(80px,1fr) 1.2fr auto;gap:7px;font-size:11px}.stats-axis{font-size:9px}}
+.dev-card{width:min(100%,920px);margin:0 auto;text-align:left}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.dev-layout{display:grid;grid-template-columns:220px minmax(0,1fr);align-items:start;gap:20px;margin-top:24px;text-align:left}
+.dev-layout .section-subnav{position:sticky;top:20px;display:grid;justify-content:stretch;gap:5px;margin:0;padding:10px;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--solid) 82%,transparent);backdrop-filter:blur(12px);box-shadow:0 12px 28px var(--sh)}
+.dev-layout .section-subnav button{justify-content:flex-start;width:100%;box-shadow:none}
+.dev-layout .section-subpanel{grid-column:2;grid-row:1;max-width:none;width:100%;margin:0}
+.dev-layout .section-subpanel>.card{width:100%;margin:0}
+.dev-layout .dev-card h2{text-align:left}
+.dev-layout .dev-card .btn{margin:0}
+.dev-layout .dev-steps{padding-left:0}
+.dev-layout .dev-steps li{margin:0}
+.dev-layout .section-subpanel[hidden]{display:none}
+.dev-card h2{margin:0 0 8px;font-size:18px}
+.dev-card p,.dev-card li{color:var(--mute);font-size:13px;line-height:1.65}
+.dev-callout{padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--in)}
+.dev-callout strong{display:block;margin-bottom:5px;color:var(--ink)}
+.dev-steps{display:grid;gap:12px;padding:0;list-style:none;counter-reset:dev-step}
+.dev-steps li{position:relative;padding:14px 14px 14px 50px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--solid) 75%,var(--in));counter-increment:dev-step}
+.dev-steps li:before{content:counter(dev-step);position:absolute;left:14px;top:13px;display:grid;place-items:center;width:25px;height:25px;border-radius:9px;background:color-mix(in srgb,var(--pri) 12%,var(--solid));color:var(--pri);font-weight:700}
+.dev-link-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin:16px 0}
+.dev-link-form input{min-width:0;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--in);color:var(--ink);font:14px Inter,sans-serif}
+.dev-link-form button{margin:0}
+.dev-link-result{display:grid;gap:10px;margin-top:14px}
+.dev-link-result input{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--in);color:var(--ink);font:12px ui-monospace,Consolas,monospace}
+.dev-link-result pre{overflow:auto;padding:14px;border-radius:12px;background:var(--in);font:12px/1.6 ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+.dev-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+.dev-actions .btn{width:auto;margin:0;text-decoration:none}
+.dev-status{min-height:20px;margin:8px 0;color:var(--mute);font-size:12px}
+@media(max-width:560px){.dev-link-form{grid-template-columns:1fr}.dev-link-form button{justify-self:start}}
+@media(max-width:700px){.dev-layout{grid-template-columns:minmax(0,1fr);gap:14px}.dev-layout .section-subnav{position:sticky;top:8px;z-index:10;display:flex;overflow-x:auto;justify-content:flex-start;scrollbar-width:thin}.dev-layout .section-subnav button{flex:none;width:auto}.dev-layout .section-subpanel{grid-column:1;grid-row:2}}
 @media(max-width:560px){.brand{top:10px;left:10px;padding:8px 10px;font-size:15px}.account-actions{top:10px;right:10px;gap:5px}.account-actions a,.account-actions button{min-height:38px;padding:8px 10px;border-radius:12px;font-size:12px}.account-actions .action-icon{font-size:15px}}
 .overview-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:22px}
 .overview-head,.overview-stat,.overview-panel{animation:overview-float 7s ease-in-out infinite}
@@ -351,10 +407,11 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
   </section>
 
   <section id="keys" class="hide rubric-page">
-    <h1>Développeur</h1><p class="sub">Choisissez une rubrique pour consulter les outils disponibles.</p>
-    <nav class="section-subnav" aria-label="Rubriques développeur"><button type="button" data-subpanel="keys-access" aria-pressed="false"><span aria-hidden="true">🔑</span>Clés API</button><button type="button" data-subpanel="keys-integration" aria-pressed="false"><span aria-hidden="true">⌘</span>Intégration</button></nav>
-    <section class="section-subpanel" id="keys-access" hidden><div class="card"><h2>Clés API</h2><p class="sub">Les clés API seront disponibles prochainement. Ne partagez jamais de clé secrète.</p></div></section>
-    <section class="section-subpanel" id="keys-integration" hidden><div class="card"><h2>Intégration</h2><p class="sub">Les outils d'intégration seront disponibles lorsque l'API sera configurée.</p></div></section>
+    <h1>Développeur</h1><p class="sub">Intégrez les pages de paiement hébergées et configurez les webhooks entrants disponibles.</p>
+    <div class="dev-layout"><nav class="section-subnav" aria-label="Rubriques développeur"><button type="button" data-subpanel="keys-access" aria-pressed="false"><span aria-hidden="true">🔑</span>Clés API</button><button type="button" data-subpanel="keys-integration" aria-pressed="false"><span aria-hidden="true">⌘</span>Intégration</button></nav>
+    <section class="section-subpanel" id="keys-access" hidden><div class="card dev-card"><h2>Clés API marchand</h2><div class="dev-callout"><strong>Pas de clé API marchand disponible actuellement.</strong>ABVSPAIE ne propose pas encore d'API serveur pour créer des paiements depuis votre backend. Aucune clé secrète n'est générée ni stockée depuis cette page.</div><p>La clé Supabase publique utilisée par le site n'est pas une clé API privée pour votre intégration : ne l'utilisez jamais avec un rôle serveur et ne placez jamais une clé <code>service_role</code> dans le navigateur. Les accès du tableau de bord restent protégés par l'authentification et les politiques RLS.</p><div class="dev-actions"><a class="btn alt" href="securite.html">Consulter la sécurité du compte</a></div></div></section>
+    <section class="section-subpanel" id="keys-integration" hidden><div class="card dev-card"><h2>Intégrer un paiement</h2><p>La méthode disponible est le lien de paiement hébergé ABVSPAIE. Le client choisit son moyen de paiement et confirme sur la page sécurisée.</p><ol class="dev-steps"><li>Créez un lien dans <strong>Liens de paiement</strong> et copiez son identifiant (slug).</li><li>Construisez l'URL ci-dessous pour votre bouton ou votre page de commande.</li><li>Vérifiez les paiements depuis <strong>Transactions</strong>. Les liens en mode test simulent le résultat et ne transfèrent pas de fonds.</li></ol><form id="devLinkForm" class="dev-link-form"><label class="sr-only" for="devLinkSlug">Identifiant du lien de paiement</label><input id="devLinkSlug" required maxlength="128" pattern="[A-Za-z0-9_-]{1,128}" placeholder="Identifiant du lien (slug)" autocomplete="off"><button class="btn" type="submit">Générer l'URL</button></form><div id="devLinkResult" class="dev-link-result" hidden><label for="devCheckoutUrl">URL de paiement</label><input id="devCheckoutUrl" readonly><label for="devCheckoutSnippet">Exemple de bouton HTML</label><pre id="devCheckoutSnippet"></pre><div class="dev-actions"><button id="devCopyUrl" class="btn alt" type="button">Copier l'URL</button><button id="devCopySnippet" class="btn alt" type="button">Copier le code</button><a id="devOpenCheckout" class="btn" target="_blank" rel="noopener noreferrer">Tester le lien</a></div></div><p id="devLinkStatus" class="dev-status" role="status" aria-live="polite"></p><div class="dev-callout"><strong>Notifications serveur</strong>Les webhooks entrants configurés dans <strong>Webhooks</strong> reçoivent les événements signés de votre application. Ils ne constituent pas une notification de confirmation émise par un prestataire de paiement.</div></div></section>
+    </div>
   </section>
 </main>
 <style>.legal{margin:18px auto 90px;max-width:760px;padding:0 16px;text-align:center;font-size:12px;line-height:1.6;color:var(--mut,#6b7684)}.legal a{color:inherit;text-decoration:underline}</style>
@@ -392,6 +449,7 @@ document.querySelector("main").addEventListener("click",event=>{
  if(button.dataset.subpanel==="hooks-events")loadWebhookEvents();
  if(button.dataset.subpanel==="clients-list")loadClients();
  if(button.dataset.subpanel==="clients-activity")loadClientActivity();
+ if(button.dataset.subpanel==="stats-overview"||button.dataset.subpanel==="stats-methods")loadStats();
 });
 let recentWebhook=null;
 function setWebhookMessage(id,message,isError=false){const target=$(id);target.textContent=message;target.dataset.error=String(isError)}
@@ -501,6 +559,24 @@ const tr=(a,h)=>"<tr>"+a.map(c=>h?"<th>"+c+"</th>":"<td>"+c+"</td>").join("")+"<
 const tbl=(h,r,id)=>"<div class='card'><div class='wrap'><table"+(id?" id='"+id+"'":"")+">"+tr(h,1)+r.map(x=>tr(x)).join("")+"</table></div></div>";
 const tg=(c,t)=>"<span class='tag "+c+"'>"+t+"</span>";
 const sec=(id,t,s,items)=>{const e=document.createElement("section");e.id=id;e.className="hide rubric-page";e.innerHTML="<h1>"+t+"</h1><p class='sub'>"+s+"</p><nav class='section-subnav' aria-label='Rubriques de "+t+"'>"+items.map(item=>"<button type='button' data-subpanel='"+item[0]+"' aria-pressed='false'><span aria-hidden='true'>"+item[1]+"</span>"+item[2]+"</button>").join("")+"</nav>"+items.map(item=>"<section class='section-subpanel' id='"+item[0]+"' hidden>"+item[3]+"</section>").join("");document.querySelector("main").appendChild(e)};
+document.querySelector("#devLinkForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const slug=$("devLinkSlug").value.trim();
+ if(!/^[A-Za-z0-9_-]{1,128}$/.test(slug)){ $("devLinkStatus").textContent="Identifiant invalide. Utilisez uniquement lettres, chiffres, tirets et soulignés.";return }
+ const checkout=new URL("../public/paiement.html",location.href);checkout.searchParams.set("l",slug);
+ const url=checkout.href;
+ $("devCheckoutUrl").value=url;
+ $("devCheckoutSnippet").textContent=`<a href="${url}" target="_blank" rel="noopener noreferrer">Payer maintenant</a>`;
+ $("devOpenCheckout").href=url;
+ $("devLinkResult").hidden=false;
+ $("devLinkStatus").textContent="URL générée. Vérifiez que le lien de paiement existe et est actif.";
+});
+async function copyDeveloperValue(value){
+ try{await navigator.clipboard.writeText(value);$("devLinkStatus").textContent="Copié dans le presse-papiers."}
+ catch(error){$("devLinkStatus").textContent="Copie refusée par le navigateur. Sélectionnez le texte pour le copier manuellement."}
+}
+$("devCopyUrl").addEventListener("click",()=>copyDeveloperValue($("devCheckoutUrl").value));
+$("devCopySnippet").addEventListener("click",()=>copyDeveloperValue($("devCheckoutSnippet").textContent));
 const gap="<div style='margin-top:14px'></div>";
 
 sec('wallet','Wallet','Votre solde et vos mouvements.',[
@@ -561,9 +637,54 @@ $("clientForm").addEventListener("submit",async event=>{
  finally{button.disabled=false}
 });
 sec('stats','Statistiques','Répartition de vos encaissements (30 jours).',[
- ["stats-overview","▦","Vue d'ensemble",`<div class="card"><p class="sub" style="margin:0">Les statistiques ne sont pas encore disponibles pour cette période.</p></div>`],
- ["stats-methods","◈","Moyens de paiement",`<div class="card"><p class="sub" style="margin:0">La répartition par moyen de paiement apparaîtra lorsque les données de statistiques seront connectées.</p></div>`]
+ ["stats-overview","▦","Vue d'ensemble",`<div class="card stats-card"><div class="stats-refresh-row"><button id="statsRefresh" class="overview-refresh" type="button">↻ Actualiser</button></div><h2>Activité des 30 derniers jours</h2><p class="sub">Les volumes incluent uniquement les paiements réussis. Les paiements en attente et échoués restent comptés dans le taux de réussite.</p><div id="statsOverviewContent" class="stats-message" role="status" aria-live="polite">Chargement des statistiques…</div></div>`],
+ ["stats-methods","◈","Moyens de paiement",`<div class="card stats-card"><div class="stats-refresh-row"><button id="statsMethodsRefresh" class="overview-refresh" type="button">↻ Actualiser</button></div><h2>Résultats par moyen de paiement</h2><p class="sub">Nombre et volume des paiements réussis sur les 30 derniers jours.</p><div id="statsMethodsContent" class="stats-message" role="status" aria-live="polite">Chargement des statistiques…</div></div>`]
 ]);
+let STATS_DATA=null,STATS_ERROR="";
+const STATS_METHODS=["Orange Money","MTN MoMo","Moov","Wave","Carte"];
+function statsDateKey(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}
+function statsFormatAmount(amount,currency="XOF"){return `${fmt(amount)} ${currency}`}
+function statsSetMessage(id,message,isError=false){const target=$(id);target.textContent=message;target.dataset.error=String(isError)}
+function renderStats(){
+ if(STATS_ERROR){statsSetMessage("statsOverviewContent",STATS_ERROR,true);statsSetMessage("statsMethodsContent",STATS_ERROR,true);return}
+ if(!STATS_DATA)return;
+ const {rows,start}=STATS_DATA,successful=rows.filter(row=>row.status==="succeeded"),total=rows.length;
+ const volume=successful.reduce((sum,row)=>sum+Number(row.amount||0),0),average=successful.length?Math.round(volume/successful.length):0;
+ const successRate=total?Math.round(successful.length/total*100):0;
+ const days=Array.from({length:30},(_,index)=>{const date=new Date(start);date.setDate(date.getDate()+index);return {date,key:statsDateKey(date),volume:0}});
+ const byDay=new Map(days.map(day=>[day.key,day]));
+ successful.forEach(row=>{const day=byDay.get(statsDateKey(new Date(row.created_at)));if(day)day.volume+=Number(row.amount||0)});
+ const maxDaily=Math.max(...days.map(day=>day.volume),0);
+ const currency=successful[0]?.currency||rows[0]?.currency||"XOF";
+ const chart=days.map(day=>{const height=maxDaily?Math.max(day.volume/maxDaily*100,3):3;return `<span class="stats-bar${day.volume?"":" stats-bar-empty"}" title="${esc(day.date.toLocaleDateString("fr-FR"))} · ${esc(statsFormatAmount(day.volume,currency))}"><i style="height:${height}%"></i></span>`}).join("");
+ $("statsOverviewContent").className="";
+ $("statsOverviewContent").innerHTML=total?`<div class="stats-kpis"><article class="stats-kpi"><span>Volume encaissé</span><strong>${esc(statsFormatAmount(volume,currency))}</strong><small>${successful.length} paiement(s) réussi(s)</small></article><article class="stats-kpi"><span>Transactions</span><strong>${fmt(total)}</strong><small>${fmt(total-successful.length)} en attente ou échouée(s)</small></article><article class="stats-kpi"><span>Taux de réussite</span><strong>${successRate} %</strong><small>Ticket moyen : ${esc(statsFormatAmount(average,currency))}</small></article></div><h3>Volume encaissé par jour</h3><div class="stats-chart" role="img" aria-label="Volume quotidien des paiements réussis sur 30 jours">${chart}</div><div class="stats-axis"><span>${esc(days[0].date.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}))}</span><span>${esc(days[6].date.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}))}</span><span>${esc(days[12].date.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}))}</span><span>${esc(days[18].date.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}))}</span><span>${esc(days[24].date.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}))}</span><span>${esc(days[29].date.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}))}</span></div><div class="stats-legend"><i aria-hidden="true"></i>Encaissements réussis</div>`:`<div class="stats-message">Aucune transaction sur les 30 derniers jours. Les indicateurs apparaîtront après vos premiers paiements.</div>`;
+ const methodRows=STATS_METHODS.map(method=>{const payments=successful.filter(row=>row.method===method),amount=payments.reduce((sum,row)=>sum+Number(row.amount||0),0);return {method,count:payments.length,amount}}).filter(method=>method.count);
+ const totalMethodVolume=methodRows.reduce((sum,row)=>sum+row.amount,0),maxMethod=Math.max(...methodRows.map(row=>row.amount),0);
+ $("statsMethodsContent").className="";
+ $("statsMethodsContent").innerHTML=methodRows.length?`<div class="stats-breakdown">${methodRows.map(row=>`<div class="stats-method"><strong class="stats-method-name">${esc(row.method)}</strong><span class="stats-method-track" role="img" aria-label="${Math.round(row.amount/(totalMethodVolume||1)*100)} % du volume"><i style="width:${Math.max(row.amount/(maxMethod||1)*100,2)}%"></i></span><span class="stats-method-value">${row.count} · ${esc(statsFormatAmount(row.amount,currency))}</span></div>`).join("")}</div>`:`<div class="stats-message">Aucun paiement réussi par moyen de paiement sur les 30 derniers jours.</div>`;
+}
+async function loadStats(){
+ const refresh=$("statsRefresh");if(refresh)refresh.disabled=true;
+ statsSetMessage("statsOverviewContent","Chargement des statistiques…");statsSetMessage("statsMethodsContent","Chargement des statistiques…");
+ if(!ABVS.ready){STATS_ERROR="Service de compte indisponible.";renderStats();if(refresh)refresh.disabled=false;return}
+ try{
+  const now=new Date(),start=new Date(now);start.setDate(start.getDate()-29);start.setHours(0,0,0,0);
+  const rows=[];let from=0;
+  while(true){
+   const {data,error}=await ABVS.client.from("transactions").select("amount,currency,method,status,created_at").gte("created_at",start.toISOString()).lte("created_at",now.toISOString()).order("created_at",{ascending:true}).range(from,from+999);
+   if(error)throw error;
+   rows.push(...(data||[]));
+   if(!data||data.length<1000)break;
+   from+=1000;
+  }
+  STATS_DATA={rows,start};STATS_ERROR="";renderStats();
+ }catch(error){
+  STATS_DATA=null;STATS_ERROR=`Chargement impossible : ${error.message||"erreur de lecture Supabase."}`;renderStats();
+ }finally{if(refresh)refresh.disabled=false}
+}
+$("statsRefresh").addEventListener("click",loadStats);
+$("statsMethodsRefresh").addEventListener("click",loadStats);
 sec('retraits','Retraits','Transférez votre solde vers votre compte.',[
  ["withdraw-request","＋","Demande de retrait",`<div class="card"><p class="sub" style="margin:0">Le traitement des retraits n'est pas encore disponible.</p></div>`],
  ["withdraw-history","▤","Historique",`<div class="card"><p class="sub" style="margin:0">L'historique des retraits n'est pas encore connecté aux données du compte.</p></div>`]
