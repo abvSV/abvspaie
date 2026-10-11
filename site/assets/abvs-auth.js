@@ -21,6 +21,29 @@
     location.href = LOGIN;
   }
 
+  // Bouton « Se déconnecter » toujours visible (haut à droite) sur toutes les pages du compte.
+  function addLogoutButton() {
+    try {
+      if (document.getElementById("abvs-logout")) return;
+      var st = document.createElement("style");
+      st.textContent =
+        "#abvs-logout{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:14px;z-index:40;" +
+        "display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:14px;cursor:pointer;" +
+        "border:1px solid var(--line,#dde3ea);background:var(--solid,var(--card,#fff));color:var(--ink,#1b2430);" +
+        "font:600 13px Inter,system-ui,sans-serif;box-shadow:0 8px 22px rgba(40,60,90,.14)}" +
+        "#abvs-logout:hover{filter:brightness(.97)}" +
+        "#abvs-logout:focus-visible{outline:2px solid var(--pri,#4a6283);outline-offset:2px}" +
+        "@media(max-width:600px){#abvs-logout{top:calc(env(safe-area-inset-top,0px) + 10px);right:10px;padding:8px 12px}}";
+      document.head.appendChild(st);
+      var b = document.createElement("button");
+      b.id = "abvs-logout"; b.type = "button";
+      b.setAttribute("aria-label", "Se déconnecter");
+      b.textContent = "\uD83D\uDEAA Déconnexion";
+      b.addEventListener("click", function () { b.disabled = true; signOut(); });
+      document.body.appendChild(b);
+    } catch (_) {}
+  }
+
   // Garde de page : masque la page tant que la session n'est pas confirmée.
   // NB : c'est du confort d'affichage ; la vraie protection des données, c'est la RLS côté base.
   async function requireSession() {
@@ -32,6 +55,7 @@
       var a = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
       if (a.data && a.data.nextLevel === "aal2" && a.data.currentLevel !== "aal2") return location.replace(LOGIN);
       touch(); ungate();
+      if (document.body) addLogoutButton(); else document.addEventListener("DOMContentLoaded", addLogoutButton);
       var last = 0;
       ["pointerdown", "keydown", "scroll"].forEach(function (ev) {
         addEventListener(ev, function () { var n = Date.now(); if (n - last > 15000) { last = n; touch(); } }, { passive: true });
