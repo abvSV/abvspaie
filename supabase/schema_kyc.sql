@@ -140,11 +140,11 @@ begin
     raise exception 'Profil marchand introuvable';
   end if;
 
-  if exists (
+  if not exists (
     select 1 from public.merchant_profiles p
-    where p.user_id = new.merchant_id and p.kyc_status = 'verified'
+    where p.user_id = new.merchant_id and p.kyc_status in ('none', 'rejected')
   ) then
-    raise exception 'Le dossier KYC est déjà vérifié';
+    raise exception 'Le dossier KYC est déjà soumis ou vérifié';
   end if;
 
   select count(*) into v_count
@@ -200,6 +200,9 @@ begin
   end if;
   if v_status = 'verified' then
     raise exception 'Le dossier KYC est déjà vérifié';
+  end if;
+  if v_status not in ('none', 'rejected') then
+    raise exception 'Le dossier KYC est déjà en cours d’examen';
   end if;
   if not exists (
     select 1 from public.merchant_kyc_documents d
@@ -278,7 +281,7 @@ begin
   if p_decision not in ('verified', 'rejected') then
     raise exception 'Décision KYC invalide';
   end if;
-  if p_decision = 'rejected' and (p_reason is null or char_length(trim(p_reason)) < 10 or char_length(p_reason) > 1000) then
+  if p_decision = 'rejected' and (p_reason is null or char_length(trim(p_reason)) < 10 or char_length(trim(p_reason)) > 1000) then
     raise exception 'Un motif de refus de 10 à 1000 caractères est obligatoire';
   end if;
 
@@ -288,6 +291,30 @@ begin
     for update;
   if not found or v_profile.kyc_status <> 'pending' then
     raise exception 'Le dossier n''est pas en attente de décision';
+  end if;
+  if p_decision = 'verified' and (
+    v_profile.kyc_submitted_at is null
+    or v_profile.kyc_full_name is null
+    or v_profile.kyc_country is null
+    or v_profile.kyc_document_type is null
+    or not exists (
+      select 1
+      from public.merchant_kyc_documents d
+      where d.merchant_id = p_merchant_id
+        and d.document_type = 'identity'
+        and d.document_side = 'front'
+    )
+    or not exists (
+      select 1
+      from public.kyc_audit_logs submitted
+      where submitted.merchant_id = p_merchant_id
+        and submitted.actor_id = p_merchant_id
+        and submitted.event_type = 'submitted'
+        and submitted.created_at >= v_profile.kyc_submitted_at
+        and submitted.created_at <= now()
+    )
+  ) then
+    raise exception 'Le dossier ne contient pas les justificatifs requis pour être approuvé';
   end if;
 
   update public.merchant_profiles
@@ -365,7 +392,7 @@ create policy merchant_kyc_storage_insert_own on storage.objects
       select 1
       from public.merchant_profiles p
       where p.user_id = (select auth.uid())
-        and p.kyc_status <> 'verified'
+        and p.kyc_status in ('none', 'rejected')
     )
   );
 

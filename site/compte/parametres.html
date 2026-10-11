@@ -163,9 +163,8 @@ f.addEventListener("submit",async e=>{e.preventDefault();
    <section class="card settings-section" id="entreprise"><h2>Entreprise</h2><p class="mute">Mets à jour les informations enregistrées dans ton profil de compte.</p><form id="business-form" class="settings-form"><label for="business-name">Nom de l'entreprise<input id="business-name" name="company" autocomplete="organization" maxlength="120" required></label><label for="business-country">Pays<select id="business-country" name="country" required><option value="">Choisir un pays</option>${countryNames.map(name=>`<option value="${countryCodes[name]}">${name}</option>`).join("")}</select></label><button class="btn p" type="submit">Enregistrer l'entreprise</button><p class="err" id="business-error" role="status" aria-live="polite"></p></form></section>
    <section class="card settings-section" id="profil"><h2>Profil</h2><p class="mute">Gère le nom associé à ton compte. L'adresse e-mail reste celle utilisée pour te connecter.</p><form id="profile-form" class="settings-form"><label for="profile-name">Nom complet<input id="profile-name" name="full_name" autocomplete="name" maxlength="120" required></label><label for="profile-email">Adresse e-mail<input id="profile-email" name="email" type="email" autocomplete="email" readonly></label><button class="btn p" type="submit">Enregistrer le profil</button><p class="err" id="profile-error" role="status" aria-live="polite"></p></form></section>
    <section class="card settings-section" id="securite"><h2>Sécurité</h2><p class="mute">Ajoute une seconde étape pour mieux protéger ton compte.</p><p class="settings-status">Authentification à deux facteurs : <span class="tag warn" id="mfa-state">Vérification…</span></p><p class="settings-note" id="mfa-risk-note">La MFA est désactivée : avec le mot de passe seul, une personne qui le connaît peut se connecter. <a href="securite.html#mfa">Activer la MFA avec une application d'authentification</a></p><div class="settings-options">
-    <article class="settings-option"><h3>Code par e-mail</h3><p id="email-mfa-note">À chaque nouvelle connexion, confirme ton identité avec un code envoyé à l’adresse e-mail de ton compte.</p><button class="btn" id="email-mfa" type="button" aria-describedby="email-mfa-note">Activer par e-mail</button><button class="btn" id="email-mfa-disable" type="button" hidden>Désactiver le code par e-mail</button><form id="email-mfa-form" hidden><label for="email-mfa-code">Code de vérification<input id="email-mfa-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required></label><button class="btn p" type="submit">Confirmer le code</button><button class="btn" id="email-mfa-cancel" type="button">Annuler</button></form><p class="err" id="email-mfa-error" role="status" aria-live="polite"></p></article>
     <article class="settings-option"><h3>Application d'authentification</h3><p>Utilise une application TOTP et un code temporaire à 6 chiffres.</p><a class="btn p" href="securite.html#mfa">Utiliser une application d'authentification</a></article>
-   </div><p class="settings-note" style="margin-top:14px">Le code e-mail ajoute une vérification à la connexion. La configuration serveur Brevo est nécessaire pour envoyer les codes.</p><div class="settings-actions"><a class="btn" href="securite.html#sessions">Gérer les connexions</a><a class="btn" href="securite.html#mfa">Gérer la double authentification</a></div></section>
+   </div><div class="settings-actions"><a class="btn" href="securite.html#sessions">Gérer les connexions</a><a class="btn" href="securite.html#mfa">Gérer la double authentification</a></div></section>
    <section class="card settings-section" id="frais"><h2>Frais</h2><p class="mute">Consulte les frais et informations de facturation disponibles pour ton compte.</p><a class="btn" href="facturation.html">Ouvrir la facturation</a></section>
    <section class="card settings-section" id="equipe"><h2>Équipe</h2><p class="mute">La gestion des membres et des rôles n'est pas encore configurée côté serveur.</p><a class="btn" href="equipe.html">Consulter l'équipe</a></section>
    <section class="card settings-section" id="mot-de-passe"><h2>Mot de passe</h2><p class="mute">Choisis un mot de passe différent et difficile à deviner.</p><form id="fpw"><label>Nouveau mot de passe<input name="b" type="password" autocomplete="new-password" minlength="8" required></label><button class="btn p" type="submit">Mettre à jour le mot de passe</button></form></section>
@@ -202,8 +201,10 @@ f.addEventListener("submit",async e=>{e.preventDefault();
      const [label,style]=needsConfirmation?["À vérifier","err"]:kycStatuses[profile.kyc_status]||["Statut inconnu","err"];
      status.textContent=label;status.className="tag "+style;
      note.textContent=needsConfirmation?"Le statut ne peut pas être confirmé sans vérifier les justificatifs. Active la MFA avant de te fier à cette information.":"Active la MFA pour accéder au dossier KYC.";
-     form.hidden=true;
-     list.textContent="Active la MFA pour consulter les justificatifs.";
+     const canPrepareForm=profile.kyc_status==="none"||profile.kyc_status==="rejected";
+     form.hidden=!canPrepareForm;
+     form.querySelectorAll("input,select,button").forEach(control=>{control.disabled=true});
+     list.textContent="Active la MFA pour consulter les justificatifs et déposer les fichiers.";
      return;
     }
     const {data:documents,error:documentsError}=await ABVS.client.from("merchant_kyc_documents").select("id,document_type,document_side,storage_path,created_at").order("created_at",{ascending:false});
@@ -215,17 +216,19 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     const displayStatus=inconsistentVerified?"none":profile.kyc_status;
     const [label,style]=inconsistentVerified?["À vérifier","err"]:kycStatuses[displayStatus]||["Statut inconnu","err"];
     status.textContent=label;status.className="tag "+style;
+    const canEdit=displayStatus==="none"||displayStatus==="rejected";
     note.textContent=inconsistentVerified
      ?"Ce compte est marqué comme vérifié sans justificatif ni preuve complète d'une décision manuelle. Il ne doit pas être considéré comme vérifié. La migration KYC doit être réappliquée par l'administrateur."
      :displayStatus==="rejected"?`Dossier refusé : ${profile.kyc_rejection_reason||"consulte le support avant une nouvelle soumission."}`
-     :displayStatus==="pending"?"Ton dossier a été transmis ; sa validation n'est pas automatique."
+     :displayStatus==="pending"?"Ton dossier est en cours d'examen. Tu ne peux pas modifier les justificatifs pendant cette période."
      :displayStatus==="verified"?"Ton identité a été vérifiée. Aucun nouveau document ne peut être ajouté."
      :"Aucun dossier soumis. Tu peux commencer la vérification en renseignant tes informations et en déposant le recto de ta pièce d'identité.";
-    form.hidden=displayStatus==="verified";
-    document.getElementById("kyc-submit-case").hidden=!hasIdentity||displayStatus==="verified";
+    form.hidden=!canEdit||inconsistentVerified;
+    form.querySelectorAll("input,select,button").forEach(control=>{control.disabled=!canEdit||inconsistentVerified});
+    document.getElementById("kyc-submit-case").hidden=!hasIdentity||!canEdit||inconsistentVerified;
     const uploadButton=document.getElementById("kyc-submit");
-    uploadButton.disabled=records.length>=8;
-    if(records.length>=8){note.textContent="La limite de huit justificatifs est atteinte. Tu peux encore soumettre le dossier ou contacter le support."; }
+    uploadButton.disabled=records.length>=8||!canEdit||inconsistentVerified;
+    if(records.length>=8&&canEdit){note.textContent="La limite de huit justificatifs est atteinte. Tu peux encore soumettre le dossier ou contacter le support."; }
     if(!records.length){list.textContent="Aucun justificatif déposé."}
     else{
      const items=records.map(entry=>{
@@ -348,81 +351,6 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     document.getElementById("mfa-risk-note").hidden=active;
    }catch(_){state.textContent="Vérification impossible";state.className="tag warn"}
   }
-  const emailMfaButton=document.getElementById("email-mfa");
-  const emailMfaDisable=document.getElementById("email-mfa-disable");
-  const emailMfaForm=document.getElementById("email-mfa-form");
-  const emailMfaError=document.getElementById("email-mfa-error");
-  let emailMfaAction="";
-  async function refreshEmailMfa(){
-   if(!auth){emailMfaButton.disabled=true;emailMfaError.textContent="Service d'authentification indisponible.";return}
-   const {data,error}=await ABVS.emailMfa("status");
-   if(error){
-    emailMfaButton.disabled=true;
-    emailMfaError.textContent=error.status===503
-     ?"Le service e-mail n'est pas encore configuré par l'administrateur."
-     :"Impossible de vérifier le statut e-mail. Réessaie plus tard.";
-    return;
-   }
-   if(!data.available){
-    emailMfaButton.disabled=true;
-    emailMfaError.textContent="L’administrateur doit terminer la configuration de sécurité et de l’envoi Brevo.";
-    return;
-   }
-   emailMfaButton.disabled=false;
-   emailMfaButton.hidden=data.enabled;
-   emailMfaDisable.hidden=!data.enabled;
-   document.getElementById("email-mfa-note").textContent=data.enabled
-    ?"La vérification par code e-mail est activée pour les nouvelles connexions."
-    :"Un code sera demandé après ton mot de passe à chaque nouvelle connexion.";
-   emailMfaError.textContent="";
-  }
-  async function startEmailMfa(action){
-   emailMfaAction=action;
-   emailMfaError.textContent="";
-   emailMfaButton.disabled=true;
-   emailMfaDisable.disabled=true;
-   const {error}=await ABVS.emailMfa("start_"+action);
-   emailMfaButton.disabled=false;
-   emailMfaDisable.disabled=false;
-   if(error){
-    emailMfaAction="";
-    emailMfaError.textContent=error.message;
-    return;
-   }
-   emailMfaForm.hidden=false;
-   document.getElementById("email-mfa-code").focus();
-   emailMfaError.textContent="Code envoyé à l’adresse confirmée de ton compte. Il expire dans 10 minutes.";
-  }
-  emailMfaButton.addEventListener("click",()=>startEmailMfa("enroll"));
-  emailMfaDisable.addEventListener("click",()=>startEmailMfa("disable"));
-  document.getElementById("email-mfa-cancel").addEventListener("click",()=>{
-   emailMfaAction="";
-   emailMfaForm.hidden=true;
-   emailMfaForm.reset();
-   emailMfaError.textContent="";
-  });
-  emailMfaForm.addEventListener("submit",async event=>{
-   event.preventDefault();
-   if(!emailMfaAction)return;
-   const button=emailMfaForm.querySelector('button[type="submit"]');
-   button.disabled=true;
-   emailMfaError.textContent="";
-   try{
-    const {error}=await ABVS.emailMfa("verify_"+emailMfaAction,document.getElementById("email-mfa-code").value.trim());
-    if(error)throw error;
-    const refreshed=await ABVS.refreshSession();
-    if(refreshed.error)throw refreshed.error;
-    emailMfaForm.hidden=true;
-    emailMfaForm.reset();
-    emailMfaError.textContent=emailMfaAction==="enroll"
-     ?"Code e-mail activé pour les prochaines connexions."
-     :"Code e-mail désactivé.";
-    emailMfaAction="";
-    await refreshEmailMfa();
-   }catch(error){
-    emailMfaError.textContent=error.message||"Le code n'a pas pu être vérifié.";
-   }finally{button.disabled=false}
-  });
   const settingsSections=[...document.querySelectorAll(".settings-content > .settings-section")];
   function showSettingsSection(id){
    const selected=settingsSections.find(section=>section.id===id)||null;
@@ -440,7 +368,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
   }));
   window.addEventListener("hashchange",()=>showSettingsSection(location.hash.slice(1)));
   showSettingsSection(location.hash.slice(1));
-  loadProfile();loadMfa();loadKyc();refreshEmailMfa();
+  loadProfile();loadMfa();loadKyc();
  })();
  </script>
  </body>

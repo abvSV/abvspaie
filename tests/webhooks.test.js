@@ -3,7 +3,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
-const { encryptSecret, decryptSecret, verifySignature, readRawBody } = require("../server/webhooks");
+const { encryptSecret, decryptSecret, verifySignature, readRawBody, authUser } = require("../server/webhooks");
 const receiveWebhook = require("../api/webhooks/receive");
 
 test("encrypts and decrypts a webhook secret", () => {
@@ -36,6 +36,25 @@ test("rejects request bodies above the configured limit", async () => {
     yield Buffer.from("1234");
   })();
   await assert.rejects(readRawBody(request, 3), { status: 413 });
+});
+
+test("authenticates existing sessions without email-MFA token claims", async t => {
+  const env = { ...process.env };
+  const originalFetch = global.fetch;
+  const userId = crypto.randomUUID();
+  process.env.SUPABASE_URL = "https://supabase.example";
+  process.env.SUPABASE_ANON_KEY = "test-anon";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service";
+  process.env.EMAIL_MFA_TOKEN_HOOK_CONFIGURED = "true";
+  global.fetch = async () => Response.json({ id: userId });
+  t.after(() => {
+    process.env = env;
+    global.fetch = originalFetch;
+  });
+
+  const accessToken = `header.${Buffer.from(JSON.stringify({ sub: userId })).toString("base64url")}.signature`;
+  const user = await authUser({ headers: { authorization: `Bearer ${accessToken}` } });
+  assert.equal(user.id, userId);
 });
 
 test("accepts and stores a correctly signed JSON webhook", async t => {

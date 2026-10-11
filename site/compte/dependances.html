@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ABVSPAIE — Dépendances techniques</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script>
+<script src="../assets/abvs-config.js"></script>
+<script src="../assets/abvs-auth.js"></script>
+<script>ABVS.requireSession()</script>
+<style>
+:root{--bg:#eef1f5;--solid:#fff;--ink:#1b2430;--mute:#657487;--pri:#405d83;--line:#dce3eb;--in:#f7f9fb;--warn:#b7791f;font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg);font-synthesis:none}
+@media(prefers-color-scheme:dark){:root{--bg:#12171e;--solid:#1b222c;--ink:#edf1f5;--mute:#9aa6b4;--pri:#8fa8c4;--line:#2b3541;--in:#151b23;--warn:#e0a84a}}
+*{box-sizing:border-box}body{margin:0}.wrap{max-width:960px;margin:auto;padding:38px 20px 80px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.top a,.card a{color:var(--pri)}.sub,.muted{color:var(--mute)}.card{background:var(--solid);border:1px solid var(--line);border-radius:18px;padding:22px;margin:18px 0}.intro{line-height:1.65}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}.dependency{background:var(--solid);border:1px solid var(--line);border-radius:16px;padding:20px}.dependency h2{font-size:18px;margin:0 0 8px}.dependency p{line-height:1.6}.badge{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:4px 9px;font-size:12px;color:var(--pri);margin:3px}.uses{margin-top:12px}.tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:18px 0}.button{border:1px solid var(--line);background:var(--solid);color:var(--ink);border-radius:10px;padding:10px 14px;cursor:pointer;font:600 14px Inter,sans-serif}.status{color:var(--mute);font-size:13px}.note{border-left:3px solid var(--warn);padding:12px 14px;background:var(--in);border-radius:8px;line-height:1.6}.error{color:#a5323b}[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main class="wrap">
+ <header class="top"><div><p class="sub">ESPACE CONFORMITÉ</p><h1>Dépendances techniques</h1></div><a href="kyc-admin.html">Retour à l’examen KYC</a></header>
+ <section id="access-status" class="card" role="status" aria-live="polite">Vérification de l’accès administrateur…</section>
+ <div id="content" hidden>
+  <p class="intro">Cette page résume les bibliothèques et services externes utilisés par le site, les zones fonctionnelles qui en dépendent et leur rôle. Les fiches sont affichées dans un ordre différent à chaque chargement.</p>
+  <div class="tools"><button class="button" id="shuffle" type="button">Mélanger les rubriques</button><span class="status" id="shuffle-status" aria-live="polite"></span></div>
+  <section id="dependency-list" class="grid" aria-label="Dépendances et rubriques associées"></section>
+  <section class="card"><h2>Gestion des paquets</h2><p>Le dépôt ne contient pas de manifeste npm ni de dépendances installées par npm. Les composants listés ci-dessus sont chargés depuis un CDN, fournis par Node.js ou utilisés comme services hébergés.</p></section>
+ </div>
+</main>
+<script>
+(()=>{
+ const status=document.getElementById("access-status"),content=document.getElementById("content"),list=document.getElementById("dependency-list"),shuffleStatus=document.getElementById("shuffle-status");
+ const dependencies=[
+  {name:"Supabase JavaScript",version:"@supabase/supabase-js 2.58.0",kind:"Bibliothèque navigateur",description:"Client JavaScript chargé depuis jsDelivr. Il gère les sessions Auth et les accès navigateur autorisés à la base et au stockage.",uses:["Inscription et connexion","Paramètres et MFA TOTP","Dépôt et consultation KYC","Tableau de bord et webhooks"],sources:["site/public/inscription-connexion.html","site/compte/parametres.html","site/compte/tableau-de-bord.html"]},
+  {name:"Node.js crypto",version:"Module natif, sans paquet externe",kind:"Dépendance serveur",description:"Module intégré à Node.js pour générer des identifiants aléatoires, chiffrer des secrets et calculer ou vérifier des signatures HMAC.",uses:["Dépôt de documents KYC","Configuration des endpoints webhook","Réception et authentification des webhooks"],sources:["api/kyc/upload.js","api/webhooks/endpoints.js","api/webhooks/receive.js","server/webhooks.js"]},
+  {name:"Supabase hébergé",version:"Service externe",kind:"Authentification, base et stockage",description:"Fournit Auth, les tables PostgreSQL avec RLS, le bucket privé des pièces KYC et les données de webhooks. La clé service reste côté serveur.",uses:["Comptes et sessions","Profils marchands et décisions KYC","Stockage privé des justificatifs","Événements webhook"],sources:["site/assets/abvs-config.js","supabase/schema_kyc.sql","api/kyc/"]},
+  {name:"Vercel Functions",version:"Plateforme d’hébergement",kind:"Runtime API",description:"Héberge les routes serveur du dépôt sous /api et sert les pages statiques. La configuration du projet se trouve dans vercel.json.",uses:["Authentification serveur","API KYC","API webhooks"],sources:["api/","vercel.json"]},
+  {name:"Google Fonts — Inter",version:"Feuille de style distante",kind:"Typographie",description:"Fournit la police Inter utilisée par les interfaces ABVSPAIE. Les pages définissent une police système de remplacement.",uses:["Page d’accueil","Connexion et inscription","Paramètres et interface KYC","Pages du tableau de bord"],sources:["site/index.html","site/public/inscription-connexion.html","site/compte/kyc-admin.html"]}
+ ];
+ function shuffled(items){
+  const result=items.slice();
+  for(let i=result.length-1;i>0;i--){
+   const j=Math.floor(Math.random()*(i+1));
+   [result[i],result[j]]=[result[j],result[i]];
+  }
+  return result;
+ }
+ function render(){
+  list.replaceChildren(...shuffled(dependencies).map(item=>{
+   const card=document.createElement("article");card.className="dependency";
+   const heading=document.createElement("h2");heading.textContent=item.name;card.appendChild(heading);
+   const badge=document.createElement("span");badge.className="badge";badge.textContent=item.kind;card.appendChild(badge);
+   const version=document.createElement("p");version.className="muted";version.textContent=item.version;card.appendChild(version);
+   const description=document.createElement("p");description.textContent=item.description;card.appendChild(description);
+   const uses=document.createElement("div");uses.className="uses";
+   shuffled(item.uses).forEach(value=>{const tag=document.createElement("span");tag.className="badge";tag.textContent=value;uses.appendChild(tag)});
+   card.appendChild(uses);
+   const sources=document.createElement("p");sources.className="muted";
+   sources.appendChild(document.createTextNode("Fichiers concernés : "));
+   item.sources.forEach((source,index)=>{
+    if(index)sources.appendChild(document.createTextNode(" · "));
+    const path=document.createElement("code");path.textContent=source;sources.appendChild(path);
+   });
+   card.appendChild(sources);return card;
+  }));
+  shuffleStatus.textContent="Ordre mélangé.";
+ }
+ document.getElementById("shuffle").addEventListener("click",render);
+ (async()=>{
+  if(!ABVS.ready){status.textContent="Service d’authentification indisponible.";status.classList.add("error");return}
+  const [{data,error},{data:assurance,error:assuranceError}]=await Promise.all([
+   ABVS.client.auth.getUser(),ABVS.client.auth.mfa.getAuthenticatorAssuranceLevel()
+  ]);
+  if(error||!data.user){status.textContent="Session expirée. Reconnectez-vous.";status.classList.add("error");return}
+  if(data.user.app_metadata?.kyc_admin!==true){status.textContent="Accès réservé aux administrateurs KYC autorisés.";status.classList.add("error");return}
+  if(assuranceError||assurance.currentLevel!=="aal2"){status.textContent="Une session avec authentification MFA est requise.";status.classList.add("error");return}
+  status.hidden=true;content.hidden=false;render();
+ })().catch(error=>{status.textContent=error.message||"La vérification de l’accès a échoué.";status.classList.add("error")});
+})();
+</script>
+</body>
+</html>

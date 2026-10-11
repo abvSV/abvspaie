@@ -97,3 +97,42 @@ test("records a rejection through the privileged transactional RPC", async t => 
     p_admin_id: adminId
   });
 });
+
+test("records an approval through the privileged transactional RPC", async t => {
+  const adminId = crypto.randomUUID();
+  const merchantId = crypto.randomUUID();
+  const calls = [];
+  const token = await withMockAuth(t, { id: adminId, app_metadata: { kyc_admin: true } }, async (url, options) => {
+    calls.push({ url: String(url), options });
+    return new Response(null, { status: 204 });
+  });
+  const res = createResponse();
+  await handler({
+    method: "POST",
+    headers: { authorization: `Bearer ${token}` },
+    body: { merchant_id: merchantId, decision: "verified" }
+  }, res);
+  assert.equal(res.statusCode, 200);
+  assert.deepEqual(JSON.parse(calls[0].options.body), {
+    p_merchant_id: merchantId,
+    p_decision: "verified",
+    p_reason: null,
+    p_admin_id: adminId
+  });
+});
+
+test("rejects a database decision when required KYC evidence is missing", async t => {
+  const adminId = crypto.randomUUID();
+  const merchantId = crypto.randomUUID();
+  const token = await withMockAuth(t, { id: adminId, app_metadata: { kyc_admin: true } }, async () => {
+    return new Response(JSON.stringify({ message: "Le dossier ne contient pas les justificatifs requis pour être approuvé" }), { status: 400 });
+  });
+  const res = createResponse();
+  await handler({
+    method: "POST",
+    headers: { authorization: `Bearer ${token}` },
+    body: { merchant_id: merchantId, decision: "verified" }
+  }, res);
+  assert.equal(res.statusCode, 409);
+  assert.match(JSON.parse(res.body).error, /incomplet/i);
+});

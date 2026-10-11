@@ -146,6 +146,12 @@ module.exports = async function handler(req, res) {
       if (details.includes("n''est pas en attente") || details.includes("n'est pas en attente")) {
         return json(res, 409, { error: "Ce dossier a déjà été traité ou n'est plus en attente." });
       }
+      if (details.includes("justificatifs requis pour être approuvé")) {
+        return json(res, 409, { error: "Le dossier est incomplet et ne peut pas être approuvé." });
+      }
+      if (details.includes("motif de refus")) {
+        return json(res, 400, { error: "Le motif de refus doit contenir entre 10 et 1000 caractères." });
+      }
       console.error("KYC decision failed with HTTP status:", response.status);
       return json(res, 502, { error: "La décision KYC n'a pas pu être enregistrée." });
     }

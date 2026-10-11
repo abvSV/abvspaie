@@ -482,12 +482,6 @@
             <input id="lcode" type="text" inputmode="numeric" maxlength="6" placeholder="Code à 6 chiffres de votre application" autocomplete="one-time-code" aria-label="Code de double authentification">
             <div class="err" data-for="lcode" role="alert"></div>
           </div>
-          <div id="lEmail2" class="hide">
-            <p>Un code de sécurité a été envoyé à l’adresse e-mail de votre compte.</p>
-            <input id="lEmailCode" type="text" inputmode="numeric" maxlength="6" placeholder="Code reçu par e-mail" autocomplete="one-time-code" aria-label="Code de vérification e-mail">
-            <div class="err" data-for="lEmailCode" role="alert"></div>
-            <button class="btn" id="lEmailResend" type="button">Renvoyer le code</button>
-          </div>
           <button class="btn" type="submit">Se connecter</button>
         </form>
         <div class="swap"><span class="link" id="forgot">Mot de passe oublié ?</span> · <span class="link"
@@ -564,9 +558,8 @@
       }
     };
 
-    // ───── Connexion : mot de passe, puis TOTP et/ou code e-mail activés ─────
+    // ───── Connexion : mot de passe, puis TOTP si activé ─────
     let mfaFactor = null;
-    let emailMfaPending = false;
     let loginAudioContext = null;
     const prepareLoginSound = () => {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -605,30 +598,6 @@
       show('vDone');
       setTimeout(() => { location.replace('../compte/tableau-de-bord.html'); }, 1400);
     };
-    const beginEmailMfa = async () => {
-      const status = await ABVS.emailMfa('status');
-      if (status.error) throw status.error;
-      if (!status.data.available || !status.data.enabled) return false;
-      const started = await ABVS.emailMfa('start_login');
-      if (started.error) throw started.error;
-      emailMfaPending = true;
-      $('lEmail2').classList.remove('hide');
-      $('lEmailCode').focus();
-      setErr('lEmailCode', started.data.message || 'Saisis le code envoyé par e-mail.');
-      return true;
-    };
-    $('lEmailResend').onclick = async () => {
-      $('lEmailResend').disabled = true;
-      try {
-        const result = await ABVS.emailMfa('start_login');
-        if (result.error) throw result.error;
-        setErr('lEmailCode', result.data.message || 'Un nouveau code a été envoyé.');
-      } catch (err) {
-        setErr('lEmailCode', err.message || 'Le code n’a pas pu être renvoyé.');
-      } finally {
-        $('lEmailResend').disabled = false;
-      }
-    };
     $('fLogin').onsubmit = async e => {
       e.preventDefault();
       const r = [setErr('lemail', okMail($('lemail').value) ? '' : 'E-mail invalide.'), setErr('lpwd', $('lpwd').value ? '' : 'Saisissez votre mot de passe.')];
@@ -638,20 +607,6 @@
       btn.disabled = true;
       prepareLoginSound();
       try {
-        if (emailMfaPending) {
-          const code = $('lEmailCode').value.trim();
-          if (!/^\d{6}$/.test(code)) { setErr('lEmailCode', 'Saisis le code à 6 chiffres reçu par e-mail.'); return }
-          const verification = await ABVS.emailMfa('verify_login', code);
-          if (verification.error) { setErr('lEmailCode', verification.error.message); return }
-          const refreshed = await ABVS.refreshSession();
-          if (refreshed.error || !await ABVS.hasSession()) {
-            setErr('lEmailCode', 'Le code a été accepté, mais la session sécurisée n’a pas pu être actualisée. Reconnecte-toi.');
-            return;
-          }
-          emailMfaPending = false;
-          goDash();
-          return
-        }
         if (mfaFactor) {
           const code = $('lcode').value.trim();
           if (!/^\d{6}$/.test(code)) { setErr('lcode', 'Code invalide : 6 chiffres attendus.'); return }
@@ -659,7 +614,6 @@
           if (v.error) { setErr('lcode', ABVS.msg(v.error)); return }
           setErr('lcode', '');
           mfaFactor = null;
-          if (await beginEmailMfa()) return;
           goDash(); return
         }
         const res = await ABVS.signIn($('lemail').value.trim(), $('lpwd').value);
@@ -670,14 +624,9 @@
           setErr('lcode', "Double authentification : entrez le code de votre application d'authentification.");
           return
         }
-        if (await beginEmailMfa()) return;
         goDash();
       } catch (err) {
-        if ($('lEmail2').classList.contains('hide')) {
-          setErr('lpwd', err.message || 'La vérification e-mail a échoué. Réessayez.');
-        } else {
-          setErr('lEmailCode', err.message || 'La vérification e-mail a échoué. Réessaie.');
-        }
+        setErr('lpwd', err.message || 'La connexion a échoué. Réessayez.');
       } finally { btn.disabled = false }
     };
     $('forgot').onclick = () => { location.replace('mot-de-passe-oublie.html'); };

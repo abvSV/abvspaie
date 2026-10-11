@@ -33,7 +33,7 @@ function decryptSecret(record) {
   ]).toString("utf8");
 }
 
-async function authUser(req, options = {}) {
+async function authUser(req) {
   const authorization = req.headers.authorization || "";
   const match = authorization.match(/^Bearer ([^\s]+)$/i);
   if (!match) return null;
@@ -44,22 +44,6 @@ async function authUser(req, options = {}) {
   if (!response.ok) return null;
   const user = await response.json();
   if (!user || !user.id) return null;
-  if (process.env.EMAIL_MFA_TOKEN_HOOK_CONFIGURED === "true") {
-    try {
-      const claims = JSON.parse(Buffer.from(match[1].split(".")[1], "base64url").toString("utf8"));
-      const validClaims = claims.sub === user.id
-        && typeof claims.email_mfa_required === "boolean"
-        && typeof claims.email_mfa_verified === "boolean";
-      if (!validClaims || claims.email_mfa_verified !== true) {
-        const pendingEmailFactor = validClaims
-          && claims.email_mfa_required === true
-          && claims.email_mfa_verified === false;
-        return options.allowPendingEmailMfa === true && pendingEmailFactor ? user : null;
-      }
-    } catch (_) {
-      return null;
-    }
-  }
   return user;
 }
 

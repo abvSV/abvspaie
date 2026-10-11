@@ -14,12 +14,12 @@
 <script>ABVS.requireSession()</script>
 <style>
 :root{font-family:Inter,system-ui,sans-serif;color:#1b2430;background:#eef1f5;font-synthesis:none}
-*{box-sizing:border-box}body{margin:0}.wrap{max-width:980px;margin:auto;padding:38px 20px 80px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px}.top a,.case a{color:#405d83}.sub,.muted{color:#657487}.card,.case{background:#fff;border:1px solid #dce3eb;border-radius:18px;padding:22px;margin:18px 0}.case h2{margin:0 0 8px;font-size:18px}.row{display:flex;gap:12px;flex-wrap:wrap}.docs,.history{margin:16px 0}.docs button,.action{border:1px solid #dce3eb;background:#fff;border-radius:9px;padding:9px 12px;cursor:pointer;font:600 13px Inter,sans-serif}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.approve{background:#27664a;color:white;border:0}.reject{background:#a5323b;color:white;border:0}.reason{max-width:600px;min-height:78px}.error{color:#a5323b}.status{font-weight:700;color:#405d83}.history{font-size:13px;color:#657487;border-top:1px solid #e7ebf0;padding-top:12px}.hidden{display:none!important}[hidden]{display:none!important}
+*{box-sizing:border-box}body{margin:0}.wrap{max-width:980px;margin:auto;padding:38px 20px 80px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px}.top a,.case a{color:#405d83}.sub,.muted{color:#657487}.card,.case{background:#fff;border:1px solid #dce3eb;border-radius:18px;padding:22px;margin:18px 0}.case h2{margin:0 0 8px;font-size:18px}.row{display:flex;gap:12px;flex-wrap:wrap}.docs,.history{margin:16px 0}.docs button,.action{border:1px solid #dce3eb;background:#fff;border-radius:9px;padding:9px 12px;cursor:pointer;font:600 13px Inter,sans-serif}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.approve{background:#27664a;color:white;border:0}.reject{background:#a5323b;color:white;border:0}.reason{max-width:600px;min-height:78px}.review-confirm{display:flex;gap:8px;align-items:flex-start;margin-top:16px}.error{color:#a5323b}.status{font-weight:700;color:#405d83}.history{font-size:13px;color:#657487;border-top:1px solid #e7ebf0;padding-top:12px}.hidden{display:none!important}[hidden]{display:none!important}
 </style>
 </head>
 <body>
 <main class="wrap">
- <header class="top"><div><p class="sub">ESPACE CONFORMITÉ</p><h1>Examen des dossiers KYC</h1></div><a href="parametres.html#kyc">Retour aux paramètres</a></header>
+ <header class="top"><div><p class="sub">ESPACE CONFORMITÉ</p><h1>Examen des dossiers KYC</h1></div><div class="row"><a href="dependances.html">Dépendances techniques</a><a href="parametres.html#kyc">Retour aux paramètres</a></div></header>
  <div id="page-status" class="card" role="status" aria-live="polite">Vérification de l'accès administrateur…</div>
  <section><h2>Dossiers en attente</h2><div id="case-list" aria-label="Dossiers en attente"></div></section>
  <section><h2>Historique récent des dépôts et décisions</h2><div id="history-list" class="card" aria-live="polite">Chargement…</div></section>
@@ -27,6 +27,12 @@
 <script>
 (()=>{
  const status=document.getElementById("page-status"),list=document.getElementById("case-list");
+ const sections=[...document.querySelectorAll("main.wrap > section")];
+ for(let i=sections.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [sections[i],sections[j]]=[sections[j],sections[i]];
+ }
+ sections.forEach(section=>section.parentElement.appendChild(section));
  const labels={identity:"Pièce d'identité",business:"Document d'entreprise",address:"Justificatif d'adresse",other:"Autre justificatif"};
  const sides={front:"Recto / page d'identité",back:"Verso",supporting:"Complémentaire"};
  const documentKinds={national_id:"Carte nationale d'identité",passport:"Passeport",driving_license:"Permis de conduire"};
@@ -75,12 +81,20 @@
   }
   const reason=document.createElement("textarea");reason.className="reason";reason.maxLength=1000;reason.placeholder="Motif obligatoire en cas de refus (10 caractères minimum)";reason.setAttribute("aria-label","Motif de refus");
   card.appendChild(reason);
+  const reviewLabel=document.createElement("label");reviewLabel.className="review-confirm";
+  const review=document.createElement("input");review.type="checkbox";
+  reviewLabel.appendChild(review);
+  reviewLabel.appendChild(document.createTextNode("J’ai consulté les justificatifs et vérifié les informations du dossier."));
+  card.appendChild(reviewLabel);
   const message=appendText(card,"p","","error");message.setAttribute("role","status");
   const actions=document.createElement("div");actions.className="actions";
   [["verified","Approuver","approve"],["rejected","Refuser","reject"]].forEach(([decision,label,className])=>{
    const button=document.createElement("button");button.type="button";button.className=`action ${className}`;button.textContent=label;
+   button.disabled=true;
+   review.addEventListener("change",()=>{button.disabled=!review.checked});
    button.addEventListener("click",async()=>{
     message.textContent="";
+    if(!review.checked){message.textContent="Consultez les justificatifs avant de prendre une décision.";return}
     if(decision==="rejected"&&(reason.value.trim().length<10||reason.value.trim().length>1000)){message.textContent="Saisissez un motif de refus entre 10 et 1000 caractères.";return}
     button.disabled=true;
     try{
