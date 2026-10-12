@@ -33,17 +33,38 @@ function decryptSecret(record) {
   ]).toString("utf8");
 }
 
-async function authUser(req) {
+async function authUser(req, options = {}) {
   const authorization = req.headers.authorization || "";
-  const match = authorization.match(/^Bearer ([^\s]+)$/i);
+  const match = authorization.match(/^Bearer\s+([^\s]+)$/i);
   if (!match) return null;
+
+  const token = match[1];
+  let claims = {};
+  try {
+    const parts = token.split(".");
+    if (parts.length === 3) {
+      claims = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf8"));
+    }
+  } catch (_) {
+    claims = {};
+  }
+
+  if (claims.email_mfa_required === true && claims.email_mfa_verified === false && !options.allowPendingEmailMfa) {
+    return null;
+  }
+
   const { url, anonKey } = config();
   const response = await fetch(`${url}/auth/v1/user`, {
-    headers: { apikey: anonKey, authorization: `Bearer ${match[1]}` }
+    headers: { apikey: anonKey, authorization: authorization }
   });
   if (!response.ok) return null;
   const user = await response.json();
   if (!user || !user.id) return null;
+
+  if (claims.email_mfa_required === true && claims.email_mfa_verified === false && !options.allowPendingEmailMfa) {
+    return null;
+  }
+
   return user;
 }
 
