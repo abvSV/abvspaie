@@ -14,15 +14,20 @@
 <script>ABVS.requireSession("../public/connexion-admin.html",{requireMfa:false})</script>
 <style>
 :root{font-family:Inter,system-ui,sans-serif;color:#1b2430;background:#f2f5f8;font-synthesis:none}
-*{box-sizing:border-box}body{margin:0}.shell{max-width:1500px;margin:auto;padding:28px 22px 72px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.top h1{margin:4px 0}.eyebrow,.muted{color:#657487}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;margin-top:20px}.panel,.sidebar,.nav-button,.kpi{background:#fff;border:1px solid #dce3eb;border-radius:14px}.sidebar{padding:12px;height:max-content;position:sticky;top:15px}.nav-button{display:block;width:100%;padding:10px 12px;margin:4px 0;text-align:left;cursor:pointer;font:600 13px Inter,sans-serif;color:#405d83}.nav-button[aria-current=page]{background:#edf3fa;border-color:#95abc4;color:#1b2430}.panel{padding:20px;min-width:0}.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}.toolbar input{flex:1;min-width:200px}.field,.button{border:1px solid #cbd5df;border-radius:9px;padding:10px 12px;background:white;font:inherit}.button{cursor:pointer;font-weight:600;color:#24364b}.button:disabled{opacity:.55;cursor:wait}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.kpi{padding:17px}.kpi strong{display:block;font-size:25px;margin-top:8px}.table-wrap{overflow:auto;border:1px solid #e1e7ed;border-radius:12px}table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid #e6ebf0;vertical-align:top;max-width:380px;overflow-wrap:anywhere}th{background:#f7f9fb;color:#506176;position:sticky;top:0}td pre{margin:0;white-space:pre-wrap;max-width:420px;font:12px ui-monospace,monospace}.pagination{display:flex;align-items:center;gap:10px;margin-top:14px}.notice{padding:12px 14px;border-radius:10px;background:#edf3fa;color:#405d83}.error{background:#fff1f1;color:#9e2430}.success{background:#eef8f1;color:#27664a}.role-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.role-controls label{white-space:nowrap}.account-controls{display:grid;gap:8px;min-width:170px}.account-controls .button,.kyc-card .button{padding:8px 10px}.kyc-list{display:grid;gap:14px;padding:14px}.kyc-card{border:1px solid #dce3eb;border-radius:12px;padding:16px;background:#fff}.kyc-card h3{margin:0 0 8px}.kyc-card p{margin:6px 0}.kyc-documents{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.kyc-review{display:flex;gap:8px;align-items:flex-start;margin:12px 0}.kyc-reason{width:100%;min-height:72px;margin:8px 0;padding:10px;border:1px solid #cbd5df;border-radius:8px;font:inherit}.kyc-actions{display:flex;gap:8px;flex-wrap:wrap}.status{min-height:24px;margin:12px 0}.sensitive-note{font-size:12px;line-height:1.5;color:#657487}.empty{padding:28px;text-align:center;color:#657487}[hidden]{display:none!important}
-@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.shell{padding:20px 12px 50px}}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 85% 0%,#e6eef8 0,transparent 34%),#f2f5f8}.shell{max-width:1500px;margin:auto;padding:28px 22px 72px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.top h1{margin:4px 0}.eyebrow,.muted{color:#657487}.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.admin-identity{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #dce3eb;border-radius:12px;background:#fff;color:#405d83;font-size:13px}.admin-avatar{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#e8eff9;color:#35577e;font-weight:800}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;margin-top:20px}.panel,.sidebar,.nav-button,.kpi{background:#fff;border:1px solid #dce3eb;border-radius:14px}.sidebar{padding:12px;height:max-content;position:sticky;top:15px;box-shadow:0 8px 24px rgba(38,59,88,.04)}.nav-button{display:block;width:100%;padding:10px 12px;margin:4px 0;text-align:left;cursor:pointer;font:600 13px Inter,sans-serif;color:#405d83;transition:background .15s,border-color .15s,transform .15s}.nav-button:hover{background:#f6f9fc;transform:translateX(2px)}.nav-button[aria-current=page]{background:#edf3fa;border-color:#95abc4;color:#1b2430}.panel{padding:20px;min-width:0;box-shadow:0 12px 32px rgba(38,59,88,.035)}.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}.toolbar input{flex:1;min-width:200px}.field,.button{border:1px solid #cbd5df;border-radius:9px;padding:10px 12px;background:white;font:inherit}.button{cursor:pointer;font-weight:600;color:#24364b;transition:background .15s,border-color .15s,transform .15s}.button:hover:not(:disabled){background:#f4f7fb;border-color:#9fb2c8;transform:translateY(-1px)}.button:disabled{opacity:.55;cursor:wait}.button.primary{border-color:#375a82;background:#375a82;color:#fff}.button.primary:hover:not(:disabled){background:#29496f}.overview-hero{position:relative;display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:210px;margin:4px 0 20px;padding:24px 30px;overflow:hidden;border-radius:18px;background:linear-gradient(115deg,#193858 0%,#315c86 58%,#5278a2 100%);color:#fff}.hero-copy{position:relative;z-index:1;max-width:58%}.hero-copy .eyebrow{color:#c8d8eb;font-size:11px;font-weight:700;letter-spacing:.12em}.hero-copy h3{margin:8px 0;font-size:25px}.hero-copy p{max-width:470px;margin:0;color:#e1eaf4;font-size:13px;line-height:1.6}.hero-art{position:absolute;right:5%;top:50%;width:34%;max-width:330px;transform:translateY(-50%);filter:drop-shadow(0 16px 18px rgba(7,25,44,.2))}.quick-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 18px}.quick-label{margin-right:auto;color:#657487;font-size:12px;font-weight:700}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.kpi{position:relative;min-height:112px;padding:17px;text-align:left;cursor:pointer;color:inherit;transition:transform .16s,box-shadow .16s,border-color .16s}.kpi:hover{transform:translateY(-3px);border-color:#9db2ca;box-shadow:0 12px 22px rgba(38,59,88,.09)}.kpi .kpi-top{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#657487;font-size:13px}.kpi-icon{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:#edf3fa;color:#426588;font-size:11px;font-weight:800}.kpi strong{display:block;font-size:25px;margin-top:8px}.table-wrap{overflow:auto;border:1px solid #e1e7ed;border-radius:12px}table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid #e6ebf0;vertical-align:top;max-width:380px;overflow-wrap:anywhere}th{background:#f7f9fb;color:#506176;position:sticky;top:0}td pre{margin:0;white-space:pre-wrap;max-width:420px;font:12px ui-monospace,monospace}.pagination{display:flex;align-items:center;gap:10px;margin-top:14px}.notice{padding:12px 14px;border-radius:10px;background:#edf3fa;color:#405d83}.error{background:#fff1f1;color:#9e2430}.success{background:#eef8f1;color:#27664a}.role-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.role-controls label{white-space:nowrap}.account-controls{display:grid;gap:8px;min-width:170px}.account-controls .button,.kyc-card .button{padding:8px 10px}.kyc-list{display:grid;gap:14px;padding:14px}.kyc-card{border:1px solid #dce3eb;border-radius:12px;padding:16px;background:#fff}.kyc-card h3{margin:0 0 8px}.kyc-card p{margin:6px 0}.kyc-documents{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.kyc-review{display:flex;gap:8px;align-items:flex-start;margin:12px 0}.kyc-reason{width:100%;min-height:72px;margin:8px 0;padding:10px;border:1px solid #cbd5df;border-radius:8px;font:inherit}.kyc-actions{display:flex;gap:8px;flex-wrap:wrap}.status{min-height:24px;margin:12px 0}.sensitive-note{font-size:12px;line-height:1.5;color:#657487}.empty{padding:28px;text-align:center;color:#657487}[hidden]{display:none!important}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.shell{padding:20px 12px 50px}.hero-copy{max-width:75%}.hero-art{right:-4%;width:40%;opacity:.8}}
+@media(max-width:520px){.overview-hero{min-height:190px;padding:20px}.hero-copy{max-width:100%}.hero-copy h3{font-size:21px}.hero-art{right:-18%;width:58%;opacity:.22}.quick-label{width:100%}.admin-identity{max-width:100%;overflow-wrap:anywhere}.panel{padding:15px}}
 </style>
 </head>
 <body>
 <main class="shell">
  <header class="top">
   <div><p class="eyebrow">CONSOLE ADMINISTRATEUR</p><h1>Administration ABVSPAIE</h1><p class="muted">Accès réservé au compte administrateur unique autorisé.</p></div>
-  <div class="toolbar"><a class="button" href="tableau-de-bord.html">Retour au site</a></div>
+  <div class="top-actions">
+   <div id="admin-identity" class="admin-identity" hidden><span class="admin-avatar" aria-hidden="true">A</span><span id="admin-email"></span></div>
+   <button id="admin-signout" class="button" type="button" hidden>Déconnexion</button>
+   <a class="button" href="tableau-de-bord.html">Retour au site</a>
+  </div>
  </header>
  <div id="access-status" class="panel notice" role="status" aria-live="polite">Vérification des autorisations…</div>
  <div id="admin-layout" class="layout" hidden>
@@ -31,6 +36,31 @@
    <h2 id="section-title">Vue d'ensemble</h2>
    <p id="section-description" class="sensitive-note"></p>
    <div id="section-status" class="status muted" role="status"></div>
+   <section id="overview-hero" class="overview-hero" aria-label="Accueil de la console administrateur" hidden>
+    <div class="hero-copy"><p class="eyebrow">ESPACE DE PILOTAGE</p><h3>Bonjour, administrateur</h3><p>Retrouve en un coup d’œil les indicateurs de la plateforme et accède rapidement aux comptes ou aux dossiers KYC à traiter.</p></div>
+    <svg class="hero-art" viewBox="0 0 360 230" role="img" aria-label="Illustration d'un tableau de bord avec indicateurs">
+     <defs><linearGradient id="dash-card" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#dce9f7"/></linearGradient><linearGradient id="dash-accent" x1="0" x2="1"><stop stop-color="#a8c8e9"/><stop offset="1" stop-color="#e2edf8"/></linearGradient></defs>
+     <circle cx="268" cy="112" r="96" fill="#ffffff" opacity=".08"/>
+     <rect x="56" y="38" width="244" height="158" rx="16" fill="url(#dash-card)"/>
+     <rect x="56" y="38" width="244" height="29" rx="16" fill="#f1f5fa"/>
+     <circle cx="74" cy="52" r="4" fill="#87a3c2"/><circle cx="88" cy="52" r="4" fill="#b1c3d8"/><circle cx="102" cy="52" r="4" fill="#d1dce8"/>
+     <rect x="76" y="82" width="93" height="9" rx="4.5" fill="#48698e" opacity=".82"/>
+     <rect x="76" y="100" width="57" height="6" rx="3" fill="#b8c8d9"/>
+     <rect x="76" y="127" width="44" height="47" rx="8" fill="#e8eff7"/><rect x="128" y="116" width="44" height="58" rx="8" fill="#d7e5f3"/><rect x="180" y="96" width="44" height="78" rx="8" fill="url(#dash-accent)"/>
+     <path d="M82 120l39-16 36 8 47-34" fill="none" stroke="#547da8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+     <circle cx="204" cy="78" r="6" fill="#547da8"/><rect x="236" y="84" width="45" height="90" rx="9" fill="#fff" stroke="#d9e3ed"/>
+     <circle cx="258.5" cy="112" r="13" fill="#e3edf7"/><path d="M252 112l4 4 8-9" fill="none" stroke="#426b96" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+     <rect x="247" y="136" width="23" height="5" rx="2.5" fill="#a7bacf"/><rect x="244" y="148" width="29" height="5" rx="2.5" fill="#d3deea"/>
+     <rect x="19" y="139" width="82" height="50" rx="12" fill="#fff"/><circle cx="39" cy="164" r="11" fill="#e7f2ed"/><path d="M35 164l3 3 6-7" fill="none" stroke="#4d9072" stroke-width="2.5" stroke-linecap="round"/><rect x="57" y="157" width="32" height="5" rx="2.5" fill="#8ca4bf"/><rect x="57" y="167" width="24" height="4" rx="2" fill="#c4d1df"/>
+    </svg>
+   </section>
+   <div id="overview-actions" class="quick-actions" hidden>
+    <span class="quick-label">ACCÈS RAPIDE</span>
+    <button class="button primary" type="button" data-resource="kyc_cases">Examiner les dossiers KYC</button>
+    <button class="button" type="button" data-resource="users">Gérer les comptes</button>
+    <button class="button" type="button" data-resource="merchants">Voir les marchands</button>
+    <button id="overview-refresh" class="button" type="button">Actualiser les indicateurs</button>
+   </div>
    <div id="overview-cards" class="kpis" hidden></div>
    <div id="table-tools" class="toolbar" hidden>
     <input id="table-search" class="field" type="search" placeholder="Filtrer les lignes affichées…" aria-label="Filtrer les lignes affichées">
@@ -52,6 +82,7 @@
  const status=document.getElementById("access-status"),layout=document.getElementById("admin-layout");
  const nav=document.getElementById("admin-nav"),title=document.getElementById("section-title"),description=document.getElementById("section-description");
  const sectionStatus=document.getElementById("section-status"),cards=document.getElementById("overview-cards"),tools=document.getElementById("table-tools");
+ const overviewHero=document.getElementById("overview-hero"),overviewActions=document.getElementById("overview-actions");
  const tableContainer=document.getElementById("table-container"),pagination=document.getElementById("pagination");
  const pageLabel=document.getElementById("page-label"),search=document.getElementById("table-search"),sensitiveNote=document.getElementById("sensitive-note");
  const sections=[
@@ -114,13 +145,27 @@
   return String(value);
  }
  function renderOverview(counts){
-  const labels={users:"Comptes",merchants:"Marchands",transactions:"Transactions",payment_links:"Liens de paiement",clients:"Clients",pending_kyc:"KYC en attente",webhook_endpoints:"Webhooks actifs"};
+  const metrics=[
+   ["users","Comptes","CP","users"],
+   ["merchants","Marchands","MA","merchants"],
+   ["transactions","Transactions","TR","transactions"],
+   ["payment_links","Liens de paiement","LP","payment_links"],
+   ["clients","Clients","CL","clients"],
+   ["pending_kyc","KYC en attente","KYC","kyc_cases"],
+   ["webhook_endpoints","Webhooks actifs","WH","webhook_endpoints"]
+  ];
+  overviewHero.hidden=false;overviewActions.hidden=false;
   cards.hidden=false;tools.hidden=true;tableContainer.hidden=true;pagination.hidden=true;sensitiveNote.textContent="";
-  cards.replaceChildren(...Object.entries(labels).map(([key,label])=>{
-   const card=document.createElement("article");card.className="kpi";
-   const name=document.createElement("span");name.className="muted";name.textContent=label;
+  cards.replaceChildren(...metrics.map(([key,label,icon,resource])=>{
+   const card=document.createElement("button");card.type="button";card.className="kpi";
+   card.setAttribute("aria-label",`Ouvrir ${label}`);
+   const top=document.createElement("span");top.className="kpi-top";
+   const name=document.createElement("span");name.textContent=label;
+   const badge=document.createElement("span");badge.className="kpi-icon";badge.setAttribute("aria-hidden","true");badge.textContent=icon;
    const value=document.createElement("strong");value.textContent=counts[key]===null?"—":new Intl.NumberFormat("fr-FR").format(counts[key]);
-   card.append(name,value);return card;
+   top.append(name,badge);card.append(top,value);
+   card.addEventListener("click",()=>loadSection(resource));
+   return card;
   }));
   message("Vue globale chargée.");
  }
@@ -282,12 +327,14 @@
   state.resource=resource;state.page=page;state.loading=true;state.rows=[];search.value="";
   title.textContent=section[1];description.textContent=section[2];renderNav();
   if(resource==="overview"){
+   overviewHero.hidden=true;overviewActions.hidden=true;
    cards.hidden=false;tableContainer.hidden=true;tools.hidden=true;pagination.hidden=true;sensitiveNote.textContent="";message("Chargement…");
    try{const result=await api("/api/admin?resource=overview");renderOverview(result.counts)}
    catch(error){message(error.message||"Chargement impossible.",true)}
    finally{state.loading=false}
    return;
   }
+  overviewHero.hidden=true;overviewActions.hidden=true;
   cards.hidden=true;tools.hidden=false;tableContainer.hidden=false;pagination.hidden=false;tableContainer.textContent="";message("Chargement…");
   try{
    if(resource==="kyc_cases"){
@@ -301,6 +348,9 @@
   }catch(error){state.loading=false;message(error.message||"Chargement impossible.",true);tableContainer.textContent="Impossible de charger cette rubrique."}
  }
  document.getElementById("reload").addEventListener("click",()=>loadSection(state.resource,state.page));
+ document.getElementById("overview-refresh").addEventListener("click",()=>loadSection("overview"));
+ overviewActions.querySelectorAll("[data-resource]").forEach(button=>button.addEventListener("click",()=>loadSection(button.dataset.resource)));
+ document.getElementById("admin-signout").addEventListener("click",()=>ABVS.signOut("../public/connexion-admin.html"));
  search.addEventListener("input",renderTable);
  document.getElementById("previous").addEventListener("click",()=>loadSection(state.resource,state.page-1));
  document.getElementById("next").addEventListener("click",()=>loadSection(state.resource,state.page+1));
@@ -310,6 +360,11 @@
    const {data,error}=await ABVS.client.auth.getUser();
    if(error||!data.user)throw new Error("Session expirée. Reconnecte-toi.");
    currentUserId=data.user.id;
+   const email=data.user.email||"Administrateur";
+   document.getElementById("admin-email").textContent=email;
+   document.querySelector(".admin-avatar").textContent=email.charAt(0).toLocaleUpperCase("fr");
+   document.getElementById("admin-identity").hidden=false;
+   document.getElementById("admin-signout").hidden=false;
    if(!data.user.app_metadata||data.user.app_metadata.platform_admin!==true){
     status.textContent="Accès réservé aux super-administrateurs autorisés (app_metadata.platform_admin = true).";
     status.classList.add("error");return;
