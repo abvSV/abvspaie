@@ -194,7 +194,7 @@ test("explains when the eight-document limit has been reached", async t => {
       return new Response(null, { status: options.method === "DELETE" ? 200 : 201 });
     }
     if (String(url).endsWith("/rest/v1/merchant_kyc_documents")) {
-      return Response.json({ code: "P0001", message: "Limite de huit justificatifs atteinte" }, { status: 400 });
+      return Response.json({ code: "P0001", message: "Limite de huit justificatifs actifs atteinte" }, { status: 400 });
     }
     throw new Error(`Unexpected request: ${url}`);
   });

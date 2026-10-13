@@ -197,9 +197,10 @@ begin
 
   select count(*) into v_count
     from public.merchant_kyc_documents d
-    where d.merchant_id = new.merchant_id;
+    where d.merchant_id = new.merchant_id
+      and d.is_current;
   if v_count >= 8 then
-    raise exception 'Limite de huit justificatifs atteinte';
+    raise exception 'Limite de huit justificatifs actifs atteinte';
   end if;
 
   return new;
@@ -351,7 +352,10 @@ begin
     select 1
     from auth.users u
     where u.id = p_admin_id
-      and u.raw_app_meta_data -> 'kyc_admin' = 'true'::jsonb
+      and (
+        u.raw_app_meta_data -> 'kyc_admin' = 'true'::jsonb
+        or u.raw_app_meta_data -> 'platform_admin' = 'true'::jsonb
+      )
   ) then
     raise exception 'L’identifiant fourni ne correspond pas à un administrateur KYC autorisé' using errcode = '42501';
   end if;

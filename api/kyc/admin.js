@@ -5,7 +5,7 @@ const { config, authUser, rest, json, resolveStorageSignedUrl } = require("../..
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function isAdmin(user) {
-  return user.app_metadata && user.app_metadata.kyc_admin === true;
+  return user.app_metadata && (user.app_metadata.kyc_admin === true || user.app_metadata.platform_admin === true);
 }
 
 function hasAal2(req, user) {

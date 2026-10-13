@@ -111,7 +111,7 @@ module.exports = async function handler(req, res) {
           ? "Ton dossier KYC est déjà soumis ou vérifié. Tu ne peux plus ajouter de justificatifs pour le moment."
           : "Ton dossier KYC est déjà soumis ou vérifié et le nettoyage du fichier temporaire a échoué. Contacte le support." });
       }
-      if (message.toLowerCase().includes("limite de huit justificatifs atteinte")) {
+      if (/limite de huit justificatifs(?: actifs)? atteinte/i.test(message)) {
         return json(res, 409, { error: cleaned
           ? "La limite de 8 justificatifs est atteinte."
           : "La limite de 8 justificatifs est atteinte et le nettoyage du fichier temporaire a échoué. Contacte le support." });

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ABVSPAIE — Administration</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script>
+<script src="../assets/abvs-config.js"></script>
+<script src="../assets/abvs-auth.js"></script>
+<script>ABVS.requireSession()</script>
+<style>
+:root{font-family:Inter,system-ui,sans-serif;color:#1b2430;background:#f2f5f8;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}.shell{max-width:1500px;margin:auto;padding:28px 22px 72px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.top h1{margin:4px 0}.eyebrow,.muted{color:#657487}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;margin-top:20px}.panel,.sidebar,.nav-button,.kpi{background:#fff;border:1px solid #dce3eb;border-radius:14px}.sidebar{padding:12px;height:max-content;position:sticky;top:15px}.nav-button{display:block;width:100%;padding:10px 12px;margin:4px 0;text-align:left;cursor:pointer;font:600 13px Inter,sans-serif;color:#405d83}.nav-button[aria-current=page]{background:#edf3fa;border-color:#95abc4;color:#1b2430}.panel{padding:20px;min-width:0}.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}.toolbar input{flex:1;min-width:200px}.field,.button{border:1px solid #cbd5df;border-radius:9px;padding:10px 12px;background:white;font:inherit}.button{cursor:pointer;font-weight:600;color:#24364b}.button:disabled{opacity:.55;cursor:wait}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.kpi{padding:17px}.kpi strong{display:block;font-size:25px;margin-top:8px}.table-wrap{overflow:auto;border:1px solid #e1e7ed;border-radius:12px}table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid #e6ebf0;vertical-align:top;max-width:380px;overflow-wrap:anywhere}th{background:#f7f9fb;color:#506176;position:sticky;top:0}td pre{margin:0;white-space:pre-wrap;max-width:420px;font:12px ui-monospace,monospace}.pagination{display:flex;align-items:center;gap:10px;margin-top:14px}.notice{padding:12px 14px;border-radius:10px;background:#edf3fa;color:#405d83}.error{background:#fff1f1;color:#9e2430}.success{background:#eef8f1;color:#27664a}.role-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.role-controls label{white-space:nowrap}.status{min-height:24px;margin:12px 0}.sensitive-note{font-size:12px;line-height:1.5;color:#657487}.empty{padding:28px;text-align:center;color:#657487}[hidden]{display:none!important}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.shell{padding:20px 12px 50px}}
+</style>
+</head>
+<body>
+<main class="shell">
+ <header class="top">
+  <div><p class="eyebrow">CONSOLE SÉCURISÉE · MFA AAL2</p><h1>Administration ABVSPAIE</h1><p class="muted">Accès réservé au compte administrateur unique autorisé.</p></div>
+  <div class="toolbar"><a class="button" href="kyc-admin.html">Examiner les dossiers KYC</a><a class="button" href="tableau-de-bord.html">Retour au site</a></div>
+ </header>
+ <div id="access-status" class="panel notice" role="status" aria-live="polite">Vérification des autorisations…</div>
+ <div id="admin-layout" class="layout" hidden>
+  <nav id="admin-nav" class="sidebar" aria-label="Rubriques d'administration"></nav>
+  <section class="panel" aria-live="polite">
+   <h2 id="section-title">Vue d'ensemble</h2>
+   <p id="section-description" class="sensitive-note"></p>
+   <div id="section-status" class="status muted" role="status"></div>
+   <div id="overview-cards" class="kpis" hidden></div>
+   <div id="table-tools" class="toolbar" hidden>
+    <input id="table-search" class="field" type="search" placeholder="Filtrer les lignes affichées…" aria-label="Filtrer les lignes affichées">
+    <button id="reload" class="button" type="button">Actualiser</button>
+   </div>
+   <div id="table-container" class="table-wrap" hidden></div>
+   <div id="pagination" class="pagination" hidden>
+    <button id="previous" class="button" type="button">Précédent</button>
+    <span id="page-label" class="muted"></span>
+    <button id="next" class="button" type="button">Suivant</button>
+   </div>
+   <p id="sensitive-note" class="sensitive-note"></p>
+  </section>
+ </div>
+</main>
+<script>
+(()=>{
+ "use strict";
+ const status=document.getElementById("access-status"),layout=document.getElementById("admin-layout");
+ const nav=document.getElementById("admin-nav"),title=document.getElementById("section-title"),description=document.getElementById("section-description");
+ const sectionStatus=document.getElementById("section-status"),cards=document.getElementById("overview-cards"),tools=document.getElementById("table-tools");
+ const tableContainer=document.getElementById("table-container"),pagination=document.getElementById("pagination");
+ const pageLabel=document.getElementById("page-label"),search=document.getElementById("table-search"),sensitiveNote=document.getElementById("sensitive-note");
+ const sections=[
+  ["overview","Vue d'ensemble","Indicateurs des principaux espaces de la plateforme."],
+  ["users","Comptes","Comptes Auth et rôles. Les mots de passe et facteurs MFA ne sont jamais affichés."],
+  ["merchants","Marchands","Coordonnées professionnelles et statut déclaratif."],
+  ["profiles","Profils / accès Live","Statuts KYC et activation Live ; décisions KYC dans l'espace dédié."],
+  ["transactions","Transactions","Registres de transactions en lecture seule ; aucune confirmation PSP simulée."],
+  ["payment_links","Liens de paiement","Liens et état actif/inactif."],
+  ["clients","Clients","Données personnelles client nécessaires au support. Accès à limiter aux personnes habilitées."],
+  ["webhook_endpoints","Webhooks","Endpoints publics configurés. Les secrets chiffrés sont exclus."],
+  ["webhook_events","Événements webhook","Métadonnées de livraison uniquement ; les payloads sont exclus."],
+  ["kyc_documents","Documents KYC","Métadonnées et chemins privés. Pour ouvrir les documents, utilise l'espace d'examen KYC."],
+  ["kyc_audit","Audit KYC","Journal des dépôts, soumissions et décisions."],
+  ["admin_audit","Audit des rôles admin","Journal des changements d'autorisations."]
+ ];
+ const columns={
+  users:["id","email","company","email_confirmed","created_at","last_sign_in_at","platform_admin","kyc_admin"],
+  merchants:["id","name","email","country","test_mode","kyc_status"],
+  profiles:["user_id","kyc_status","live_enabled","verified_at","kyc_full_name","kyc_country","kyc_document_type","kyc_submitted_at","kyc_decided_at"],
+  transactions:["reference","merchant_id","amount","currency","mode","method","payer","status","created_at"],
+  payment_links:["merchant_id","title","slug","amount","currency","mode","active","created_at"],
+  clients:["merchant_id","name","email","phone","created_at"],
+  webhook_endpoints:["merchant_id","name","endpoint_url","is_active","created_at"],
+  webhook_events:["merchant_id","delivery_id","event_type","received_at"],
+  kyc_documents:["merchant_id","document_type","document_side","is_current","storage_path","created_at"],
+  kyc_audit:["merchant_id","actor_id","event_type","details","created_at"],
+  admin_audit:["actor_id","target_id","action","details","created_at"]
+ };
+ const state={resource:"overview",page:1,rows:[],hasMore:false,total:null,loading:false};
+ function sessionHeaders(token){return{Authorization:`Bearer ${token}`,"Content-Type":"application/json"}}
+ async function api(path,options={}){
+  const {data,error}=await ABVS.client.auth.getSession();
+  if(error||!data.session)throw new Error("Session expirée. Reconnecte-toi.");
+  const response=await fetch(path,{...options,headers:{...sessionHeaders(data.session.access_token),...(options.headers||{})}});
+  let result;
+  try{result=await response.json()}catch(_){throw new Error(`Réponse API inattendue (HTTP ${response.status}). Vérifie le déploiement des fonctions Vercel.`)}
+  if(!response.ok)throw new Error(result.error||`Requête refusée (HTTP ${response.status}).`);
+  return result;
+ }
+ function message(text,isError=false){sectionStatus.textContent=text;sectionStatus.className=`status ${isError?"notice error":"muted"}`}
+ function renderNav(){
+  nav.replaceChildren(...sections.map(([id,label])=>{
+   const button=document.createElement("button");button.type="button";button.className="nav-button";button.textContent=label;
+   if(id===state.resource)button.setAttribute("aria-current","page");
+   button.addEventListener("click",()=>loadSection(id,1));
+   return button;
+  }));
+ }
+ function formatValue(key,value){
+  if(value===null||value===undefined||value==="")return "—";
+  if(typeof value==="boolean")return value?"Oui":"Non";
+  if(typeof value==="object")return JSON.stringify(value);
+  if(/_at$/.test(key)){
+   const date=new Date(value);
+   return Number.isNaN(date.getTime())?String(value):date.toLocaleString("fr-FR");
+  }
+  return String(value);
+ }
+ function renderOverview(counts){
+  const labels={users:"Comptes",merchants:"Marchands",transactions:"Transactions",payment_links:"Liens de paiement",clients:"Clients",pending_kyc:"KYC en attente",webhook_endpoints:"Webhooks actifs"};
+  cards.hidden=false;tools.hidden=true;tableContainer.hidden=true;pagination.hidden=true;sensitiveNote.textContent="";
+  cards.replaceChildren(...Object.entries(labels).map(([key,label])=>{
+   const card=document.createElement("article");card.className="kpi";
+   const name=document.createElement("span");name.className="muted";name.textContent=label;
+   const value=document.createElement("strong");value.textContent=counts[key]===null?"—":new Intl.NumberFormat("fr-FR").format(counts[key]);
+   card.append(name,value);return card;
+  }));
+  message("Vue globale chargée.");
+ }
+ function roleEditor(row){
+  const cell=document.createElement("td");cell.colSpan=2;
+  const controls=document.createElement("div");controls.className="role-controls";
+  const platformLabel=document.createElement("label"),platform=document.createElement("input");
+  platform.type="checkbox";platform.checked=row.platform_admin;platform.disabled=true;platformLabel.append(platform,document.createTextNode(" Super-admin (géré dans Supabase)"));
+  const kycLabel=document.createElement("label"),kyc=document.createElement("input");
+  kyc.type="checkbox";kyc.checked=row.kyc_admin;kycLabel.append(kyc,document.createTextNode(" Examinateur KYC"));
+  const save=document.createElement("button");save.type="button";save.className="button";save.textContent="Enregistrer";
+  const result=document.createElement("span");result.className="sensitive-note";
+  save.addEventListener("click",async()=>{
+   save.disabled=true;result.textContent="Enregistrement…";
+   try{
+    await api("/api/admin",{method:"POST",body:JSON.stringify({user_id:row.id,platform_admin:row.platform_admin,kyc_admin:kyc.checked})});
+    result.textContent="Rôles mis à jour. Renouvelle la session du compte concerné.";
+    row.platform_admin=platform.checked;row.kyc_admin=kyc.checked;
+   }catch(error){result.textContent=error.message||"Modification impossible."}
+   finally{save.disabled=false}
+  });
+  controls.append(platformLabel,kycLabel,save,result);cell.appendChild(controls);return cell;
+ }
+ function renderTable(){
+  const keys=columns[state.resource]||[];
+  const query=search.value.trim().toLocaleLowerCase("fr");
+  const rows=state.rows.filter(row=>!query||keys.some(key=>formatValue(key,row[key]).toLocaleLowerCase("fr").includes(query)));
+  const table=document.createElement("table"),thead=document.createElement("thead"),headRow=document.createElement("tr");
+  const displayKeys=state.resource==="users"?["id","email","company","email_confirmed","created_at","last_sign_in_at"]:keys;
+  displayKeys.forEach(key=>{const th=document.createElement("th");th.scope="col";th.textContent=key.replaceAll("_"," ");headRow.appendChild(th)});
+  if(state.resource==="users"||state.resource==="kyc_documents"){const th=document.createElement("th");th.scope="col";th.textContent=state.resource==="users"?"Autorisations":"Document privé";headRow.appendChild(th)}
+  thead.appendChild(headRow);table.appendChild(thead);
+  const tbody=document.createElement("tbody");
+  rows.forEach(row=>{
+   const tr=document.createElement("tr");
+   displayKeys.forEach(key=>{
+    const td=document.createElement("td");
+    if(key==="storage_path"&&state.resource==="kyc_documents"){
+     td.textContent=row.storage_path;
+    }else if(key==="details"){
+     const pre=document.createElement("pre");pre.textContent=formatValue(key,row[key]);td.appendChild(pre);
+    }else td.textContent=formatValue(key,row[key]);
+    tr.appendChild(td);
+   });
+   if(state.resource==="users")tr.appendChild(roleEditor(row));
+   if(state.resource==="kyc_documents"){
+    const cell=document.createElement("td"),button=document.createElement("button");button.type="button";button.className="button";button.textContent="Préparer le lien privé";
+    button.addEventListener("click",async()=>{
+     button.disabled=true;button.textContent="Création du lien…";
+     try{
+      const result=await api(`/api/kyc/admin?document_id=${encodeURIComponent(row.id)}`);
+      const link=document.createElement("a");link.className="button";link.href=result.url;link.target="_blank";link.rel="noopener noreferrer";link.textContent="Ouvrir (60 s)";
+      button.replaceWith(link);
+     }catch(error){button.disabled=false;button.textContent=error.message||"Lien indisponible."}
+    });
+    cell.appendChild(button);tr.appendChild(cell);
+   }
+   tbody.appendChild(tr);
+  });
+  if(!rows.length){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=displayKeys.length+(state.resource==="users"?1:0);td.className="empty";td.textContent=state.rows.length?"Aucun résultat pour ce filtre.":"Aucun enregistrement.";tr.appendChild(td);tbody.appendChild(tr)}
+  table.appendChild(tbody);tableContainer.replaceChildren(table);
+  cards.hidden=true;tools.hidden=false;tableContainer.hidden=false;pagination.hidden=false;
+  pageLabel.textContent=`Page ${state.page}${state.total===null?"":` · ${state.total} lignes`}`;
+  document.getElementById("previous").disabled=state.page<=1||state.loading;
+  document.getElementById("next").disabled=!state.hasMore||state.loading;
+  if(state.resource==="users")sensitiveNote.textContent="Tu peux gérer les examinateurs KYC. Le rôle super-admin est attribué uniquement dans Supabase App Metadata par une opération de confiance. Les rôles s'appliquent après renouvellement de la session.";
+  else if(state.resource==="clients")sensitiveNote.textContent="Cette rubrique contient des coordonnées personnelles. Consulte uniquement les données nécessaires à une demande de support.";
+  else if(state.resource==="webhook_endpoints")sensitiveNote.textContent="Les secrets webhook ne sont ni lus ni affichés dans cette console.";
+  else if(state.resource==="webhook_events")sensitiveNote.textContent="Les corps JSON des événements ne sont pas affichés.";
+  else sensitiveNote.textContent="";
+  message(state.loading?"Chargement…":`${rows.length} ligne(s) affichée(s).`);
+ }
+ async function loadSection(resource,page=1){
+  const section=sections.find(item=>item[0]===resource);
+  if(!section)return;
+  state.resource=resource;state.page=page;state.loading=true;state.rows=[];search.value="";
+  title.textContent=section[1];description.textContent=section[2];renderNav();
+  if(resource==="overview"){
+   cards.hidden=false;tableContainer.hidden=true;tools.hidden=true;pagination.hidden=true;sensitiveNote.textContent="";message("Chargement…");
+   try{const result=await api("/api/admin?resource=overview");renderOverview(result.counts)}
+   catch(error){message(error.message||"Chargement impossible.",true)}
+   finally{state.loading=false}
+   return;
+  }
+  cards.hidden=true;tools.hidden=false;tableContainer.hidden=false;pagination.hidden=false;tableContainer.textContent="";message("Chargement…");
+  try{
+   const result=await api(`/api/admin?resource=${encodeURIComponent(resource)}&page=${page}`);
+   state.rows=result.data;state.hasMore=result.hasMore;state.total=result.total;state.page=result.page;
+   state.loading=false;renderTable();
+  }catch(error){state.loading=false;message(error.message||"Chargement impossible.",true);tableContainer.textContent="Impossible de charger cette rubrique."}
+ }
+ document.getElementById("reload").addEventListener("click",()=>loadSection(state.resource,state.page));
+ search.addEventListener("input",renderTable);
+ document.getElementById("previous").addEventListener("click",()=>loadSection(state.resource,state.page-1));
+ document.getElementById("next").addEventListener("click",()=>loadSection(state.resource,state.page+1));
+ (async()=>{
+  if(!ABVS.ready){status.textContent="Service d'authentification indisponible.";status.classList.add("error");return}
+  try{
+   const {data,error}=await ABVS.client.auth.getUser();
+   if(error||!data.user)throw new Error("Session expirée. Reconnecte-toi.");
+   const {data:assurance,error:assuranceError}=await ABVS.client.auth.mfa.getAuthenticatorAssuranceLevel();
+   if(assuranceError)throw new Error("Vérification MFA impossible.");
+   if(!data.user.app_metadata||data.user.app_metadata.platform_admin!==true){
+    status.textContent="Accès réservé aux super-administrateurs autorisés (app_metadata.platform_admin = true).";
+    status.classList.add("error");return;
+   }
+   if(!assurance||assurance.currentLevel!=="aal2"){
+    status.textContent="Confirme la MFA puis recharge cette page.";
+    status.classList.add("error");return;
+   }
+   status.hidden=true;layout.hidden=false;renderNav();await loadSection("overview");
+  }catch(error){status.textContent=error.message||"Vérification de l'accès impossible.";status.classList.add("error")}
+ })();
+})();
+</script>
+</body>
+</html>

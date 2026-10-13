@@ -299,8 +299,11 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     document.getElementById("kyc-full-name").value=profile.kyc_full_name||"";
     document.getElementById("kyc-country").value=profile.kyc_country||"";
     document.getElementById("kyc-document-kind").value=profile.kyc_document_type||"";
-    if(user.app_metadata&&user.app_metadata.kyc_admin===true&&!document.getElementById("kyc-admin-link")){
+    if(user.app_metadata&&(user.app_metadata.kyc_admin===true||user.app_metadata.platform_admin===true)&&!document.getElementById("kyc-admin-link")){
      const adminLink=document.createElement("a");adminLink.id="kyc-admin-link";adminLink.className="btn";adminLink.href="kyc-admin.html";adminLink.textContent="Ouvrir l'espace d'examen KYC";note.after(adminLink);
+    }
+    if(user.app_metadata&&user.app_metadata.platform_admin===true&&!document.getElementById("platform-admin-link")){
+     const adminLink=document.createElement("a");adminLink.id="platform-admin-link";adminLink.className="btn";adminLink.href="admin.html";adminLink.textContent="Ouvrir l'administration";note.after(adminLink);
     }
     const hasMfa=assurance.currentLevel==="aal2";
     const statusAllowsStart=profile.kyc_status==="none"||profile.kyc_status==="rejected";
@@ -354,9 +357,10 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     updateKycReview();
     document.getElementById("kyc-submit-case").hidden=!hasIdentity||!canEdit||inconsistentVerified;
     const uploadButton=document.getElementById("kyc-submit");
-    uploadButton.disabled=records.length>=8||!canEdit||inconsistentVerified;
-    document.getElementById("kyc-add-document").disabled=records.length>=8||!canEdit||inconsistentVerified;
-    if(records.length>=8&&canEdit){note.textContent="La limite de huit justificatifs est atteinte. Tu peux encore soumettre le dossier ou contacter le support."; }
+    const currentDocumentCount=currentDocuments.length;
+    uploadButton.disabled=currentDocumentCount>=8||!canEdit||inconsistentVerified;
+    document.getElementById("kyc-add-document").disabled=currentDocumentCount>=8||!canEdit||inconsistentVerified;
+    if(currentDocumentCount>=8&&canEdit){note.textContent="La limite de huit justificatifs actifs est atteinte. Tu peux encore soumettre le dossier ou contacter le support."; }
     if(records.length){
      const items=records.map(entry=>{
       const item=document.createElement("div");
@@ -499,7 +503,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
      control.badge.textContent=uploaded?(kycCanReplaceDocuments?"Remplacer":"Déposé"):"À déposer";
      control.badge.className=`tag ${uploaded?"":"mute"} kyc-face-badge`;
      control.card.classList.toggle("is-uploaded",uploaded);
-     control.input.disabled=!required||!kycCanEdit||kycDocuments.length>=8||(uploaded&&!kycCanReplaceDocuments)||control.uploading;
+     control.input.disabled=!required||!kycCanEdit||(kycCurrentDocuments().length>=8&&!(uploaded&&kycCanReplaceDocuments))||(uploaded&&!kycCanReplaceDocuments)||control.uploading;
    }
    const selfieUploaded=kycCurrentDocuments().some(document=>document.document_type==="selfie"&&document.document_side==="supporting");
    kycSelfieStatus.textContent=selfieUploaded&&kycCanReplaceDocuments?"Selfie déjà déposé. Choisis une nouvelle image pour le remplacer si nécessaire.":selfieUploaded?"Selfie déjà déposé.":kycSelfieControl.uploading?"Dépôt du selfie en cours…":kycSelfieControl.input.files[0]?`Fichier sélectionné : ${kycSelfieControl.input.files[0].name}`:"Selfie requis.";
@@ -507,7 +511,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
    kycSelfieBadge.textContent=selfieUploaded?(kycCanReplaceDocuments?"Remplacer":"Déposé"):"À déposer";
    kycSelfieBadge.className=`tag ${selfieUploaded?"":"mute"} kyc-face-badge`;
    kycSelfieCard.classList.toggle("is-uploaded",selfieUploaded);
-   kycSelfieInput.disabled=!isIdentity||!kycCanEdit||kycDocuments.length>=8||(selfieUploaded&&!kycCanReplaceDocuments)||kycSelfieControl.uploading;
+   kycSelfieInput.disabled=!isIdentity||!kycCanEdit||(kycCurrentDocuments().length>=8&&!(selfieUploaded&&kycCanReplaceDocuments))||(selfieUploaded&&!kycCanReplaceDocuments)||kycSelfieControl.uploading;
    kycSelfieCard.hidden=!isIdentity;
    kycContinueButton.disabled=!kycCanEdit||!hasRequiredKycDocuments()||Object.values(kycFaceControls).some(control=>control.uploading)||kycSelfieControl.uploading;
   }
@@ -596,7 +600,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     playKycStepSound();
     showKycStep(2);
    }catch(error){message.textContent=error.message||"Le justificatif n'a pas pu être déposé."}
-   finally{kycUploadButton.disabled=!kycCanEdit||kycDocuments.length>=8}
+   finally{kycUploadButton.disabled=!kycCanEdit||kycCurrentDocuments().length>=8}
   });
   document.getElementById("kyc-add-document").addEventListener("click",()=>showKycStep(1));
   document.getElementById("kyc-submit-case").addEventListener("click",async()=>{

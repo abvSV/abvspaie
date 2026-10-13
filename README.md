@@ -2,7 +2,7 @@
 
 ```
 abvspaie/
-├── api/                 fonctions Vercel : auth, KYC et webhooks
+├── api/                 fonctions Vercel : admin, auth, KYC et webhooks
 ├── server/              utilitaires serveur (signature et chiffrement)
 ├── vercel.json          réglages Vercel (site statique + fonctions API)
 ├── .gitignore
@@ -12,6 +12,7 @@ abvspaie/
 │   ├── schema_paiements.sql
 │   ├── schema_webhooks.sql
 │   ├── schema_kyc.sql
+│   ├── schema_admin.sql
 │   └── remove_email_mfa.sql
 └── site/                tout ce qui est publié sur Vercel
     ├── index.html
@@ -21,7 +22,7 @@ abvspaie/
 ```
 
 ## Mise en route
-1. Supabase > SQL Editor : lancer `supabase/schema_paiements.sql`, puis `supabase/schema.sql`, `supabase/schema_webhooks.sql`, `supabase/schema_clients.sql` et enfin `supabase/schema_kyc.sql`. Cette dernière migration crée le bucket privé, les règles d'accès et le dépôt des justificatifs.
+1. Supabase > SQL Editor : lancer `supabase/schema_paiements.sql`, puis `supabase/schema.sql`, `supabase/schema_webhooks.sql`, `supabase/schema_clients.sql`, `supabase/schema_kyc.sql` et enfin `supabase/schema_admin.sql`. Les migrations KYC et admin créent les tables d'audit et le bucket privé.
 2. `site/assets/abvs-config.js` : renseigner l'URL et la clé publique (`anon` / publishable) du projet (Settings > Data API). Ne jamais y placer la clé `service_role`.
 3. Supabase > Authentication > URL Configuration : Site URL = adresse Vercel ; Redirect URLs = `.../public/inscription-connexion.html` et `.../public/mot-de-passe-oublie.html`.
 4. Vercel : importer le dépôt GitHub, Framework « Other », aucune commande de build. Les fonctions de `api/` sont déployées avec le site.
@@ -35,7 +36,17 @@ Les coordonnées recueillies au paiement servent à créer ou retrouver une fich
 
 Dans **Paramètres > KYC**, tout marchand peut démarrer sa vérification de sa propre initiative après activation de la MFA. Ce formulaire couvre uniquement les personnes physiques ; les profils d'entreprise et les structures complexes ne sont pas encore pris en charge. Le parcours se fait en trois étapes : informations légales et choix de la pièce, dépôt des faces requises et d'un selfie, puis vérification et soumission explicite du dossier. La règle technique actuelle demande recto et verso pour une carte nationale d'identité ou un permis, et la page d'identité pour un passeport. Un selfie JPG ou PNG est également obligatoire. Elle est identique pour les pays proposés dans le formulaire et ne constitue pas une validation réglementaire pays par pays ; vérifier les obligations locales avant la mise en production. Le marchand renseigne aussi son nom légal et son pays de résidence. Huit fichiers PDF, JPG ou PNG de 4 Mo maximum chacun sont acceptés. La fonction Vercel valide la signature binaire avant l'envoi au bucket privé `merchant-kyc-documents`, sous un chemin aléatoire ne contenant pas le nom d'origine. La consultation, le dépôt et la soumission exigent une session MFA AAL2 ; RLS limite l'accès au compte propriétaire. Pendant l'examen, le dossier et ses justificatifs ne peuvent pas être modifiés ; après un refus, le marchand peut déposer des pièces et soumettre à nouveau. Le marchand ne peut ni modifier son statut ni supprimer un justificatif enregistré. Une insertion incomplète autorise uniquement le nettoyage de son objet orphelin.
 
-La validation est manuelle. L'espace `site/compte/kyc-admin.html` et `/api/kyc/admin` permettent aux seuls utilisateurs dont `app_metadata.kyc_admin` vaut `true` d'examiner les dossiers en attente. L'API exige une session MFA AAL2, émet des liens de consultation des pièces valables 60 secondes, interdit l'auto-examen et consigne chaque dépôt, soumission et décision dans `kyc_audit_logs`. Une approbation exige les faces requises de la pièce d'identité, le selfie, les informations du profil et une trace de soumission. Le refus exige un motif ; après un refus, le marchand peut remplacer les faces de sa pièce et son selfie : les anciennes versions restent conservées et marquées comme remplacées, et seules les versions actuelles sont présentées pour une nouvelle décision. La limite de huit fichiers s'applique à l'ensemble des versions. L'approbation KYC ne met pas Live en service.
+La validation est manuelle. L'espace `site/compte/kyc-admin.html` et `/api/kyc/admin` permettent aux seuls utilisateurs dont `app_metadata.kyc_admin` vaut `true` d'examiner les dossiers en attente. L'API exige une session MFA AAL2, émet des liens de consultation des pièces valables 60 secondes, interdit l'auto-examen et consigne chaque dépôt, soumission et décision dans `kyc_audit_logs`. Une approbation exige les faces requises de la pièce d'identité, le selfie, les informations du profil et une trace de soumission. Le refus exige un motif ; après un refus, le marchand peut remplacer les faces de sa pièce et son selfie : les anciennes versions restent conservées et marquées comme remplacées, et seules les versions actuelles sont présentées pour une nouvelle décision. La limite est de huit justificatifs actifs ; les versions remplacées restent archivées sans compter dans cette limite. L'approbation KYC ne met pas Live en service.
+
+Pour utiliser cet espace d'examen, déploie le site et les fonctions `api/` sur Vercel, puis attribue `app_metadata.kyc_admin: true` au compte examinateur avec une opération Auth Admin de confiance côté serveur (jamais depuis le navigateur, `user_metadata` ou un champ modifiable par l'utilisateur). Active une MFA TOTP sur ce compte, connecte-toi au domaine HTTPS déployé et ouvre `/compte/kyc-admin.html`. Les liens de pièces générés par cet espace expirent après 60 secondes ; le bucket reste privé. Les secrets de service Supabase ne doivent jamais être communiqués ni inclus dans le site.
+
+### Console d'administration de la plateforme
+
+La console `/compte/admin.html` donne au seul compte dont l'UUID est défini par la variable serveur `PLATFORM_ADMIN_USER_ID`, qui porte également `app_metadata.platform_admin: true` et dispose d'une session MFA AAL2, une vue paginée des comptes, marchands, profils, transactions, liens de paiement, clients, endpoints et événements webhook, pièces KYC et journaux d'audit. Configure `PLATFORM_ADMIN_USER_ID` dans les variables d'environnement Vercel avec l'UUID du compte visible dans Supabase Authentication > Users. Si cette variable est absente ou invalide, l'API refuse l'accès. Les autres comptes peuvent continuer à s'inscrire et utiliser le site marchand, mais ne peuvent pas accéder aux données de la console. Elle ne lit ni les mots de passe, ni les facteurs MFA, ni les secrets webhook, ni les contenus JSON des événements. Les coordonnées clients sont des données personnelles ; limite strictement les personnes qui reçoivent ce rôle. Les transactions sont en lecture seule : aucun prestataire n'est connecté pour autoriser ou capturer des paiements.
+
+Dans cette console, l'unique super-admin peut attribuer ou retirer le rôle `kyc_admin` à un autre compte ; chaque changement est inscrit dans `platform_admin_audit_logs`. Le rôle `platform_admin` ne peut pas être accordé depuis l'application. Pour initialiser le super-admin, dans Supabase **Authentication > Users**, ouvre ton propre compte, copie son UUID, modifie **App Metadata** (pas User Metadata) en préservant les propriétés existantes et ajoute `"platform_admin": true`. Dans les paramètres Vercel du projet, définis `PLATFORM_ADMIN_USER_ID` avec cet UUID et redéploie. Active la MFA TOTP, déconnecte-toi puis reconnecte-toi au site Vercel, et ouvre `https://TON-DOMAINE-VERCEL/compte/admin.html`. N'ajoute jamais une clé `service_role` au navigateur ou à la conversation.
+
+Exécute `supabase/schema_admin.sql` après `supabase/schema_kyc.sql` avant d'utiliser la console. Les changements de rôles ne prennent effet dans une session existante qu'après reconnexion ; le retrait du rôle est ensuite vérifié côté serveur à chaque requête.
 
 Si le dépôt indique que le dossier est déjà soumis ou que la limite est atteinte, vérifie le statut du profil et le nombre de justificatifs. Si l'API signale une configuration KYC incomplète, réapplique `supabase/schema_kyc.sql` dans Supabase, puis redéploie les fonctions Vercel. Réapplique également ce schéma pour activer le suivi des versions remplacées et réparer les anciens statuts vérifiés qui ne satisfont pas les preuves KYC requises.
 

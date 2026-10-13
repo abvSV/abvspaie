@@ -74,7 +74,7 @@
    ABVS.client.auth.getUser(),ABVS.client.auth.mfa.getAuthenticatorAssuranceLevel()
   ]);
   if(error||!data.user){status.textContent="Session expirée. Reconnectez-vous.";status.classList.add("error");return}
-  if(data.user.app_metadata?.kyc_admin!==true){status.textContent="Accès réservé aux administrateurs KYC autorisés.";status.classList.add("error");return}
+  if(data.user.app_metadata?.kyc_admin!==true&&data.user.app_metadata?.platform_admin!==true){status.textContent="Accès réservé aux administrateurs KYC autorisés.";status.classList.add("error");return}
   if(assuranceError||assurance.currentLevel!=="aal2"){status.textContent="Une session avec authentification MFA est requise.";status.classList.add("error");return}
   status.hidden=true;content.hidden=false;render();
  })().catch(error=>{status.textContent=error.message||"La vérification de l’accès a échoué.";status.classList.add("error")});

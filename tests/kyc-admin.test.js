@@ -63,7 +63,7 @@ test("resolves root-relative signed document URLs against the Supabase Storage p
   const adminId = crypto.randomUUID();
   const documentId = crypto.randomUUID();
   const calls = [];
-  const token = await withMockAuth(t, { id: adminId, app_metadata: { kyc_admin: true } }, async (url, options) => {
+  const token = await withMockAuth(t, { id: adminId, app_metadata: { platform_admin: true } }, async (url, options) => {
     calls.push({ url: String(url), options });
     if (String(url).includes("/rest/v1/merchant_kyc_documents?")) {
       return Response.json([{ storage_path: `${crypto.randomUUID()}/document.pdf` }]);
