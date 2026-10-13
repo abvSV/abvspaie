@@ -796,6 +796,21 @@ body{background-color:#d9bf9d;background-image:linear-gradient(90deg,rgba(238,22
 .stage{background:transparent}
 .stage:before{content:none}
 @media(max-width:900px){body{background-image:linear-gradient(180deg,rgba(238,227,212,.76),rgba(238,227,212,.8) 42%,rgba(238,227,212,.94) 100%),linear-gradient(rgba(147,97,61,.25),rgba(147,97,61,.25)),url("assets/technoit-hero.png");background-position:center,center,left bottom;background-size:cover,cover,auto 100vh;background-repeat:no-repeat;background-attachment:fixed;background-blend-mode:normal,color,luminosity}}
+.hero-copy .hero-kicker{display:block}
+.mobile-menu-panel{display:contents}
+@media(max-width:900px){
+  .nav{position:relative;top:auto;left:auto;right:auto;z-index:50}
+  .stage{padding:42px 18px 34px}
+  .hero-copy{margin:0 auto;text-align:left}
+  .hero-copy .hero-kicker{max-width:340px;margin:0 0 15px;font-size:11px;line-height:1.45}
+  .hero-copy h1{margin-bottom:14px;font-size:clamp(38px,10.2vw,48px);line-height:1.02;letter-spacing:-.06em}
+  .hero-copy .sub{max-width:360px;margin:0 0 20px;font-size:15px;line-height:1.55}
+  .hero-copy .btns{display:flex;flex-direction:column;align-items:stretch;gap:3px;width:100%;max-width:420px;margin:0}
+  .hero-copy .btns .btn{display:flex;min-height:52px;align-items:center;justify-content:center;padding:12px 16px;font-size:15px;line-height:1.25;text-align:center}
+  .hero-copy .btns .btn.alt{min-height:42px;justify-content:flex-start;padding:8px 2px;border:0;background:transparent;box-shadow:none;color:#704a30;text-align:left;text-decoration:underline;text-underline-offset:3px}
+  .hero-copy .audit{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));justify-content:start;gap:8px;width:min(100%,360px);margin-top:17px}
+  .hero-copy .audit span{padding:8px 10px;text-align:center;font-size:10px;letter-spacing:.015em;text-transform:none;white-space:nowrap}
+}
 .main-links{flex:1;gap:clamp(8px,1.2vw,16px);padding:0}
 .main-links a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 14px;border:1px solid rgba(147,97,61,.2);border-radius:999px;background:rgba(255,250,242,.88);box-shadow:0 8px 20px rgba(69,46,29,.09);color:#493a2d;animation:top-link-float 6.5s ease-in-out infinite;transition:background .2s,border-color .2s,box-shadow .2s,translate .2s}
 .main-links a:nth-child(2){animation-delay:-1.1s}
@@ -810,6 +825,26 @@ body{background-color:#d9bf9d;background-image:linear-gradient(90deg,rgba(238,22
 .nav .right .btn{border-color:#895738;background:linear-gradient(135deg,#895738,#b77c4c);color:#fffaf4}
 @media(max-width:900px){.nav{flex-wrap:wrap;gap:9px;width:calc(100% - 32px);margin:12px auto 0;padding:8px 0 12px}.main-links{order:3;display:flex;flex:0 0 100%;width:100%;justify-content:flex-start;gap:9px;overflow-x:auto;padding:4px 2px 9px;scrollbar-width:thin;scrollbar-color:rgba(147,97,61,.65) transparent}.main-links::-webkit-scrollbar{display:block;height:4px}.main-links::-webkit-scrollbar-thumb{border-radius:99px;background:rgba(147,97,61,.55)}.main-links::-webkit-scrollbar-track{background:transparent}.main-links a{flex:none;min-height:37px;padding:8px 12px;font-size:12px}.nav .right a.l{display:none}.nav .right.glass{margin-left:auto}}
 @media(prefers-reduced-motion:reduce){.main-links a{animation:none}.main-links a:hover{translate:none}}
+.menu-toggle{display:none}
+@media(max-width:900px){
+  .nav{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;margin:0;padding:10px 18px;border:0;border-bottom:1px solid rgba(147,97,61,.14);border-radius:0;background:#eee3d4;box-shadow:0 5px 18px rgba(69,46,29,.06)}
+  .nav .brand{justify-self:start;width:max-content;max-width:100%;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;font-size:20px;line-height:1.2}
+  .menu-toggle{display:inline-flex;width:auto;min-width:88px;height:44px;flex-direction:row;align-items:center;justify-content:center;gap:9px;padding:0 12px;border:0;border-radius:13px;background:linear-gradient(135deg,#895738,#b77c4c);box-shadow:0 6px 16px rgba(69,46,29,.16);color:#fffaf4;font:700 13px/1 Inter,system-ui,sans-serif;cursor:pointer}
+  .menu-toggle:after{content:"Menu"}
+  .menu-toggle[aria-expanded=true]:after{content:"Fermer"}
+  .menu-toggle>span:not(.menu-toggle-label){display:block;width:16px;height:2px;border-radius:2px;background:currentColor;transition:transform .2s,opacity .2s}
+  .menu-toggle[aria-expanded=true] span:first-child{transform:translateY(7px) rotate(45deg)}
+  .menu-toggle[aria-expanded=true] span:nth-child(2){opacity:0}
+  .menu-toggle[aria-expanded=true] span:last-child{transform:translateY(-7px) rotate(-45deg)}
+  .main-links,.main-links[hidden]{display:none!important}
+  .mobile-menu-panel{display:none}
+  .nav[data-menu-open=true] .mobile-menu-panel{position:absolute;top:calc(100% + 8px);left:12px;right:12px;z-index:1;display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:12px;border:0;border-radius:18px;background:rgba(255,250,242,.98);box-shadow:0 18px 36px rgba(69,46,29,.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  .nav[data-menu-open=true] .main-links{position:static;order:0;display:flex!important;width:100%;flex-direction:column;align-items:stretch;gap:5px;overflow:visible;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .main-links a{justify-content:flex-start;min-height:44px;padding:11px 13px;border:0;border-radius:11px;background:rgba(147,97,61,.075);box-shadow:none;color:#382a20;font-size:15px;font-weight:650;animation:none}
+  .main-links a:hover,.main-links a[aria-current=page]{border:0;border-radius:11px;background:rgba(147,97,61,.15);box-shadow:none;color:#67432b}
+  .nav .right.glass,.nav[data-menu-open=true] .right.glass{position:static;order:1;display:flex;width:100%;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .nav .right .btn{width:100%;min-height:48px;border:0;box-shadow:0 7px 18px rgba(69,46,29,.16);font-size:15px;font-weight:700}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script><script src="assets/abvs-config.js"></script><script src="assets/abvs-auth.js"></script></head>
 <body>
@@ -831,14 +866,17 @@ body{background-color:#d9bf9d;background-image:linear-gradient(90deg,rgba(238,22
 
 <header class="nav">
   <a class="brand glass" href="index.html">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-  <nav class="main-links" aria-label="Navigation principale">
-    <a href="public/solutions.html">Solutions</a>
-    <a href="public/plateforme.html">Pourquoi ABVSPAIE</a>
-    <a href="public/pays-couverts.html">Pays couverts</a>
-    <a href="public/demarrage.html">Démarrage</a>
-    <a href="public/tarification.html">Tarifs</a>
-  </nav>
-  <div class="right glass"><a class="l" href="public/inscription-connexion.html">Connexion client</a><a class="l" href="public/connexion-admin.html">Administration</a><a class="btn" href="public/inscription-connexion.html">Commencer</a></div>
+  <button class="menu-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-navigation"><span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
+  <div class="mobile-menu-panel">
+    <nav class="main-links" id="main-navigation" aria-label="Navigation principale">
+      <a href="public/solutions.html">Solutions</a>
+      <a href="public/plateforme.html">Pourquoi ABVSPAIE</a>
+      <a href="public/pays-couverts.html">Pays couverts</a>
+      <a href="public/demarrage.html">Démarrage</a>
+      <a href="public/tarification.html">Tarifs</a>
+    </nav>
+    <div class="right glass"><a class="l" href="public/inscription-connexion.html">Connexion client</a><a class="l" href="public/connexion-admin.html">Administration</a><a class="btn" href="public/inscription-connexion.html">Commencer</a></div>
+  </div>
 </header>
 
 <main class="stage">
@@ -895,6 +933,38 @@ body{background-color:#d9bf9d;background-image:linear-gradient(90deg,rgba(238,22
     }
   };
   type();
+})();
+</script>
+<script>
+(()=>{
+  const header=document.querySelector(".nav");
+  const toggle=header.querySelector(".menu-toggle");
+  const navigation=header.querySelector("#main-navigation");
+  const action=header.querySelector(".right");
+  const mobile=window.matchMedia("(max-width:900px)");
+  const setOpen=open=>{
+    const collapsed=mobile.matches&&!open;
+    if(!collapsed&&mobile.matches)header.setAttribute("data-menu-open","true");
+    else header.removeAttribute("data-menu-open");
+    toggle.setAttribute("aria-expanded",String(!collapsed&&mobile.matches));
+    toggle.setAttribute("aria-label",!collapsed&&mobile.matches?"Fermer le menu":"Ouvrir le menu");
+    navigation.inert=collapsed;
+    action.inert=collapsed;
+    navigation.setAttribute("aria-hidden",String(collapsed));
+    action.setAttribute("aria-hidden",String(collapsed));
+  };
+  toggle.addEventListener("click",()=>setOpen(toggle.getAttribute("aria-expanded")!=="true"));
+  navigation.addEventListener("click",event=>{
+    if(event.target.closest("a")&&mobile.matches)setOpen(false);
+  });
+  document.addEventListener("keydown",event=>{
+    if(event.key==="Escape"&&toggle.getAttribute("aria-expanded")==="true"){
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+  mobile.addEventListener("change",()=>setOpen(false));
+  setOpen(false);
 })();
 </script>
 <script>
