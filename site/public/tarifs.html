@@ -10,10 +10,10 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ABVSPAIE — Tarifs</title>
-<meta name="description" content="Des tarifs simples, sans abonnement : 1,5 % ou 1,2 % par paiement réussi. Estimez vos frais selon votre volume.">
+<meta name="description" content="Découvrez la tarification ABVSPAIE : des frais à partir de 2 % par transaction.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234a6283'/%3E%3Ctext x='32' y='45' font-size='36' text-anchor='middle' fill='%23fff' font-family='Arial%2Csans-serif' font-weight='800'%3EA%3C/text%3E%3C/svg%3E">
-<meta name="theme-color" content="#eef1f5" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#12171e" media="(prefers-color-scheme: dark)">
-<meta property="og:type" content="website"><meta property="og:site_name" content="ABVSPAIE"><meta property="og:locale" content="fr_FR"><meta property="og:title" content="ABVSPAIE — Tarifs"><meta property="og:description" content="Des tarifs simples, sans abonnement : 1,5 % ou 1,2 % par paiement réussi. Estimez vos frais selon votre volume.">
+<meta name="theme-color" content="#eee3d4" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#eee3d4" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website"><meta property="og:site_name" content="ABVSPAIE"><meta property="og:locale" content="fr_FR"><meta property="og:title" content="ABVSPAIE — Tarifs"><meta property="og:description" content="Découvrez la tarification ABVSPAIE : des frais à partir de 2 % par transaction.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap">
 <style>
 
@@ -95,6 +95,7 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 .pnote{text-align:center;color:var(--mute);font-size:12px;margin-top:16px}
 @media(max-width:820px){.plans{grid-template-columns:1fr}.plan.hot{transform:none}}
 </style>
+<link rel="stylesheet" href="../assets/warm-site-background.css">
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
@@ -103,30 +104,15 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 
   <div class="head">
     <span class="pill">Tarifs</span>
-    <h1>Un prix <em>simple</em>, sans surprise</h1>
-    <p class="sub">Vous ne payez que lorsque vous encaissez.</p>
+    <h1>Une tarification <em>à partir de 2 %</em></h1>
+    <p class="sub">Le tarif applicable à votre compte vous sera confirmé lors de sa configuration.</p>
   </div>
 
   <div class="plans">
-    <div class="card plan"><h2>Démarrage</h2><div class="tagl">Pour lancer votre SaaS</div>
-      <div class="price">1,5 %<span> par paiement réussi</span></div>
-      <ul><li>Mobile money et cartes</li><li>Liens de paiement</li><li></li></ul>
-      <a class="btn" href="../public/inscription-connexion.html">Commencer</a></div>
-    <div class="card plan hot"><h2>Croissance</h2><div class="tagl">Pour les volumes en hausse</div>
-      <div class="price">1,2 %<span> par paiement réussi</span></div>
-      <ul><li>Tout de Démarrage</li><li>Décaissements en masse</li><li>Rapprochement automatique</li><li>Support prioritaire</li></ul>
+    <div class="card plan hot"><h2>Frais par transaction</h2><div class="tagl">Paiements traités avec ABVSPAIE</div>
+      <div class="price">À partir de 2 %</div>
+      <ul><li>Paiements mobile money et cartes</li><li>Liens de paiement</li><li>Suivi des transactions dans votre espace marchand</li></ul>
       <a class="btn p" href="../public/inscription-connexion.html">Commencer</a></div>
-    <div class="card plan"><h2>Entreprise</h2><div class="tagl">Pour les gros volumes</div>
-      <div class="price">Sur mesure</div>
-      <ul><li>Tarifs négociés</li><li>Gestionnaire dédié</li><li>Engagement de service (SLA)</li><li>Intégrations sur demande</li></ul>
-      <a class="btn" href="a-propos-contact.html">Nous contacter</a></div>
-  </div>
-
-  <div class="card est">
-    <h3>Estimez vos frais</h3><p>Déplacez le curseur selon votre volume mensuel d'encaissements.</p>
-    <div class="big" id="vol"></div>
-    <input type="range" id="r" min="500000" max="50000000" step="500000" value="5000000" aria-label="Volume mensuel">
-    <div class="res"><div><small>Démarrage (1,5 %)</small><b id="a"></b></div><div><small>Croissance (1,2 %)</small><b id="b"></b></div></div>
   </div>
 
 </div>
@@ -152,11 +138,6 @@ document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m
  const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
  m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
 
-</script>
-<script>
-const f=n=>Math.round(n).toLocaleString("fr-FR")+" FCFA",$=id=>document.getElementById(id);
-const u=()=>{const v=+$("r").value;$("vol").textContent=f(v)+" / mois";$("a").textContent=f(v*.015);$("b").textContent=f(v*.012)};
-$("r").oninput=u;u();
 </script>
 </body>
 </html>

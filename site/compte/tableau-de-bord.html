@@ -11,7 +11,7 @@
 <title>ABVSPAIE — Tableau de bord</title>
 <meta name="description" content="Pilotez vos encaissements, liens de paiement, décaissements et clés API.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234a6283'/%3E%3Ctext x='32' y='45' font-size='36' text-anchor='middle' fill='%23fff' font-family='Arial%2Csans-serif' font-weight='800'%3EA%3C/text%3E%3C/svg%3E">
-<meta name="theme-color" content="#eef1f5" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#12171e" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eee3d4" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#eee3d4" media="(prefers-color-scheme: dark)">
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap">
 <style>
@@ -98,7 +98,40 @@ body #nav button:hover:before{content:attr(title);position:absolute;bottom:58px;
 .account-actions{position:fixed;top:16px;right:20px;z-index:10;display:flex;align-items:center;gap:8px}
 .account-actions a,.account-actions button{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:9px 13px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--solid) 80%,transparent);backdrop-filter:blur(10px);color:var(--ink);font:600 13px Inter,sans-serif;text-decoration:none;cursor:pointer}
 .account-actions a:hover,.account-actions button:hover{border-color:var(--pri);color:var(--pri)}
-body main{max-width:1200px;margin:0 auto;padding-top:84px}
+body main{max-width:1200px;margin:0 auto;padding-top:100px}
+.topbar{position:fixed;inset:0 0 auto;z-index:30;display:flex;align-items:center;gap:14px;min-height:68px;padding:10px clamp(12px,3vw,40px);border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--solid) 90%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.topbar-brand{position:static;flex:none;padding:8px 10px;font-size:16px}
+.topbar details{position:relative;flex:none;border:0;padding:0}
+.topbar details>summary{display:flex;align-items:center;gap:10px;min-height:44px;padding:7px 11px;border:1px solid var(--line);border-radius:13px;background:var(--solid);cursor:pointer;list-style:none}
+.topbar details>summary::-webkit-details-marker{display:none}
+.workspace-menu>summary{width:230px}
+.topbar-avatar{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:10px;background:var(--grad);color:#fff;font-size:12px;font-weight:800}
+.topbar-identity{display:grid;min-width:0;flex:1;text-align:left}
+.topbar-identity strong,.topbar-identity small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar-identity strong{font-size:12px}
+.topbar-identity small{margin-top:2px;color:var(--mute);font-size:10px;font-weight:500}
+.topbar-chevron{color:var(--mute);font-size:12px}
+.topbar-search{display:flex;align-items:center;gap:9px;min-width:120px;max-width:480px;flex:1;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--in);color:var(--mute)}
+.topbar-search input{width:100%;height:38px;margin:0;padding:0;border:0;outline:0;background:transparent;color:var(--ink);font:13px Inter,sans-serif}
+.topbar-search input:focus{outline:0}
+.topbar-popover{position:absolute;top:calc(100% + 9px);right:0;z-index:40;width:min(320px,calc(100vw - 24px));padding:15px;border:1px solid var(--line);border-radius:16px;background:var(--solid);box-shadow:0 16px 40px var(--sh);color:var(--ink)}
+.workspace-menu .topbar-popover{right:auto;left:0}
+.topbar-popover>strong{display:block;font-size:13px}
+.topbar-popover>p{margin:6px 0 12px;color:var(--mute);font-size:12px;line-height:1.5}
+.topbar-popover a,.topbar-popover button{display:flex;align-items:center;width:100%;padding:10px;border:0;border-radius:9px;background:transparent;color:var(--ink);font:600 12px Inter,sans-serif;text-align:left;text-decoration:none;cursor:pointer}
+.topbar-popover a:hover,.topbar-popover button:hover{background:var(--in)}
+.topbar-search:focus-within,.topbar details>summary:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.notification-menu>summary{justify-content:center;width:44px;padding:0;border:0;background:transparent;font-size:17px}
+.notification-list{display:grid;gap:8px;margin-top:10px}
+.notification-item{padding:10px;border-radius:10px;background:var(--in);font-size:12px;line-height:1.45}
+.notification-item strong{display:block;margin-bottom:3px}
+.notification-item small{display:block;margin-top:4px;color:var(--mute)}
+.notification-empty{padding:10px;border-radius:10px;background:var(--in);color:var(--mute);font-size:12px;line-height:1.5}
+.profile-menu{margin-left:auto!important}
+.profile-menu>summary{max-width:270px}
+.profile-menu .topbar-avatar{border-radius:50%}
+@media(max-width:760px){.topbar{gap:8px;min-height:62px;padding:8px 10px}.topbar-brand{display:none}.workspace-menu>summary{width:min(200px,38vw)}.profile-menu>summary{max-width:190px}.topbar-search{max-width:none}.topbar-search input{font-size:12px}body main{padding-top:86px}}
+@media(max-width:480px){.topbar{gap:6px}.workspace-menu>summary{width:46px;justify-content:center;padding:6px}.workspace-menu .topbar-identity,.workspace-menu .topbar-chevron{display:none}.profile-menu>summary{max-width:46px;justify-content:center;padding:6px}.profile-menu .topbar-identity,.profile-menu .topbar-chevron{display:none}.topbar-search{min-width:60px;padding:0 8px}.topbar-search input::placeholder{font-size:11px}}
 .card{background:color-mix(in srgb,var(--solid) 84%,transparent);backdrop-filter:blur(10px);border-radius:24px}
 .canvas{position:relative;height:540px;margin-top:6px}
 .mod{position:absolute;background:color-mix(in srgb,var(--solid) 84%,transparent);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 20px 44px var(--sh);cursor:grab;user-select:none;touch-action:none;transform:rotate(var(--r,0deg));animation:mf 7s ease-in-out infinite}
@@ -349,17 +382,52 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
 @media(max-width:820px){body aside{width:calc(100vw - 20px);max-width:520px;padding:8px;border-radius:20px}body #nav{width:100%;max-width:100%;gap:7px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}body #nav::-webkit-scrollbar{display:none}body #nav button,body #nav a{width:48px;height:48px;min-width:48px;flex-basis:48px;scroll-snap-align:center}body #nav button span,body #nav a span{font-size:19px}body main{padding-left:16px;padding-right:16px}body .brand{top:calc(12px + env(safe-area-inset-top,0px));left:12px}}
 @media(min-width:821px){body #nav a:hover:before{content:attr(title);position:absolute;bottom:58px;background:var(--ink);color:var(--solid);font:600 11px Inter,sans-serif;padding:5px 9px;border-radius:8px;white-space:nowrap}}
 </style>
+<link rel="stylesheet" href="../assets/warm-site-background.css">
 </head>
 <body>
 <aside>
   <div class="logo">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></div>
   <div id="nav"></div>
 </aside>
-<a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-<div class="account-actions" aria-label="Compte">
-  <a href="parametres.html#kyc"><span class="action-icon" aria-hidden="true">⚙️</span>Vérification KYC</a>
-  <button type="button" data-logout><span class="action-icon" aria-hidden="true">🚪</span>Déconnexion</button>
-</div>
+<header class="topbar" aria-label="Barre du compte">
+  <a class="brand topbar-brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
+  <details class="workspace-menu">
+    <summary aria-label="Espace marchand actif">
+      <span class="topbar-avatar" id="workspace-avatar" aria-hidden="true">AB</span>
+      <span class="topbar-identity"><strong id="workspace-name">Espace marchand</strong><small id="workspace-meta">Compte actif</small></span>
+      <span class="topbar-chevron" aria-hidden="true">⌄</span>
+    </summary>
+    <div class="topbar-popover">
+      <strong id="workspace-detail">Espace marchand</strong>
+      <p>Un espace marchand est associé à cette connexion. Pour modifier son nom ou son pays, ouvrez les paramètres de l’entreprise.</p>
+      <a href="parametres.html#entreprise">Gérer l’entreprise</a>
+    </div>
+  </details>
+  <label class="topbar-search" for="topbar-search-input"><span aria-hidden="true">⌕</span><input id="topbar-search-input" type="search" autocomplete="off" placeholder="Rechercher dans l’activité" aria-label="Rechercher dans les transactions et liens"></label>
+  <details class="notification-menu">
+    <summary aria-label="Afficher l’activité récente">🔔</summary>
+    <div class="topbar-popover">
+      <strong>Activité récente</strong>
+      <div id="notification-list" class="notification-list" aria-live="polite"><div class="notification-empty">Chargement de l’activité…</div></div>
+    </div>
+  </details>
+  <details class="profile-menu">
+    <summary aria-label="Ouvrir le menu du profil">
+      <span class="topbar-avatar" id="profile-avatar" aria-hidden="true">AB</span>
+      <span class="topbar-identity"><strong id="profile-name-display">Mon compte</strong><small id="profile-email-display">Compte marchand</small></span>
+      <span class="topbar-chevron" aria-hidden="true">⌄</span>
+    </summary>
+    <div class="topbar-popover">
+      <strong id="profile-menu-name">Mon compte</strong>
+      <p id="profile-menu-email">Chargement du profil…</p>
+      <a href="parametres.html#profil">Mon profil</a>
+      <a href="parametres.html#entreprise">Paramètres de l’entreprise</a>
+      <a href="parametres.html#kyc">Vérification d’identité</a>
+      <button type="button" data-logout>Déconnexion</button>
+      <p id="profile-load-error" role="status" aria-live="polite" hidden></p>
+    </div>
+  </details>
+</header>
 <main>
   <section id="home">
     <header class="overview-head">
@@ -407,7 +475,7 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
   </section>
 
   <section id="keys" class="hide rubric-page">
-    <h1>Développeur</h1><p class="sub">Intégrez les pages de paiement hébergées et configurez les webhooks entrants disponibles.</p>
+    <h1>Développement</h1><p class="sub">Intégrez les pages de paiement hébergées et configurez les webhooks entrants disponibles.</p>
     <div class="dev-layout"><nav class="section-subnav" aria-label="Rubriques développeur"><button type="button" data-subpanel="keys-access" aria-pressed="false"><span aria-hidden="true">🔑</span>Clés API</button><button type="button" data-subpanel="keys-integration" aria-pressed="false"><span aria-hidden="true">⌘</span>Intégration</button></nav>
     <section class="section-subpanel" id="keys-access" hidden><div class="card dev-card"><h2>Clés API marchand</h2><div class="dev-callout"><strong>Pas de clé API marchand disponible actuellement.</strong>ABVSPAIE ne propose pas encore d'API serveur pour créer des paiements depuis votre backend. Aucune clé secrète n'est générée ni stockée depuis cette page.</div><p>La clé Supabase publique utilisée par le site n'est pas une clé API privée pour votre intégration : ne l'utilisez jamais avec un rôle serveur et ne placez jamais une clé <code>service_role</code> dans le navigateur. Les accès du tableau de bord restent protégés par l'authentification et les politiques RLS.</p><div class="dev-actions"><a class="btn alt" href="securite.html">Consulter la sécurité du compte</a></div></div></section>
     <section class="section-subpanel" id="keys-integration" hidden><div class="card dev-card"><h2>Intégrer un paiement</h2><p>La méthode disponible est le lien de paiement hébergé ABVSPAIE. Le client choisit son moyen de paiement et confirme sur la page sécurisée.</p><ol class="dev-steps"><li>Créez un lien dans <strong>Liens de paiement</strong> et copiez son identifiant (slug).</li><li>Construisez l'URL ci-dessous pour votre bouton ou votre page de commande.</li><li>Vérifiez les paiements depuis <strong>Transactions</strong>. Les liens en mode test simulent le résultat et ne transfèrent pas de fonds.</li></ol><form id="devLinkForm" class="dev-link-form"><label class="sr-only" for="devLinkSlug">Identifiant du lien de paiement</label><input id="devLinkSlug" required maxlength="128" pattern="[A-Za-z0-9_-]{1,128}" placeholder="Identifiant du lien (slug)" autocomplete="off"><button class="btn" type="submit">Générer l'URL</button></form><div id="devLinkResult" class="dev-link-result" hidden><label for="devCheckoutUrl">URL de paiement</label><input id="devCheckoutUrl" readonly><label for="devCheckoutSnippet">Exemple de bouton HTML</label><pre id="devCheckoutSnippet"></pre><div class="dev-actions"><button id="devCopyUrl" class="btn alt" type="button">Copier l'URL</button><button id="devCopySnippet" class="btn alt" type="button">Copier le code</button><a id="devOpenCheckout" class="btn" target="_blank" rel="noopener noreferrer">Tester le lien</a></div></div><p id="devLinkStatus" class="dev-status" role="status" aria-live="polite"></p><div class="dev-callout"><strong>Notifications serveur</strong>Les webhooks entrants configurés dans <strong>Webhooks</strong> reçoivent les événements signés de votre application. Ils ne constituent pas une notification de confirmation émise par un prestataire de paiement.</div></div></section>
@@ -423,6 +491,14 @@ let TX=[];
 const L={succeeded:"Réussi",pending:"En attente",failed:"Échoué"};
 const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt=n=>Number(n||0).toLocaleString("fr-FR");
+function renderNotifications(){
+ const list=$("notification-list");
+ if(!TX.length){list.innerHTML="<div class='notification-empty'>Aucune activité récente. Les nouvelles transactions apparaîtront ici.</div>";return}
+ list.innerHTML=TX.slice(0,5).map(t=>{
+  const status=["succeeded","pending","failed"].includes(t[3])?t[3]:"pending";
+  return `<article class="notification-item"><strong>${esc(t[0]||"Transaction")} · ${L[status]}</strong>${esc(t[2])} FCFA · ${esc(t[1]||"Moyen non précisé")}<small>${esc(t[4])}</small></article>`;
+ }).join("");
+}
 const rows=a=>"<tr><th>Référence</th><th>Méthode</th><th>Montant (FCFA)</th><th>Statut</th><th>Date</th></tr>"+(a.length?a.map(t=>`<tr><td>${esc(t[0])}</td><td>${esc(t[1])}</td><td><b>${esc(t[2])}</b></td><td><span class="tag ${t[3]}">${L[t[3]]}</span></td><td>${esc(t[4])}</td></tr>`).join(""):"<tr><td colspan='5'>Aucune transaction pour le moment.</td></tr>");
 let curF=null;
 function drawTx(){
@@ -432,10 +508,11 @@ function drawTx(){
  $("stat-transactions").textContent=fmt(succeeded.length);
  $("tHome").innerHTML=TX.length?TX.slice(0,4).map(t=>{const status=["succeeded","pending","failed"].includes(t[3])?t[3]:"pending";return "<div class='overview-transaction'><div><span class='overview-transaction-ref'>"+esc(t[0])+"</span><span class='overview-transaction-meta'>"+esc(t[1])+" · "+esc(t[4])+"</span></div><strong class='overview-transaction-amount'>"+esc(t[2])+" FCFA</strong><span class='tag "+status+"'>"+(L[status]||"En attente")+"</span></div>"}).join(""):"<div class='overview-empty'><strong>Aucune transaction pour le moment</strong>Les nouvelles transactions apparaîtront ici après leur enregistrement.</div>";
  $("tAll").innerHTML=rows(curF==="all"?TX:TX.filter(t=>t[3]===curF));
+ renderNotifications();
 }
 drawTx();
 function resetSubsections(section){section.querySelectorAll("[data-subpanel]").forEach(button=>button.setAttribute("aria-pressed","false"));section.querySelectorAll(".section-subpanel").forEach(panel=>panel.hidden=true);section.querySelectorAll("[data-link-rubric]").forEach(button=>button.setAttribute("aria-pressed","false"));section.querySelectorAll(".link-rubric-panel").forEach(panel=>panel.hidden=true);if(section.id==="tx"){$("tx-table-wrap").hidden=true;curF=null;document.querySelectorAll("#filters button").forEach(button=>{button.classList.remove("on");button.setAttribute("aria-pressed","false")})}}
-function go(v,updateLocation=true){const sections=[...document.querySelectorAll("main > section")],selected=sections.find(section=>section.id===v);if(!selected)return;document.querySelectorAll("#nav button").forEach(x=>{const active=x.dataset.v===v;x.classList.toggle("on",active);if(active)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current")});sections.forEach(e=>e.classList.toggle("hide",e!==selected));resetSubsections(selected);if(updateLocation&&location.hash!=="#"+v)location.hash=v;scrollTo(0,0)}
+function go(v,updateLocation=true){if(v==="settings"){window.location.href="parametres.html";return}const sections=[...document.querySelectorAll("main > section")],selected=sections.find(section=>section.id===v);if(!selected)return;document.querySelectorAll("#nav button").forEach(x=>{const active=x.dataset.v===v;x.classList.toggle("on",active);if(active)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current")});sections.forEach(e=>e.classList.toggle("hide",e!==selected));resetSubsections(selected);if(updateLocation&&location.hash!=="#"+v)location.hash=v;scrollTo(0,0)}
 $("home").addEventListener("click",e=>{const target=e.target.closest("[data-section]");if(!target)return;e.preventDefault();go(target.dataset.section)});
 $("filters").onclick=e=>{const button=e.target.closest("button[data-f]");if(!button)return;
   document.querySelectorAll("#filters button").forEach(x=>{const active=x===button;x.classList.toggle("on",active);x.setAttribute("aria-pressed",String(active))});
@@ -525,6 +602,7 @@ let LK=[];
 function drawLinks(){$("stat-links").textContent=fmt(LK.length);$("lkList").innerHTML=LK.map((l,i)=>`<div class="lk"><div><b>${esc(l.d)}</b><small>${esc(l.u)}</small></div><div class="r"><b>${fmt(l.a)} FCFA</b><span class="tag ${l.s==="succeeded"?"succeeded":"pending"}">${l.s==="succeeded"?"Payé":"En attente"}</span></div><div class="act"><button class="btn alt" data-c="${i}">Copier</button><a class="btn alt" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=${encodeURIComponent(l.d+" : "+fmt(l.a)+" FCFA - "+l.u)}">WhatsApp</a></div></div>`).join("")||"<div class='overview-empty'><strong>Aucun lien actif</strong>Créez un lien pour commencer à partager une demande de paiement.</div>"}
 drawLinks();
 const searchInput=$("global-search"),searchResults=$("search-results");
+const topbarSearch=$("topbar-search-input");
 function runSearch(){
  const query=searchInput.value.trim().toLocaleLowerCase("fr");
  searchResults.replaceChildren();
@@ -546,6 +624,13 @@ function runSearch(){
 }
 window.refreshSearch=runSearch;
 searchInput.addEventListener("input",runSearch);
+topbarSearch.addEventListener("input",()=>{
+ searchInput.value=topbarSearch.value;
+ if(topbarSearch.value&&!$("search").classList.contains("hide")){runSearch();return}
+ if(topbarSearch.value)go("search");
+ runSearch();
+});
+topbarSearch.addEventListener("keydown",event=>{if(event.key==="Escape"){topbarSearch.value="";searchInput.value="";runSearch()}});
 runSearch();
 $("lkList").onclick=async e=>{const i=e.target.dataset.c;if(i===undefined)return;try{await navigator.clipboard.writeText(LK[i].u);e.target.textContent="Copié ✓"}catch(x){e.target.textContent="Copie impossible"}setTimeout(drawLinks,1200)};
 $("lkForm").onsubmit=async e=>{e.preventDefault();const a=parseInt($("lkAmt").value,10),d=$("lkDesc").value.trim();
@@ -579,14 +664,14 @@ $("devCopyUrl").addEventListener("click",()=>copyDeveloperValue($("devCheckoutUr
 $("devCopySnippet").addEventListener("click",()=>copyDeveloperValue($("devCheckoutSnippet").textContent));
 const gap="<div style='margin-top:14px'></div>";
 
-sec('wallet','Wallet','Votre solde et vos mouvements.',[
- ["wallet-balance","◉","Solde",`<div class="card"><div class="wallet-stage"><article class="wallet-bubble"><span class="wallet-orb" aria-hidden="true">◉</span><span class="wallet-status">Solde indisponible</span><h2>Votre solde apparaîtra ici</h2><p>Le solde du wallet n'est pas encore connecté aux données de votre compte.</p></article></div></div>`],
- ["wallet-movements","↔","Mouvements",`<div class="card"><p class="sub" style="margin:0">L'historique des mouvements du wallet n'est pas encore connecté aux données du compte.</p></div>`]
+sec('wallet','Portefeuille','Votre solde et vos mouvements.',[
+ ["wallet-balance","◉","Solde",`<div class="card"><div class="wallet-stage"><article class="wallet-bubble"><span class="wallet-orb" aria-hidden="true">◉</span><span class="wallet-status">Solde indisponible</span><h2>Votre solde apparaîtra ici</h2><p>Le solde du portefeuille n'est pas encore connecté aux données de votre compte.</p></article></div></div>`],
+ ["wallet-movements","↔","Mouvements",`<div class="card"><p class="sub" style="margin:0">L'historique des mouvements du portefeuille n'est pas encore connecté aux données du compte.</p></div>`]
 ]);
 
-sec('sessions','Sessions de checkout','Les pages de paiement ouvertes par vos clients.',[
- ["sessions-active","◷","Sessions actives",`<div class="card"><p class="sub" style="margin:0">Les sessions de checkout actives ne sont pas encore disponibles dans cet espace.</p></div>`],
- ["sessions-history","▤","Historique",`<div class="card"><p class="sub" style="margin:0">L'historique des sessions de checkout n'est pas encore connecté aux données du compte.</p></div>`]
+sec('sessions','Sessions de paiement','Les pages de paiement ouvertes par vos clients.',[
+ ["sessions-active","◷","Sessions actives",`<div class="card"><p class="sub" style="margin:0">Les sessions de paiement actives ne sont pas encore disponibles dans cet espace.</p></div>`],
+ ["sessions-history","▤","Historique",`<div class="card"><p class="sub" style="margin:0">L'historique des sessions de paiement n'est pas encore connecté aux données du compte.</p></div>`]
 ]);
 
 sec('clients','Clients','Retrouvez les personnes qui vous paient et consultez leurs paiements.',[
@@ -707,12 +792,12 @@ sec("disputes","Litiges","Contestations de paiement à traiter.",[
  ["disputes-closed","✓","Terminés",`<div class="card"><p class="sub" style="margin:0">L'historique des litiges terminés n'est pas encore connecté aux données du compte.</p></div>`]
 ]);
 
-sec("pricing","Tarification","Vos frais par moyen de paiement.",[
- ["pricing-collection","↗","Encaissement",`<div class="card"><small>Offre actuelle</small><div class="big">ABVSPAIE</div><span class="up">Tarification de votre compte</span>${gap}${tbl(["Moyen","Frais d'encaissement"],[["Orange Money","1,5 %"],["Wave","1,5 %"],["MTN MoMo","1,5 %"],["Moov","1,5 %"],["Carte bancaire","1,5 %"]])}</div>`],
+sec("pricing","Tarification","Des frais d’encaissement à partir de 2 %.",[
+ ["pricing-collection","↗","Encaissement",`<div class="card"><small>Frais d'encaissement</small><div class="big">À partir de 2 %</div><p class="sub" style="margin:0">Le tarif applicable à votre compte vous sera confirmé lors de sa configuration.</p></div>`],
  ["pricing-payout","↙","Décaissement",`<div class="card">${tbl(["Moyen","Frais de décaissement"],[["Orange Money","100 FCFA"],["Wave","100 FCFA"],["MTN MoMo","100 FCFA"],["Moov","100 FCFA"],["Carte bancaire","—"]])}</div>`]
 ]);
 
-sec("support","Support","Contactez notre équipe en cas de besoin.",[
+sec("support","Assistance","Contactez notre équipe en cas de besoin.",[
  ["support-contact","✉","Contacter le support",`<div class="card"><p class="sub" style="margin:0">Utilisez la page de contact pour joindre notre équipe.</p><a href="a-propos-contact.html">Contacter le support</a></div>`],
  ["support-info","i","Informations",`<div class="card"><p class="sub" style="margin:0">Pour toute demande d'assistance, contactez notre équipe depuis la page de contact.</p></div>`]
 ]);
@@ -745,8 +830,46 @@ window.__reload=loadAll;
 $("overview-refresh").addEventListener("click",loadAll);
 $("loadError").querySelector("[data-retry]").addEventListener("click",loadAll);
 await loadAll();})();
-const NAV=[["home","🏠","Tableau de bord"],["wallet","👛","Wallet"],["tx","↔️","Transactions"],["links","🔗","Liens de paiement"],["sessions","🧾","Sessions de checkout"],["clients","👥","Clients"],["stats","📈","Statistiques"],["retraits","🏦","Retraits"],["keys","🔑","Développeur"],["hooks","🪝","Webhooks"],["hooklog","📜","Journal des webhooks"],["disputes","⚖️","Litiges"],["pricing","🏷️","Tarification"],["support","💬","Support"]];
+const NAV=[["home","🏠","Tableau de bord"],["wallet","👛","Portefeuille"],["tx","↔️","Transactions"],["links","🔗","Liens de paiement"],["sessions","🧾","Sessions de paiement"],["clients","👥","Clients"],["stats","📈","Statistiques"],["retraits","🏦","Retraits"],["keys","🔑","Développement"],["hooks","🪝","Webhooks"],["hooklog","📜","Journal des webhooks"],["disputes","⚖️","Litiges"],["pricing","🏷️","Tarification"],["support","💬","Assistance"],["settings","⚙️","Paramètres"]];
 $("nav").innerHTML=NAV.map((n,i)=>"<button title='"+n[2]+"' aria-label='"+n[2]+"' data-v='"+n[0]+"'"+(i?"":" class='on' aria-current='page'")+"><span>"+n[1]+"</span>"+n[2]+"</button>").join("");
+async function loadAccountIdentity(){
+ const error=$("profile-load-error");
+ try{
+  if(!ABVS.ready)throw new Error("Le service de compte est indisponible.");
+  const {data,error:authError}=await ABVS.client.auth.getUser();
+  if(authError||!data.user)throw new Error("Impossible de charger le profil du compte.");
+  const user=data.user,metadata=user.user_metadata||{},company=String(metadata.company||"").trim()||"Espace marchand";
+  const displayName=String(metadata.full_name||"").trim()||user.email||"Mon compte";
+  const email=user.email||"Adresse e-mail indisponible";
+  const countries={CI:"Côte d’Ivoire",SN:"Sénégal",BF:"Burkina Faso",ML:"Mali",BJ:"Bénin",TG:"Togo",NE:"Niger",GW:"Guinée-Bissau"};
+  const country=countries[metadata.country]||"Compte marchand";
+  const initials=displayName.split(/\s+/).filter(Boolean).slice(0,2).map(part=>Array.from(part)[0]).join("").toLocaleUpperCase("fr")||"AB";
+  const companyInitials=company.split(/\s+/).filter(Boolean).slice(0,2).map(part=>Array.from(part)[0]).join("").toLocaleUpperCase("fr")||"AB";
+  $("workspace-name").textContent=company;
+  $("workspace-detail").textContent=company;
+  $("workspace-meta").textContent=country;
+  $("workspace-avatar").textContent=companyInitials;
+  $("profile-name-display").textContent=displayName;
+  $("profile-menu-name").textContent=displayName;
+  $("profile-email-display").textContent=email;
+  $("profile-menu-email").textContent=email;
+  $("profile-avatar").textContent=initials;
+ }catch(loadError){
+  error.textContent=loadError.message||"Impossible de charger le profil.";
+  error.hidden=false;
+  $("profile-menu-email").textContent=error.textContent;
+ }
+}
+loadAccountIdentity();
+document.addEventListener("click",event=>{
+ const openMenu=event.target.closest(".topbar details");
+ document.querySelectorAll(".topbar details[open]").forEach(menu=>{if(menu!==openMenu)menu.open=false});
+});
+document.addEventListener("keydown",event=>{
+ if(event.key!=="Escape")return;
+ const openMenu=document.querySelector(".topbar details[open]");
+ if(openMenu){openMenu.open=false;openMenu.querySelector("summary").focus()}
+});
 document.addEventListener("click",e=>{if(e.target.closest("[data-logout]")){e.preventDefault();ABVS.signOut()}});
 $("nav").onclick=e=>{const b=e.target.closest("button");if(b)go(b.dataset.v)};
 window.addEventListener("hashchange",()=>{const view=location.hash.slice(1);go(view||"home",false)});

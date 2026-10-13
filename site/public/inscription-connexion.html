@@ -3,14 +3,14 @@
 
 <head>
   <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>ABVSPAIE — Connexion et inscription</title>
 <meta name="description" content="Créez votre compte ABVSPAIE ou connectez-vous pour encaisser et payer en FCFA.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234a6283'/%3E%3Ctext x='32' y='45' font-size='36' text-anchor='middle' fill='%23fff' font-family='Arial%2Csans-serif' font-weight='800'%3EA%3C/text%3E%3C/svg%3E">
-<meta name="theme-color" content="#eef1f5" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#12171e" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eee3d4" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#eee3d4" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website"><meta property="og:site_name" content="ABVSPAIE"><meta property="og:locale" content="fr_FR"><meta property="og:title" content="ABVSPAIE — Connexion et inscription"><meta property="og:description" content="Créez votre compte ABVSPAIE ou connectez-vous pour encaisser et payer en FCFA.">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap">
   <style>
@@ -144,6 +144,29 @@
     input:focus {
       outline: 2px solid var(--pri);
       outline-offset: 1px
+    }
+
+    .password-field {
+      position: relative;
+      margin-top: 12px
+    }
+
+    .password-field input {
+      margin-top: 0;
+      padding-right: 76px
+    }
+
+    .password-toggle {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      padding: 6px;
+      border: 0;
+      background: transparent;
+      color: var(--pri);
+      font: 600 12px Inter, sans-serif;
+      cursor: pointer
     }
 
     .err {
@@ -387,37 +410,6 @@
       box-shadow: 0 34px 70px var(--sh, rgba(40, 60, 90, .2))
     }
 
-    .pop {
-      position: fixed;
-      bottom: 90px;
-      z-index: 25;
-      background: var(--pri);
-      color: var(--solid, var(--card));
-      font: 600 12px Inter, sans-serif;
-      padding: 7px 12px;
-      border-radius: 99px;
-      box-shadow: 0 10px 24px rgba(40, 60, 90, .2);
-      animation: rise 4s ease-out forwards;
-      pointer-events: none;
-      white-space: nowrap
-    }
-
-    @keyframes rise {
-      0% {
-        opacity: 0;
-        transform: translateY(10px)
-      }
-
-      15% {
-        opacity: 1
-      }
-
-      100% {
-        opacity: 0;
-        transform: translateY(-260px)
-      }
-    }
-
     @media(max-width:600px) {
       .brand {
         left: 12px;
@@ -426,7 +418,8 @@
     }
   .legal-bar{position:fixed;left:0;right:0;bottom:6px;text-align:center;font:500 11px Inter,system-ui,sans-serif;color:var(--mute);z-index:5;pointer-events:none}.legal-bar a{pointer-events:auto;color:var(--mute);text-decoration:none;margin:0 7px}.legal-bar a:hover{text-decoration:underline}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script><script src="../assets/abvs-config.js"></script><script src="../assets/abvs-auth.js"></script></head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script><script src="../assets/abvs-config.js"></script><script src="../assets/abvs-auth.js"></script><link rel="stylesheet" href="../assets/warm-site-background.css">
+</head>
 
 <body>
   <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
@@ -444,11 +437,13 @@
           <div id="s1">
             <input id="email" type="email" placeholder="E-mail" autocomplete="email">
             <div class="err" data-for="email"></div>
-            <input id="pwd" type="password" placeholder="Mot de passe (8 caractères min.)" autocomplete="new-password">
+            <div class="password-field"><input id="pwd" type="password" placeholder="Mot de passe (8 caractères min.)" autocomplete="new-password"><button class="password-toggle" type="button" data-password-toggle="pwd" aria-controls="pwd" aria-pressed="false">Afficher</button></div>
             <div class="err" data-for="pwd"></div>
             <button class="btn" type="button" id="next">Continuer</button>
           </div>
           <div id="s2" class="hide">
+            <input id="fullName" autocomplete="name" placeholder="Nom complet">
+            <div class="err" data-for="fullName"></div>
             <input id="company" placeholder="Entreprise" autocomplete="organization">
             <div class="err" data-for="company"></div>
             <select id="country">
@@ -479,7 +474,7 @@
           <div id="loginCredentials">
             <input id="lemail" type="email" placeholder="E-mail" autocomplete="email">
             <div class="err" data-for="lemail"></div>
-            <input id="lpwd" type="password" placeholder="Mot de passe" autocomplete="current-password">
+            <div class="password-field"><input id="lpwd" type="password" placeholder="Mot de passe" autocomplete="current-password"><button class="password-toggle" type="button" data-password-toggle="lpwd" aria-controls="lpwd" aria-pressed="false">Afficher</button></div>
             <div class="err" data-for="lpwd"></div>
           </div>
           <div id="l2" class="hide" aria-live="polite">
@@ -515,6 +510,14 @@
     const views = ['vSignup', 'vLogin', 'vDone'];
     const show = v => views.forEach(x => $(x).classList.toggle('hide', x !== v));
     $('toLogin').onclick = () => show('vLogin'); $('toSignup').onclick = () => show('vSignup');
+    document.querySelectorAll('[data-password-toggle]').forEach(button => {
+      button.onclick = () => {
+        const input = $(button.dataset.passwordToggle), visible = input.type === 'password';
+        input.type = visible ? 'text' : 'password';
+        button.textContent = visible ? 'Masquer' : 'Afficher';
+        button.setAttribute('aria-pressed', String(visible));
+      };
+    });
     const setErr = (k, m) => { document.querySelector('[data-for="' + k + '"]').textContent = m || ''; return !m };
     const okMail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
     const step = n => { $('s1').classList.toggle('hide', n !== 1); $('s2').classList.toggle('hide', n !== 2); $('d2').classList.toggle('on', n === 2) };
@@ -526,6 +529,7 @@
       e.preventDefault();
       if ($('s2').classList.contains('hide')) { $('next').onclick(); return }
       const r = [
+        setErr('fullName', $('fullName').value.trim().length < 2 ? "Indiquez votre nom complet." : ''),
         setErr('company', $('company').value.trim().length < 2 ? "Indiquez votre entreprise." : ''),
         setErr('country', $('country').value ? '' : 'Choisissez un pays.'),
         setErr('cgu', $('cgu').checked ? '' : 'Acceptez les conditions.')
@@ -538,7 +542,7 @@
       try {
         const res = await ABVS.signUp({
           email: $('email').value.trim(), password: $('pwd').value,
-          company: $('company').value.trim(), country: ISO[$('country').value]
+          full_name: $('fullName').value.trim(), company: $('company').value.trim(), country: ISO[$('country').value]
         });
         if (res.exists) { step(1); setErr('email', 'Cet e-mail existe déjà.'); return }
         if (res.error) {
@@ -665,11 +669,6 @@
         m.addEventListener("pointermove", mv); m.addEventListener("pointerup", up)
       })
     })();
-    if (!matchMedia("(prefers-reduced-motion:reduce)").matches) setInterval(() => {
-      if (document.hidden || innerWidth < 700) return;
-      const p = document.createElement("div"); p.className = "pop"; const o = ["Orange Money", "Wave", "MTN MoMo", "Carte"][Math.floor(Math.random() * 4)], a = [5000, 8000, 15000, 22000, 42500][Math.floor(Math.random() * 5)];
-      p.textContent = "+" + a.toLocaleString("fr-FR") + " FCFA · " + o; p.style.left = (10 + Math.random() * 70) + "%"; document.body.appendChild(p); setTimeout(() => p.remove(), 4200)
-    }, 3500);
   </script>
 </body>
 

@@ -1,0 +1,128 @@
+:root{
+  color-scheme:light!important;
+  --bg:#eee3d4!important;
+  --paper:#fffaf2!important;
+  --solid:#fffaf2!important;
+  --card:#fffaf2!important;
+  --surface:#fffaf2!important;
+  --ink:#382a20!important;
+  --text:#382a20!important;
+  --mute:#665648!important;
+  --muted:#665648!important;
+  --mut:#665648!important;
+  --pri:#93613d!important;
+  --primary:#93613d!important;
+  --brand:#93613d!important;
+  --brown:#93613d!important;
+  --grad:linear-gradient(135deg,#895738,#b77c4c)!important;
+  --line:#ddc8b1!important;
+  --border:#ddc8b1!important;
+  --in:#f7eee3!important;
+  --input:#fffaf2!important;
+  --ok:#98623b!important;
+  --success:#98623b!important;
+  --err:#bd514c!important;
+  --error:#bd514c!important;
+  --warn:#a96c2f!important;
+  --sh:rgba(69,46,29,.14)!important;
+  --shadow:rgba(69,46,29,.14)!important;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif!important;
+}
+
+body{
+  color:#382a20!important;
+  background-color:#d9bf9d!important;
+  background-image:
+    linear-gradient(90deg,rgba(255,250,242,.72) 0%,rgba(255,250,242,.8) 42%,rgba(255,250,242,.94) 100%),
+    linear-gradient(rgba(147,97,61,.22),rgba(147,97,61,.22)),
+    url("technoit-hero.png")!important;
+  background-position:center,center,left center!important;
+  background-size:cover,cover,cover!important;
+  background-repeat:no-repeat!important;
+  background-attachment:fixed!important;
+  background-blend-mode:normal,color,luminosity!important;
+}
+
+h1,h2,h3,h4,legend{color:#382a20}
+a.brand,.brand{color:#382a20}
+.brand span{color:#93613d}
+a:not(.btn):not(.button):not(.brand){color:#815432}
+a:not(.btn):not(.button):not(.brand):hover{color:#93613d}
+
+.card,.panel,.surface,.modal,.dialog,.dependency,.case,.kpi,.kyc-card,.page-intro,.info-card,.price-card{
+  border-color:rgba(147,97,61,.22)!important;
+  background-color:rgba(255,250,242,.96)!important;
+  box-shadow:0 14px 34px rgba(69,46,29,.12)!important;
+}
+
+.overview-hero{
+  background:linear-gradient(115deg,#75482d 0%,#93613d 58%,#bd926e 100%)!important;
+}
+.overview-hero,.overview-hero h1,.overview-hero h2,.overview-hero h3{color:#fffaf2!important}
+.overview-hero .eyebrow,.overview-hero p{color:#fff3e4!important}
+.nav-button{color:#70482e!important;border-color:#ddc8b1!important;background:#fffaf2!important}
+.nav-button[aria-current=page]{color:#493220!important;border-color:#c9a783!important;background:#f1e3d2!important}
+.admin-identity{border-color:#ddc8b1!important;background:#fffaf2!important;color:#70482e!important}
+.admin-avatar,.kpi-icon,.icon-box{background:#f1e3d2!important;color:#815432!important}
+th{background:#f7eee3!important;color:#593d27!important}
+td,th,.table-wrap{border-color:#e2cfb9!important}
+.notice:not(.error):not(.success){border-color:#ddc8b1!important;background:#f7eee3!important;color:#593d27!important}
+
+input:not([type=checkbox]):not([type=radio]):not([type=submit]),
+select,textarea{
+  border-color:#ddc8b1!important;
+  background-color:#fffaf2!important;
+  color:#382a20!important;
+}
+
+input::placeholder,textarea::placeholder{color:#766656!important;opacity:1}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{
+  outline:3px solid rgba(147,97,61,.55);
+  outline-offset:2px;
+}
+
+button,.btn,.button{
+  border-color:#c9a783;
+  font-family:inherit;
+  transition:background-color .2s,border-color .2s,box-shadow .2s,transform .2s;
+}
+
+.btn,.button,button[type=submit]{border-radius:11px}
+
+.btn:not(.alt):not(.secondary):not(.danger):not(.reject):not(.approve):not(.success),
+.button:not(.secondary):not(.danger):not(.reject):not(.approve):not(.success),
+button[type=submit]:not(.secondary):not(.danger):not(.reject):not(.approve):not(.success){
+  border-color:#895738!important;
+  background:linear-gradient(135deg,#895738,#b77c4c)!important;
+  color:#fffaf2!important;
+}
+
+.btn.alt,.btn.secondary,.button.secondary{
+  border-color:#ddc8b1!important;
+  background:#f7eee3!important;
+  color:#593d27!important;
+}
+
+button.approve,.btn.approve,.button.approve,button.success,.btn.success{
+  border-color:#567c58!important;
+  background:#567c58!important;
+  color:#fffaf2!important;
+}
+button.reject,button.danger,.btn.reject,.btn.danger,.button.reject,.button.danger{
+  border-color:#a9433e!important;
+  background:#a9433e!important;
+  color:#fffaf2!important;
+}
+
+.badge,.pill,.tag{border-color:#ddc8b1}
+
+@media(max-width:900px){
+  body{
+    background-image:
+      linear-gradient(180deg,rgba(255,250,242,.8),rgba(255,250,242,.86) 42%,rgba(255,250,242,.97) 100%),
+      linear-gradient(rgba(147,97,61,.22),rgba(147,97,61,.22)),
+      url("technoit-hero.png")!important;
+    background-position:center,center,left bottom!important;
+    background-size:cover,cover,auto 100vh!important;
+  }
+}

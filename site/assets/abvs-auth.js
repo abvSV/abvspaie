@@ -3,17 +3,22 @@
   "use strict";
   var cfg = window.ABVS_CONFIG || {};
   var LOGIN = "../public/inscription-connexion.html";
-  var IDLE_MS = 30 * 60 * 1000, KEY = "abvs_last";
+  var KEY = "abvs_last_touch";
+  var IDLE_MS = 30 * 60 * 1000;
   var sb = null;
+
   try {
-    sb = window.supabase.createClient(cfg.url, cfg.anonKey, {
-      auth: { flowType: "pkce", persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-    });
-  } catch (e) { sb = null; }
+    if (window.supabase && cfg.url && cfg.anonKey) {
+      sb = window.supabase.createClient(cfg.url, cfg.anonKey);
+    }
+  } catch (e) {
+    console.error("Impossible d'initialiser le service d'authentification ABVSPAIE.", e);
+  }
 
   function touch() {
-    try { sessionStorage.setItem(KEY, String(Date.now())); }
-    catch (_) {
+    try {
+      sessionStorage.setItem(KEY, String(Date.now()));
+    } catch (_) {
       try { localStorage.setItem(KEY, String(Date.now())); } catch (_) {}
     }
   }
@@ -83,7 +88,7 @@
   async function signUp(o) {
     var r = await sb.auth.signUp({
       email: o.email, password: o.password,
-      options: { data: { company: o.company, country: o.country }, emailRedirectTo: new URL(LOGIN, location.href).href }
+      options: { data: { full_name: o.full_name, company: o.company, country: o.country }, emailRedirectTo: new URL(LOGIN, location.href).href }
     });
     if (r.error) return { error: r.error };
     // E-mail déjà inscrit (confirmation activée) : Supabase renvoie un utilisateur sans identité.
