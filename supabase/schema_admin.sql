@@ -1,4 +1,4 @@
--- ABVSPAIE — audit des changements de rôles de la console super-admin.
+-- ABVSPAIE — audit des changements de rôles et de comptes de la console super-admin.
 -- À exécuter après schema_kyc.sql.
 
 create table if not exists public.platform_admin_audit_logs (
@@ -8,11 +8,27 @@ create table if not exists public.platform_admin_audit_logs (
   action      text not null check (action in (
     'role_change_requested',
     'role_change_succeeded',
-    'role_change_failed'
+    'role_change_failed',
+    'account_change_requested',
+    'account_change_succeeded',
+    'account_change_failed'
   )),
   details     jsonb not null default '{}'::jsonb check (jsonb_typeof(details) = 'object'),
   created_at  timestamptz not null default now()
 );
+
+alter table public.platform_admin_audit_logs
+  drop constraint if exists platform_admin_audit_logs_action_check;
+alter table public.platform_admin_audit_logs
+  add constraint platform_admin_audit_logs_action_check
+  check (action in (
+    'role_change_requested',
+    'role_change_succeeded',
+    'role_change_failed',
+    'account_change_requested',
+    'account_change_succeeded',
+    'account_change_failed'
+  ));
 
 create index if not exists platform_admin_audit_logs_created_idx
   on public.platform_admin_audit_logs (created_at desc);

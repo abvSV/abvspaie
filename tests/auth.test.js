@@ -7,7 +7,7 @@ const vm = require("node:vm");
 
 const source = fs.readFileSync(require.resolve("../site/assets/abvs-auth.js"), "utf8");
 
-function loadAuth(client) {
+function loadAuth(client, onReplace = () => {}) {
   const window = {
     ABVS_CONFIG: { url: "https://supabase.example", anonKey: "test-anon" },
     supabase: { createClient: () => client }
@@ -18,7 +18,7 @@ function loadAuth(client) {
     document: { getElementById() { return null; } },
     sessionStorage: storage,
     localStorage: storage,
-    location: { replace() {} },
+    location: { replace: onReplace },
     addEventListener() {},
     setInterval() {},
     URL,
@@ -26,6 +26,28 @@ function loadAuth(client) {
   });
   return window.ABVS;
 }
+
+test("redirects admin-only pages to their separate login route", async () => {
+  let destination = "";
+  const client = { auth: { getSession: async () => ({ data: { session: null } }) } };
+  await loadAuth(client, url => { destination = url; }).requireSession("../public/connexion-admin.html");
+  assert.equal(destination, "../public/connexion-admin.html");
+});
+
+test("allows the admin page session guard to skip MFA without changing its default", async () => {
+  let assuranceChecks = 0;
+  const client = {
+    auth: {
+      getSession: async () => ({ data: { session: {} } }),
+      mfa: { getAuthenticatorAssuranceLevel: async () => {
+        assuranceChecks++;
+        return { data: { currentLevel: "aal1", nextLevel: "aal2" } };
+      } }
+    }
+  };
+  await loadAuth(client).requireSession("../public/connexion-admin.html", { requireMfa: false });
+  assert.equal(assuranceChecks, 0);
+});
 
 test("signs in without the removed email-MFA flow when no TOTP factor is required", async () => {
   const client = {

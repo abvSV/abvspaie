@@ -67,17 +67,9 @@ function configuredPlatformAdminId() {
   return UUID.test(userId) ? userId : "";
 }
 
-function hasAal2(req, user) {
-  const match = (req.headers.authorization || "").match(/^Bearer\s+([^\s]+)$/i);
-  if (!match) return false;
-  try {
-    const parts = match[1].split(".");
-    if (parts.length !== 3) return false;
-    const claims = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf8"));
-    return claims.sub === user.id && claims.aal === "aal2";
-  } catch (_) {
-    return false;
-  }
+function isSuspended(user) {
+  const bannedUntil = Date.parse(user.banned_until || "");
+  return Number.isFinite(bannedUntil) && bannedUntil > Date.now();
 }
 
 async function authAdmin(path, options = {}) {
@@ -106,6 +98,7 @@ async function listUsers(page) {
       created_at: user.created_at,
       last_sign_in_at: user.last_sign_in_at || null,
       email_confirmed: Boolean(user.email_confirmed_at),
+      account_suspended: isSuspended(user),
       platform_admin: Boolean(user.app_metadata && user.app_metadata.platform_admin === true),
       kyc_admin: Boolean(user.app_metadata && user.app_metadata.kyc_admin === true)
     })),
@@ -254,6 +247,87 @@ async function setRoles(req, actor) {
   return { status: 200, body: { ok: true, roles: newRoles } };
 }
 
+async function recordAccountChange(actorId, targetId, action, details) {
+  const response = await rest("platform_admin_audit_logs", {
+    method: "POST",
+    headers: { prefer: "return=representation" },
+    body: JSON.stringify({
+      actor_id: actorId,
+      target_id: targetId,
+      action: "account_change_requested",
+      details: { operation: action, ...details, outcome: "pending" }
+    })
+  });
+  if (!response.ok) return { error: "Le journal d'audit admin n'est pas installé ou accessible. Applique schema_admin.sql." };
+  const [record] = await response.json();
+  if (!record || typeof record.id !== "string") return { error: "Le journal d'audit admin a renvoyé une réponse invalide." };
+  return { id: record.id };
+}
+
+async function finishAccountChange(auditId, action, previousStatus, outcome) {
+  const response = await rest(`platform_admin_audit_logs?id=eq.${encodeURIComponent(auditId)}`, {
+    method: "PATCH",
+    headers: { prefer: "return=minimal" },
+    body: JSON.stringify({
+      action: `account_change_${outcome}`,
+      details: { operation: action, previous_status: previousStatus, outcome }
+    })
+  });
+  return response.ok;
+}
+
+async function manageAccount(req, actor, platformAdminId) {
+  const targetId = typeof req.body?.user_id === "string" ? req.body.user_id : "";
+  const action = req.body?.action;
+  if (!UUID.test(targetId)) return { status: 400, body: { error: "Identifiant de compte invalide." } };
+  if (targetId === actor.id || targetId === platformAdminId) {
+    return { status: 403, body: { error: "Le compte administrateur principal ne peut pas être suspendu ni supprimé depuis la console." } };
+  }
+  if (!["suspend", "restore", "delete"].includes(action)) {
+    return { status: 400, body: { error: "Action de compte invalide." } };
+  }
+
+  const targetResponse = await authAdmin(`users/${targetId}`);
+  if (!targetResponse.ok) return { status: 404, body: { error: "Compte introuvable." } };
+  const targetResult = await targetResponse.json();
+  const target = targetResult.user || targetResult;
+  if (action === "suspend" && isSuspended(target)) {
+    return { status: 409, body: { error: "Ce compte est déjà suspendu." } };
+  }
+  if (action === "restore" && !isSuspended(target)) {
+    return { status: 409, body: { error: "Ce compte n'est pas suspendu." } };
+  }
+
+  const previousStatus = isSuspended(target) ? "suspended" : "active";
+  const audit = await recordAccountChange(actor.id, targetId, action, { previous_status: previousStatus });
+  if (audit.error) return { status: 503, body: { error: audit.error } };
+
+  const update = action === "delete"
+    ? await authAdmin(`users/${targetId}`, { method: "DELETE" })
+    : await authAdmin(`users/${targetId}`, {
+      method: "PUT",
+      body: JSON.stringify({ ban_duration: action === "suspend" ? "876000h" : "none" })
+    });
+  const outcome = update.ok ? "succeeded" : "failed";
+  const auditUpdated = await finishAccountChange(audit.id, action, previousStatus, outcome);
+  if (!update.ok) {
+    console.error("Admin account action failed with HTTP status:", update.status);
+    return {
+      status: 502,
+      body: { error: auditUpdated
+        ? action === "delete"
+          ? "Le compte n'a pas pu être supprimé. Vérifie les données liées dans Supabase."
+          : "L'état du compte n'a pas pu être modifié."
+        : "L'action a échoué et le journal d'audit doit être vérifié." }
+    };
+  }
+  if (!auditUpdated) {
+    console.error("Admin account action succeeded but audit completion failed.");
+    return { status: 502, body: { error: "L'action a été appliquée, mais le journal d'audit doit être vérifié." } };
+  }
+  return { status: 200, body: { ok: true, action, user_id: targetId } };
+}
+
 module.exports = async function handler(req, res) {
   if (!["GET", "POST"].includes(req.method)) {
     res.setHeader("Allow", "GET, POST");
@@ -262,7 +336,6 @@ module.exports = async function handler(req, res) {
   try {
     const user = await authUser(req);
     if (!user) return json(res, 401, { error: "Session invalide." });
-    if (!hasAal2(req, user)) return json(res, 403, { error: "Une session MFA AAL2 est requise." });
     const platformAdminId = configuredPlatformAdminId();
     if (platformAdminId === null) {
       return json(res, 503, { error: "Console admin non configurée. Définis PLATFORM_ADMIN_USER_ID dans les variables d'environnement Vercel." });
@@ -276,6 +349,10 @@ module.exports = async function handler(req, res) {
     config();
 
     if (req.method === "POST") {
+      if (["suspend", "restore", "delete"].includes(req.body?.action)) {
+        const result = await manageAccount(req, user, platformAdminId);
+        return json(res, result.status, result.body);
+      }
       const result = await setRoles(req, user);
       return json(res, result.status, result.body);
     }

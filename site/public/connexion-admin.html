@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ABVSPAIE — Connexion administrateur</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script>
+<script src="../assets/abvs-config.js"></script>
+<script src="../assets/abvs-auth.js"></script>
+<style>
+:root{font-family:Inter,system-ui,sans-serif;color:#1b2430;background:#f2f5f8;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px}.card{width:min(100%,420px);padding:30px;background:#fff;border:1px solid #dce3eb;border-radius:18px;box-shadow:0 20px 55px rgba(40,60,90,.12)}a{color:#405d83;font-weight:600}.brand{display:block;margin-bottom:24px;text-align:center;font-weight:800;font-size:20px;text-decoration:none;color:#1b2430}.brand span{color:#4a6283}.eyebrow{text-align:center;color:#657487;font-size:12px;font-weight:700;letter-spacing:.1em}h1{text-align:center;margin:8px 0 10px;font-size:25px}.intro,.foot{color:#657487;text-align:center;font-size:14px;line-height:1.55}.field{width:100%;margin-top:14px;padding:13px;border:1px solid #cbd5df;border-radius:10px;font:inherit}.button{width:100%;margin-top:16px;padding:13px;border:0;border-radius:10px;background:#4a6283;color:white;font:600 15px Inter,sans-serif;cursor:pointer}.button:disabled{opacity:.6;cursor:wait}.status{min-height:24px;margin:14px 0 0;font-size:13px;line-height:1.5;color:#657487}.status.error{color:#9e2430}.foot{margin-top:18px}.hide{display:none!important}
+</style>
+</head>
+<body>
+<main class="card">
+ <a class="brand" href="../index.html">ABV<span>SPAIE</span></a>
+ <p class="eyebrow">CONNEXION ADMINISTRATEUR</p>
+ <h1>Connexion administrateur</h1>
+ <p class="intro">Réservée au compte administrateur autorisé. Pour un compte marchand, utilise la <a href="inscription-connexion.html">connexion client</a>.</p>
+ <form id="admin-login" novalidate>
+  <label for="email">Adresse e-mail</label>
+  <input class="field" id="email" type="email" autocomplete="username" required>
+  <label for="password">Mot de passe</label>
+  <input class="field" id="password" type="password" autocomplete="current-password" required>
+  <button class="button" id="submit" type="submit">Se connecter comme administrateur</button>
+ </form>
+ <p id="status" class="status" role="status" aria-live="polite"></p>
+ <p class="foot"><a href="mot-de-passe-oublie.html">Mot de passe oublié ?</a><br><a href="inscription-connexion.html">Retour à la connexion client</a></p>
+</main>
+<script>
+(()=> {
+ "use strict";
+ const form=document.getElementById("admin-login"),email=document.getElementById("email");
+ const password=document.getElementById("password");
+ const submit=document.getElementById("submit"),status=document.getElementById("status");
+ function showError(message){status.textContent=message;status.className="status error"}
+ function showMessage(message){status.textContent=message;status.className="status"}
+ async function verifyAdminAccess(){
+  const {data,error}=await ABVS.client.auth.getSession();
+  if(error||!data.session)throw new Error("La session de connexion a expiré. Recommence.");
+  let response;
+  try{
+   response=await fetch("../api/admin?resource=overview",{headers:{Authorization:`Bearer ${data.session.access_token}`}});
+  }catch(_){throw new Error("Serveur injoignable. Vérifie le déploiement Vercel et réessaie.")}
+  let result;
+  try{result=await response.json()}catch(_){throw new Error(`Réponse du serveur invalide (HTTP ${response.status}). Vérifie le déploiement Vercel.`)}
+  if(!response.ok)throw new Error(result.error||`Accès administrateur refusé (HTTP ${response.status}).`);
+  location.replace("../compte/admin.html");
+ }
+ async function checkExistingSession(){
+  if(!ABVS.ready)return;
+  try{
+   const {data,error}=await ABVS.client.auth.getSession();
+   if(error)throw error;
+   if(data.session)await verifyAdminAccess();
+  }catch(error){showError(error.message||"La session existante ne peut pas être vérifiée.")}
+ }
+ form.addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(!ABVS.ready){showError("Service de connexion indisponible. Réessaie plus tard.");return}
+  submit.disabled=true;
+  try{
+   if(!email.value.trim()||!password.value){showError("Saisis ton adresse e-mail et ton mot de passe.");return}
+   const result=await ABVS.client.auth.signInWithPassword({email:email.value.trim(),password:password.value});
+   if(result.error)throw new Error(ABVS.msg(result.error));
+   ABVS.touch();
+   showMessage("Vérification de l’autorisation administrateur…");
+   await verifyAdminAccess();
+  }catch(error){
+   showError(error.message||"Connexion impossible.");
+   if(ABVS.client)await ABVS.client.auth.signOut();
+  }finally{submit.disabled=false}
+ });
+ checkExistingSession();
+})();
+</script>
+</body>
+</html>

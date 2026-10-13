@@ -28,10 +28,10 @@
     try { localStorage.removeItem(KEY); } catch (_) {}
   }
   function ungate() { var g = document.getElementById("abvs-gate"); if (g) g.remove(); }
-  async function signOut() {
+  async function signOut(redirectTo) {
     try { if (sb) await sb.auth.signOut(); } catch (_) {}
     clearTouch();
-    location.replace(LOGIN);
+    location.replace(redirectTo || LOGIN);
   }
 
   async function signOutAll() {
@@ -45,21 +45,25 @@
 
   // Garde de page : masque la page tant que la session n'est pas confirmée.
   // NB : c'est du confort d'affichage ; la vraie protection des données, c'est la RLS côté base.
-  async function requireSession() {
+  async function requireSession(loginUrl, options) {
+    var loginTarget = typeof loginUrl === "string" && loginUrl ? loginUrl : LOGIN;
+    var requireMfa = !options || options.requireMfa !== false;
     try {
       if (!sb) throw new Error("client indisponible");
       var r = await sb.auth.getSession();
-      if (!r.data || !r.data.session) return location.replace(LOGIN);
-      if (idle()) return signOut();
-      var a = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
-      if (a.data && a.data.nextLevel === "aal2" && a.data.currentLevel !== "aal2") return location.replace(LOGIN);
+      if (!r.data || !r.data.session) return location.replace(loginTarget);
+      if (idle()) return signOut(loginTarget);
+      if (requireMfa) {
+        var a = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+        if (a.data && a.data.nextLevel === "aal2" && a.data.currentLevel !== "aal2") return location.replace(loginTarget);
+      }
       touch(); ungate();
       var last = 0;
       ["pointerdown", "keydown", "scroll"].forEach(function (ev) {
         addEventListener(ev, function () { var n = Date.now(); if (n - last > 15000) { last = n; touch(); } }, { passive: true });
       });
-      setInterval(function () { if (idle()) signOut(); }, 60000);
-    } catch (e) { location.replace(LOGIN); }
+      setInterval(function () { if (idle()) signOut(loginTarget); }, 60000);
+    } catch (e) { location.replace(loginTarget); }
   }
 
   // Vrai si une session valide existe (mêmes règles que requireSession : inactivité et 2FA incluses).

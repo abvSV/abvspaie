@@ -4,8 +4,13 @@ const { config, authUser, rest, json, resolveStorageSignedUrl } = require("../..
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-function isAdmin(user) {
-  return user.app_metadata && (user.app_metadata.kyc_admin === true || user.app_metadata.platform_admin === true);
+function isPrimaryPlatformAdmin(user) {
+  return user.app_metadata && user.app_metadata.platform_admin === true &&
+    user.id === process.env.PLATFORM_ADMIN_USER_ID;
+}
+
+function isKycAdmin(user) {
+  return user.app_metadata && user.app_metadata.kyc_admin === true;
 }
 
 function hasAal2(req, user) {
@@ -46,13 +51,13 @@ async function signedDocumentUrl(documentId) {
   return { url: resolveStorageSignedUrl(config().url, signedPath) };
 }
 
-async function listPendingCases() {
+async function listPendingCases(page = 1) {
   const profilesResponse = await rest(
-    "merchant_profiles?kyc_status=eq.pending&select=user_id,kyc_status,kyc_submitted_at,created_at,kyc_rejection_reason,kyc_full_name,kyc_country,kyc_document_type&order=kyc_submitted_at.asc&limit=100"
+    `merchant_profiles?kyc_status=eq.pending&select=user_id,kyc_status,kyc_submitted_at,created_at,kyc_rejection_reason,kyc_full_name,kyc_country,kyc_document_type&order=kyc_submitted_at.asc&limit=100&offset=${(page - 1) * 100}`
   );
   if (!profilesResponse.ok) throw new Error("Chargement des dossiers KYC impossible.");
   const profiles = await profilesResponse.json();
-  if (!profiles.length) return [];
+  if (!profiles.length) return { cases: [], page, hasMore: false };
 
   const ids = profiles.map(profile => profile.user_id);
   const query = new URLSearchParams({
@@ -83,11 +88,15 @@ async function listPendingCases() {
   const auditByMerchant = new Map(ids.map(id => [id, []]));
   audit.forEach(entry => auditByMerchant.get(entry.merchant_id).push(entry));
 
-  return profiles.map(profile => ({
-    ...profile,
-    documents: byMerchant.get(profile.user_id),
-    history: auditByMerchant.get(profile.user_id)
-  }));
+  return {
+    cases: profiles.map(profile => ({
+      ...profile,
+      documents: byMerchant.get(profile.user_id),
+      history: auditByMerchant.get(profile.user_id)
+    })),
+    page,
+    hasMore: profiles.length === 100
+  };
 }
 
 async function listAuditHistory() {
@@ -105,8 +114,11 @@ module.exports = async function handler(req, res) {
   try {
     const user = await authUser(req);
     if (!user) return json(res, 401, { error: "Session invalide." });
-    if (!isAdmin(user)) return json(res, 403, { error: "Accès administrateur requis." });
-    if (!hasAal2(req, user)) return json(res, 403, { error: "Une session avec authentification MFA est requise." });
+    const primaryAdmin = isPrimaryPlatformAdmin(user);
+    if (!primaryAdmin && !isKycAdmin(user)) return json(res, 403, { error: "Accès administrateur requis." });
+    if (!primaryAdmin && !hasAal2(req, user)) {
+      return json(res, 403, { error: "Une session avec authentification MFA est requise pour les examinateurs KYC." });
+    }
     config();
 
     if (req.method === "GET") {
@@ -120,7 +132,11 @@ module.exports = async function handler(req, res) {
         if (!result) return json(res, 404, { error: "Document introuvable." });
         return json(res, 200, result);
       }
-      return json(res, 200, { cases: await listPendingCases() });
+      const page = req.query.page === undefined ? 1 : Number(req.query.page);
+      if (!Number.isInteger(page) || page < 1 || page > 10000) {
+        return json(res, 400, { error: "Numéro de page invalide." });
+      }
+      return json(res, 200, await listPendingCases(page));
     }
 
     const merchantId = typeof req.body?.merchant_id === "string" ? req.body.merchant_id : "";

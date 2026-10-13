@@ -11,18 +11,18 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script>
 <script src="../assets/abvs-config.js"></script>
 <script src="../assets/abvs-auth.js"></script>
-<script>ABVS.requireSession()</script>
+<script>ABVS.requireSession("../public/connexion-admin.html",{requireMfa:false})</script>
 <style>
 :root{font-family:Inter,system-ui,sans-serif;color:#1b2430;background:#f2f5f8;font-synthesis:none}
-*{box-sizing:border-box}body{margin:0}.shell{max-width:1500px;margin:auto;padding:28px 22px 72px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.top h1{margin:4px 0}.eyebrow,.muted{color:#657487}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;margin-top:20px}.panel,.sidebar,.nav-button,.kpi{background:#fff;border:1px solid #dce3eb;border-radius:14px}.sidebar{padding:12px;height:max-content;position:sticky;top:15px}.nav-button{display:block;width:100%;padding:10px 12px;margin:4px 0;text-align:left;cursor:pointer;font:600 13px Inter,sans-serif;color:#405d83}.nav-button[aria-current=page]{background:#edf3fa;border-color:#95abc4;color:#1b2430}.panel{padding:20px;min-width:0}.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}.toolbar input{flex:1;min-width:200px}.field,.button{border:1px solid #cbd5df;border-radius:9px;padding:10px 12px;background:white;font:inherit}.button{cursor:pointer;font-weight:600;color:#24364b}.button:disabled{opacity:.55;cursor:wait}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.kpi{padding:17px}.kpi strong{display:block;font-size:25px;margin-top:8px}.table-wrap{overflow:auto;border:1px solid #e1e7ed;border-radius:12px}table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid #e6ebf0;vertical-align:top;max-width:380px;overflow-wrap:anywhere}th{background:#f7f9fb;color:#506176;position:sticky;top:0}td pre{margin:0;white-space:pre-wrap;max-width:420px;font:12px ui-monospace,monospace}.pagination{display:flex;align-items:center;gap:10px;margin-top:14px}.notice{padding:12px 14px;border-radius:10px;background:#edf3fa;color:#405d83}.error{background:#fff1f1;color:#9e2430}.success{background:#eef8f1;color:#27664a}.role-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.role-controls label{white-space:nowrap}.status{min-height:24px;margin:12px 0}.sensitive-note{font-size:12px;line-height:1.5;color:#657487}.empty{padding:28px;text-align:center;color:#657487}[hidden]{display:none!important}
+*{box-sizing:border-box}body{margin:0}.shell{max-width:1500px;margin:auto;padding:28px 22px 72px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.top h1{margin:4px 0}.eyebrow,.muted{color:#657487}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;margin-top:20px}.panel,.sidebar,.nav-button,.kpi{background:#fff;border:1px solid #dce3eb;border-radius:14px}.sidebar{padding:12px;height:max-content;position:sticky;top:15px}.nav-button{display:block;width:100%;padding:10px 12px;margin:4px 0;text-align:left;cursor:pointer;font:600 13px Inter,sans-serif;color:#405d83}.nav-button[aria-current=page]{background:#edf3fa;border-color:#95abc4;color:#1b2430}.panel{padding:20px;min-width:0}.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}.toolbar input{flex:1;min-width:200px}.field,.button{border:1px solid #cbd5df;border-radius:9px;padding:10px 12px;background:white;font:inherit}.button{cursor:pointer;font-weight:600;color:#24364b}.button:disabled{opacity:.55;cursor:wait}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.kpi{padding:17px}.kpi strong{display:block;font-size:25px;margin-top:8px}.table-wrap{overflow:auto;border:1px solid #e1e7ed;border-radius:12px}table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid #e6ebf0;vertical-align:top;max-width:380px;overflow-wrap:anywhere}th{background:#f7f9fb;color:#506176;position:sticky;top:0}td pre{margin:0;white-space:pre-wrap;max-width:420px;font:12px ui-monospace,monospace}.pagination{display:flex;align-items:center;gap:10px;margin-top:14px}.notice{padding:12px 14px;border-radius:10px;background:#edf3fa;color:#405d83}.error{background:#fff1f1;color:#9e2430}.success{background:#eef8f1;color:#27664a}.role-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.role-controls label{white-space:nowrap}.account-controls{display:grid;gap:8px;min-width:170px}.account-controls .button,.kyc-card .button{padding:8px 10px}.kyc-list{display:grid;gap:14px;padding:14px}.kyc-card{border:1px solid #dce3eb;border-radius:12px;padding:16px;background:#fff}.kyc-card h3{margin:0 0 8px}.kyc-card p{margin:6px 0}.kyc-documents{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.kyc-review{display:flex;gap:8px;align-items:flex-start;margin:12px 0}.kyc-reason{width:100%;min-height:72px;margin:8px 0;padding:10px;border:1px solid #cbd5df;border-radius:8px;font:inherit}.kyc-actions{display:flex;gap:8px;flex-wrap:wrap}.status{min-height:24px;margin:12px 0}.sensitive-note{font-size:12px;line-height:1.5;color:#657487}.empty{padding:28px;text-align:center;color:#657487}[hidden]{display:none!important}
 @media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.shell{padding:20px 12px 50px}}
 </style>
 </head>
 <body>
 <main class="shell">
  <header class="top">
-  <div><p class="eyebrow">CONSOLE SÉCURISÉE · MFA AAL2</p><h1>Administration ABVSPAIE</h1><p class="muted">Accès réservé au compte administrateur unique autorisé.</p></div>
-  <div class="toolbar"><a class="button" href="kyc-admin.html">Examiner les dossiers KYC</a><a class="button" href="tableau-de-bord.html">Retour au site</a></div>
+  <div><p class="eyebrow">CONSOLE ADMINISTRATEUR</p><h1>Administration ABVSPAIE</h1><p class="muted">Accès réservé au compte administrateur unique autorisé.</p></div>
+  <div class="toolbar"><a class="button" href="tableau-de-bord.html">Retour au site</a></div>
  </header>
  <div id="access-status" class="panel notice" role="status" aria-live="polite">Vérification des autorisations…</div>
  <div id="admin-layout" class="layout" hidden>
@@ -56,20 +56,21 @@
  const pageLabel=document.getElementById("page-label"),search=document.getElementById("table-search"),sensitiveNote=document.getElementById("sensitive-note");
  const sections=[
   ["overview","Vue d'ensemble","Indicateurs des principaux espaces de la plateforme."],
-  ["users","Comptes","Comptes Auth et rôles. Les mots de passe et facteurs MFA ne sont jamais affichés."],
+  ["users","Comptes","Comptes Auth, rôles et accès. Les mots de passe et facteurs MFA ne sont jamais affichés."],
   ["merchants","Marchands","Coordonnées professionnelles et statut déclaratif."],
-  ["profiles","Profils / accès Live","Statuts KYC et activation Live ; décisions KYC dans l'espace dédié."],
+  ["profiles","Profils / accès Live","Statuts des profils, validation KYC et accès Live."],
   ["transactions","Transactions","Registres de transactions en lecture seule ; aucune confirmation PSP simulée."],
   ["payment_links","Liens de paiement","Liens et état actif/inactif."],
   ["clients","Clients","Données personnelles client nécessaires au support. Accès à limiter aux personnes habilitées."],
   ["webhook_endpoints","Webhooks","Endpoints publics configurés. Les secrets chiffrés sont exclus."],
   ["webhook_events","Événements webhook","Métadonnées de livraison uniquement ; les payloads sont exclus."],
-  ["kyc_documents","Documents KYC","Métadonnées et chemins privés. Pour ouvrir les documents, utilise l'espace d'examen KYC."],
+  ["kyc_cases","Dossiers KYC","Examiner les justificatifs privés et approuver ou refuser les dossiers en attente."],
+  ["kyc_documents","Documents KYC","Métadonnées et consultation temporaire des justificatifs privés."],
   ["kyc_audit","Audit KYC","Journal des dépôts, soumissions et décisions."],
-  ["admin_audit","Audit des rôles admin","Journal des changements d'autorisations."]
+  ["admin_audit","Audit admin","Journal des changements de rôles et d'état des comptes."]
  ];
  const columns={
-  users:["id","email","company","email_confirmed","created_at","last_sign_in_at","platform_admin","kyc_admin"],
+  users:["id","email","company","email_confirmed","account_suspended","created_at","last_sign_in_at","platform_admin","kyc_admin"],
   merchants:["id","name","email","country","test_mode","kyc_status"],
   profiles:["user_id","kyc_status","live_enabled","verified_at","kyc_full_name","kyc_country","kyc_document_type","kyc_submitted_at","kyc_decided_at"],
   transactions:["reference","merchant_id","amount","currency","mode","method","payer","status","created_at"],
@@ -82,6 +83,7 @@
   admin_audit:["actor_id","target_id","action","details","created_at"]
  };
  const state={resource:"overview",page:1,rows:[],hasMore:false,total:null,loading:false};
+ let currentUserId=null;
  function sessionHeaders(token){return{Authorization:`Bearer ${token}`,"Content-Type":"application/json"}}
  async function api(path,options={}){
   const {data,error}=await ABVS.client.auth.getSession();
@@ -123,7 +125,7 @@
   message("Vue globale chargée.");
  }
  function roleEditor(row){
-  const cell=document.createElement("td");cell.colSpan=2;
+  const cell=document.createElement("td");
   const controls=document.createElement("div");controls.className="role-controls";
   const platformLabel=document.createElement("label"),platform=document.createElement("input");
   platform.type="checkbox";platform.checked=row.platform_admin;platform.disabled=true;platformLabel.append(platform,document.createTextNode(" Super-admin (géré dans Supabase)"));
@@ -142,14 +144,97 @@
   });
   controls.append(platformLabel,kycLabel,save,result);cell.appendChild(controls);return cell;
  }
+ function accountEditor(row){
+  const cell=document.createElement("td"),controls=document.createElement("div"),result=document.createElement("span");
+  controls.className="account-controls";result.className="sensitive-note";
+  const action=row.account_suspended?"restore":"suspend";
+  const toggle=document.createElement("button");toggle.type="button";toggle.className="button";
+  toggle.textContent=row.account_suspended?"Réactiver le compte":"Suspendre le compte";
+  const remove=document.createElement("button");remove.type="button";remove.className="button";remove.textContent="Supprimer définitivement";
+  if(row.id===currentUserId){toggle.disabled=true;remove.disabled=true}
+  toggle.addEventListener("click",async()=>{
+   const verb=row.account_suspended?"réactiver":"suspendre";
+   if(!confirm(`Confirmer : ${verb} le compte ${row.email||row.id} ?`))return;
+   toggle.disabled=true;remove.disabled=true;result.textContent="Mise à jour…";
+   try{await api("/api/admin",{method:"POST",body:JSON.stringify({action,user_id:row.id})});await loadSection("users",state.page)}
+   catch(error){result.textContent=error.message||"Modification impossible.";toggle.disabled=false;remove.disabled=false}
+  });
+  remove.addEventListener("click",async()=>{
+   if(!confirm(`Supprimer définitivement le compte ${row.email||row.id} ? Cette action est irréversible et peut être refusée si des données y sont liées.`))return;
+   toggle.disabled=true;remove.disabled=true;result.textContent="Suppression…";
+   try{await api("/api/admin",{method:"POST",body:JSON.stringify({action:"delete",user_id:row.id})});await loadSection("users",state.page)}
+   catch(error){result.textContent=error.message||"Suppression impossible.";toggle.disabled=false;remove.disabled=false}
+  });
+  controls.append(toggle,remove,result);cell.appendChild(controls);return cell;
+ }
+ function renderKycCases(){
+  const list=document.createElement("div");list.className="kyc-list";
+  const query=search.value.trim().toLocaleLowerCase("fr");
+  const cases=state.rows.filter(item=>!query||
+   [item.kyc_full_name,item.user_id,item.kyc_country,item.kyc_document_type]
+    .some(value=>String(value||"").toLocaleLowerCase("fr").includes(query)));
+  cases.forEach(item=>{
+   const card=document.createElement("article");card.className="kyc-card";
+   const heading=document.createElement("h3");heading.textContent=item.kyc_full_name||"Dossier sans nom";card.appendChild(heading);
+   const details=document.createElement("p");
+   details.textContent=`Compte : ${item.user_id} · Pays : ${item.kyc_country||"—"} · Pièce : ${item.kyc_document_type||"—"} · Soumis : ${formatValue("kyc_submitted_at",item.kyc_submitted_at)}`;
+   card.appendChild(details);
+   const docs=document.createElement("div");docs.className="kyc-documents";
+   item.documents.forEach(document=>{
+    const open=document.createElement("button");open.type="button";open.className="button";
+    open.textContent=`Voir ${document.document_type} — ${document.document_side}`;
+    open.addEventListener("click",async()=>{
+     open.disabled=true;open.textContent="Création du lien privé…";
+     try{
+      const signed=await api(`/api/kyc/admin?document_id=${encodeURIComponent(document.id)}`);
+      const link=document.createElement("a");link.className="button";link.href=signed.url;link.target="_blank";link.rel="noopener noreferrer";link.textContent="Ouvrir le document (60 s)";
+      open.replaceWith(link);
+     }catch(error){open.disabled=false;open.textContent=error.message||"Document indisponible."}
+    });
+    docs.appendChild(open);
+   });
+   card.appendChild(docs);
+   const reviewedLabel=document.createElement("label");reviewedLabel.className="kyc-review";
+   const reviewed=document.createElement("input");reviewed.type="checkbox";
+   reviewedLabel.append(reviewed,document.createTextNode("J’ai examiné les justificatifs avant de décider."));
+   card.appendChild(reviewedLabel);
+   const reason=document.createElement("textarea");reason.className="kyc-reason";reason.maxLength=1000;reason.placeholder="Motif obligatoire en cas de refus (10 à 1000 caractères)";
+   card.appendChild(reason);
+   const actions=document.createElement("div");actions.className="kyc-actions";
+   [["verified","Approuver"],["rejected","Refuser"]].forEach(([decision,label])=>{
+    const button=document.createElement("button");button.type="button";button.className="button";button.textContent=label;button.disabled=true;
+    reviewed.addEventListener("change",()=>{button.disabled=!reviewed.checked});
+    button.addEventListener("click",async()=>{
+     if(!reviewed.checked){message("Confirme d’abord avoir examiné les justificatifs.",true);return}
+     if(decision==="rejected"&&(reason.value.trim().length<10||reason.value.trim().length>1000)){message("Le motif de refus doit contenir entre 10 et 1000 caractères.",true);return}
+     button.disabled=true;message("Enregistrement de la décision…");
+     try{
+      await api("/api/kyc/admin",{method:"POST",body:JSON.stringify({merchant_id:item.user_id,decision,reason:reason.value.trim()})});
+      message("Décision KYC enregistrée et journalisée.");await loadSection("kyc_cases",state.page);
+     }catch(error){message(error.message||"Décision impossible.",true);button.disabled=false}
+    });
+    actions.appendChild(button);
+   });
+   card.appendChild(actions);list.appendChild(card);
+  });
+  if(!cases.length){const empty=document.createElement("p");empty.className="empty";empty.textContent=state.rows.length?"Aucun dossier ne correspond à cette recherche.":"Aucun dossier KYC en attente.";list.appendChild(empty)}
+  tableContainer.replaceChildren(list);cards.hidden=true;tools.hidden=false;tableContainer.hidden=false;
+  pagination.hidden=false;pageLabel.textContent=`Page ${state.page} · dossiers KYC`;
+  document.getElementById("previous").disabled=state.page<=1||state.loading;
+  document.getElementById("next").disabled=!state.hasMore||state.loading;
+  sensitiveNote.textContent="Les justificatifs restent dans le bucket privé ; chaque lien de consultation expire après 60 secondes.";
+  message(`${cases.length} dossier(s) affiché(s).`);
+ }
  function renderTable(){
   const keys=columns[state.resource]||[];
   const query=search.value.trim().toLocaleLowerCase("fr");
   const rows=state.rows.filter(row=>!query||keys.some(key=>formatValue(key,row[key]).toLocaleLowerCase("fr").includes(query)));
+  if(state.resource==="kyc_cases"){renderKycCases();return}
   const table=document.createElement("table"),thead=document.createElement("thead"),headRow=document.createElement("tr");
-  const displayKeys=state.resource==="users"?["id","email","company","email_confirmed","created_at","last_sign_in_at"]:keys;
+  const displayKeys=state.resource==="users"?["id","email","company","email_confirmed","account_suspended","created_at","last_sign_in_at"]:keys;
   displayKeys.forEach(key=>{const th=document.createElement("th");th.scope="col";th.textContent=key.replaceAll("_"," ");headRow.appendChild(th)});
-  if(state.resource==="users"||state.resource==="kyc_documents"){const th=document.createElement("th");th.scope="col";th.textContent=state.resource==="users"?"Autorisations":"Document privé";headRow.appendChild(th)}
+  if(state.resource==="users"||state.resource==="kyc_documents"){const th=document.createElement("th");th.scope="col";th.textContent=state.resource==="users"?"Rôles":"Document privé";headRow.appendChild(th)}
+  if(state.resource==="users"){const th=document.createElement("th");th.scope="col";th.textContent="Gestion du compte";headRow.appendChild(th)}
   thead.appendChild(headRow);table.appendChild(thead);
   const tbody=document.createElement("tbody");
   rows.forEach(row=>{
@@ -163,7 +248,7 @@
     }else td.textContent=formatValue(key,row[key]);
     tr.appendChild(td);
    });
-   if(state.resource==="users")tr.appendChild(roleEditor(row));
+   if(state.resource==="users"){tr.appendChild(roleEditor(row));tr.appendChild(accountEditor(row))}
    if(state.resource==="kyc_documents"){
     const cell=document.createElement("td"),button=document.createElement("button");button.type="button";button.className="button";button.textContent="Préparer le lien privé";
     button.addEventListener("click",async()=>{
@@ -178,13 +263,13 @@
    }
    tbody.appendChild(tr);
   });
-  if(!rows.length){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=displayKeys.length+(state.resource==="users"?1:0);td.className="empty";td.textContent=state.rows.length?"Aucun résultat pour ce filtre.":"Aucun enregistrement.";tr.appendChild(td);tbody.appendChild(tr)}
+  if(!rows.length){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=displayKeys.length+(state.resource==="users"?2:state.resource==="kyc_documents"?1:0);td.className="empty";td.textContent=state.rows.length?"Aucun résultat pour ce filtre.":"Aucun enregistrement.";tr.appendChild(td);tbody.appendChild(tr)}
   table.appendChild(tbody);tableContainer.replaceChildren(table);
   cards.hidden=true;tools.hidden=false;tableContainer.hidden=false;pagination.hidden=false;
   pageLabel.textContent=`Page ${state.page}${state.total===null?"":` · ${state.total} lignes`}`;
   document.getElementById("previous").disabled=state.page<=1||state.loading;
   document.getElementById("next").disabled=!state.hasMore||state.loading;
-  if(state.resource==="users")sensitiveNote.textContent="Tu peux gérer les examinateurs KYC. Le rôle super-admin est attribué uniquement dans Supabase App Metadata par une opération de confiance. Les rôles s'appliquent après renouvellement de la session.";
+  if(state.resource==="users")sensitiveNote.textContent="Tu peux gérer les examinateurs KYC, suspendre ou réactiver un compte et demander sa suppression définitive. Les actions de compte sont journalisées. Le rôle super-admin reste attribué uniquement dans Supabase.";
   else if(state.resource==="clients")sensitiveNote.textContent="Cette rubrique contient des coordonnées personnelles. Consulte uniquement les données nécessaires à une demande de support.";
   else if(state.resource==="webhook_endpoints")sensitiveNote.textContent="Les secrets webhook ne sont ni lus ni affichés dans cette console.";
   else if(state.resource==="webhook_events")sensitiveNote.textContent="Les corps JSON des événements ne sont pas affichés.";
@@ -205,6 +290,11 @@
   }
   cards.hidden=true;tools.hidden=false;tableContainer.hidden=false;pagination.hidden=false;tableContainer.textContent="";message("Chargement…");
   try{
+   if(resource==="kyc_cases"){
+    const result=await api(`/api/kyc/admin?page=${page}`);
+    state.rows=result.cases;state.hasMore=result.hasMore;state.total=null;state.page=result.page;
+    state.loading=false;renderKycCases();renderNav();return;
+   }
    const result=await api(`/api/admin?resource=${encodeURIComponent(resource)}&page=${page}`);
    state.rows=result.data;state.hasMore=result.hasMore;state.total=result.total;state.page=result.page;
    state.loading=false;renderTable();
@@ -219,14 +309,9 @@
   try{
    const {data,error}=await ABVS.client.auth.getUser();
    if(error||!data.user)throw new Error("Session expirée. Reconnecte-toi.");
-   const {data:assurance,error:assuranceError}=await ABVS.client.auth.mfa.getAuthenticatorAssuranceLevel();
-   if(assuranceError)throw new Error("Vérification MFA impossible.");
+   currentUserId=data.user.id;
    if(!data.user.app_metadata||data.user.app_metadata.platform_admin!==true){
     status.textContent="Accès réservé aux super-administrateurs autorisés (app_metadata.platform_admin = true).";
-    status.classList.add("error");return;
-   }
-   if(!assurance||assurance.currentLevel!=="aal2"){
-    status.textContent="Confirme la MFA puis recharge cette page.";
     status.classList.add("error");return;
    }
    status.hidden=true;layout.hidden=false;renderNav();await loadSection("overview");

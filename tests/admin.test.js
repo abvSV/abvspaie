@@ -53,14 +53,14 @@ test("denies requests without the server-authorized platform-admin role", async 
   assert.ok(adminId);
 });
 
-test("requires an AAL2 session before accessing platform data", async t => {
+test("allows the single authorized administrator without MFA", async t => {
   const { authorization } = await withAdmin(t, async () => {
-    throw new Error("Privileged API must not be called");
+    return Response.json({ users: [] });
   }, { aal: "aal1" });
   const res = createResponse();
   await handler({ method: "GET", headers: { authorization }, query: { resource: "users" } }, res);
-  assert.equal(res.statusCode, 403);
-  assert.match(JSON.parse(res.body).error, /AAL2/i);
+  assert.equal(res.statusCode, 200);
+  assert.deepEqual(JSON.parse(res.body).data, []);
 });
 
 test("allows only the configured account with the platform-admin role", async t => {
@@ -160,4 +160,71 @@ test("does not allow the console to grant platform-admin access", async t => {
   }, res);
   assert.equal(res.statusCode, 403);
   assert.match(JSON.parse(res.body).error, /uniquement depuis.*Supabase/i);
+});
+
+test("suspends an account and records the action in the admin audit log", async t => {
+  const targetId = crypto.randomUUID();
+  const auditId = crypto.randomUUID();
+  const calls = [];
+  const { authorization } = await withAdmin(t, async (url, options) => {
+    calls.push({ url: String(url), options });
+    if (String(url).endsWith(`/auth/v1/admin/users/${targetId}`) && !options.method) {
+      return Response.json({ id: targetId, banned_until: null });
+    }
+    if (String(url).endsWith("/rest/v1/platform_admin_audit_logs") && options.method === "POST") {
+      assert.equal(JSON.parse(options.body).details.operation, "suspend");
+      return Response.json([{ id: auditId }], { status: 201 });
+    }
+    if (String(url).endsWith(`/auth/v1/admin/users/${targetId}`) && options.method === "PUT") {
+      assert.equal(JSON.parse(options.body).ban_duration, "876000h");
+      return Response.json({ id: targetId });
+    }
+    if (String(url).includes(`/rest/v1/platform_admin_audit_logs?id=eq.${auditId}`) && options.method === "PATCH") {
+      assert.equal(JSON.parse(options.body).action, "account_change_succeeded");
+      assert.equal(JSON.parse(options.body).details.operation, "suspend");
+      return new Response(null, { status: 204 });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  });
+  const res = createResponse();
+  await handler({ method: "POST", headers: { authorization }, body: { user_id: targetId, action: "suspend" } }, res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(calls.length, 4);
+});
+
+test("deletes an account only after creating an audit record", async t => {
+  const targetId = crypto.randomUUID();
+  const auditId = crypto.randomUUID();
+  const calls = [];
+  const { authorization } = await withAdmin(t, async (url, options) => {
+    calls.push({ url: String(url), options });
+    if (String(url).endsWith(`/auth/v1/admin/users/${targetId}`) && !options.method) {
+      return Response.json({ id: targetId, banned_until: null });
+    }
+    if (String(url).endsWith("/rest/v1/platform_admin_audit_logs") && options.method === "POST") {
+      return Response.json([{ id: auditId }], { status: 201 });
+    }
+    if (String(url).endsWith(`/auth/v1/admin/users/${targetId}`) && options.method === "DELETE") {
+      assert.equal(calls.length, 3);
+      return new Response(null, { status: 204 });
+    }
+    if (String(url).includes(`/rest/v1/platform_admin_audit_logs?id=eq.${auditId}`) && options.method === "PATCH") {
+      assert.equal(JSON.parse(options.body).details.operation, "delete");
+      return new Response(null, { status: 204 });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  });
+  const res = createResponse();
+  await handler({ method: "POST", headers: { authorization }, body: { user_id: targetId, action: "delete" } }, res);
+  assert.equal(res.statusCode, 200);
+});
+
+test("protects the configured administrator account from deletion", async t => {
+  const { adminId, authorization } = await withAdmin(t, async () => {
+    throw new Error("Admin account must not be modified");
+  });
+  const res = createResponse();
+  await handler({ method: "POST", headers: { authorization }, body: { user_id: adminId, action: "delete" } }, res);
+  assert.equal(res.statusCode, 403);
+  assert.match(JSON.parse(res.body).error, /principal ne peut pas être suspendu ni supprimé/i);
 });

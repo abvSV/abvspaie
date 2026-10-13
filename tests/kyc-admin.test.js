@@ -73,6 +73,7 @@ test("resolves root-relative signed document URLs against the Supabase Storage p
     }
     throw new Error(`Unexpected request: ${url}`);
   });
+  process.env.PLATFORM_ADMIN_USER_ID = adminId;
 
   const res = createResponse();
   await handler({
@@ -86,6 +87,44 @@ test("resolves root-relative signed document URLs against the Supabase Storage p
     "https://supabase.example/storage/v1/object/sign/merchant-kyc-documents/document?token=temporary"
   );
   assert.equal(calls.length, 2);
+});
+
+test("allows the configured platform admin to review KYC without MFA", async t => {
+  const adminId = crypto.randomUUID();
+  const documentId = crypto.randomUUID();
+  const token = await withMockAuth(
+    t,
+    { id: adminId, app_metadata: { platform_admin: true } },
+    async url => {
+      if (String(url).includes("/rest/v1/merchant_kyc_documents?")) {
+        return Response.json([{ storage_path: `${crypto.randomUUID()}/document.pdf` }]);
+      }
+      if (String(url).includes("/storage/v1/object/sign/merchant-kyc-documents/")) {
+        return Response.json({ signedURL: "/object/sign/merchant-kyc-documents/document?token=temporary" });
+      }
+      throw new Error(`Unexpected request: ${url}`);
+    },
+    makeToken(adminId, "aal1")
+  );
+  process.env.PLATFORM_ADMIN_USER_ID = adminId;
+  const res = createResponse();
+  await handler({ method: "GET", headers: { authorization: `Bearer ${token}` }, query: { document_id: documentId } }, res);
+  assert.equal(res.statusCode, 200);
+});
+
+test("does not grant MFA-free KYC access to a different platform-admin account", async t => {
+  const adminId = crypto.randomUUID();
+  const token = await withMockAuth(
+    t,
+    { id: adminId, app_metadata: { platform_admin: true } },
+    async () => { throw new Error("Privileged API must not be called"); },
+    makeToken(adminId, "aal1")
+  );
+  process.env.PLATFORM_ADMIN_USER_ID = crypto.randomUUID();
+  const res = createResponse();
+  await handler({ method: "GET", headers: { authorization: `Bearer ${token}` }, query: {} }, res);
+  assert.equal(res.statusCode, 403);
+  assert.match(JSON.parse(res.body).error, /administrateur requis/i);
 });
 
 test("rejects an administrator's attempt to review their own KYC dossier", async t => {
