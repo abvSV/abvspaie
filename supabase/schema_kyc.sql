@@ -16,7 +16,8 @@ create index if not exists merchant_kyc_documents_owner_created_idx
   on public.merchant_kyc_documents (merchant_id, created_at desc);
 alter table public.merchant_kyc_documents
   add column if not exists document_side text not null default 'front'
-  check (document_side in ('front', 'back', 'supporting'));
+  check (document_side in ('front', 'back', 'supporting')),
+  add column if not exists is_current boolean not null default true;
 alter table public.merchant_kyc_documents
   drop constraint if exists merchant_kyc_documents_document_type_check,
   drop constraint if exists merchant_kyc_documents_document_side_check,
@@ -72,12 +73,35 @@ where p.kyc_status = 'verified'
     and p.kyc_decided_at is not null
     and p.kyc_decided_by is not null
     and p.verified_at is not null
+    and nullif(trim(p.kyc_full_name), '') is not null
+    and p.kyc_country is not null
+    and p.kyc_document_type is not null
     and exists (
       select 1
       from public.merchant_kyc_documents d
       where d.merchant_id = p.user_id
         and d.document_type = 'identity'
         and d.document_side = 'front'
+        and d.is_current
+    )
+    and (
+      p.kyc_document_type not in ('national_id', 'driving_license')
+      or exists (
+        select 1
+        from public.merchant_kyc_documents d
+        where d.merchant_id = p.user_id
+          and d.document_type = 'identity'
+          and d.document_side = 'back'
+          and d.is_current
+      )
+    )
+    and exists (
+      select 1
+      from public.merchant_kyc_documents d
+      where d.merchant_id = p.user_id
+        and d.document_type = 'selfie'
+        and d.document_side = 'supporting'
+        and d.is_current
     )
     and exists (
       select 1
@@ -85,6 +109,7 @@ where p.kyc_status = 'verified'
       where submitted.merchant_id = p.user_id
         and submitted.actor_id = p.user_id
         and submitted.event_type = 'submitted'
+        and submitted.created_at >= p.kyc_submitted_at
         and submitted.created_at <= p.kyc_decided_at
     )
     and exists (
@@ -158,6 +183,18 @@ begin
     raise exception 'Le dossier KYC est déjà soumis ou vérifié';
   end if;
 
+  if new.document_type in ('identity', 'selfie') and exists (
+    select 1 from public.merchant_profiles p
+    where p.user_id = new.merchant_id and p.kyc_status = 'rejected'
+  ) then
+    update public.merchant_kyc_documents
+      set is_current = false
+      where merchant_id = new.merchant_id
+        and document_type = new.document_type
+        and document_side = new.document_side
+        and is_current;
+  end if;
+
   select count(*) into v_count
     from public.merchant_kyc_documents d
     where d.merchant_id = new.merchant_id;
@@ -220,6 +257,7 @@ begin
     where d.merchant_id = v_user_id
       and d.document_type = 'identity'
       and d.document_side = 'front'
+      and d.is_current
   ) then
     raise exception 'Dépose au moins une pièce d''identité';
   end if;
@@ -229,6 +267,7 @@ begin
        where d.merchant_id = v_user_id
          and d.document_type = 'identity'
          and d.document_side = 'back'
+         and d.is_current
      ) then
     raise exception 'Dépose le recto et le verso de ta pièce';
   end if;
@@ -237,6 +276,7 @@ begin
     where d.merchant_id = v_user_id
       and d.document_type = 'selfie'
       and d.document_side = 'supporting'
+      and d.is_current
   ) then
     raise exception 'Dépose un selfie';
   end if;
@@ -340,6 +380,7 @@ begin
       where d.merchant_id = p_merchant_id
         and d.document_type = 'identity'
         and d.document_side = 'front'
+        and d.is_current
     )
     or (
       v_profile.kyc_document_type in ('national_id', 'driving_license')
@@ -349,6 +390,7 @@ begin
         where d.merchant_id = p_merchant_id
           and d.document_type = 'identity'
           and d.document_side = 'back'
+          and d.is_current
       )
     )
     or not exists (
@@ -357,6 +399,7 @@ begin
       where d.merchant_id = p_merchant_id
         and d.document_type = 'selfie'
         and d.document_side = 'supporting'
+        and d.is_current
     )
     or not exists (
       select 1

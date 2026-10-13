@@ -1,6 +1,6 @@
 "use strict";
 
-const { authUser, config, rest, json } = require("../../server/webhooks");
+const { authUser, config, rest, json, resolveStorageSignedUrl } = require("../../server/webhooks");
 
 function hasAal2(req, user) {
   try {
@@ -23,9 +23,7 @@ async function signDocument(path) {
   if (!response.ok) return null;
   const result = await response.json();
   if (typeof result.signedURL !== "string") return null;
-  return /^https?:\/\//i.test(result.signedURL)
-    ? result.signedURL
-    : new URL(result.signedURL.replace(/^\/+/, ""), `${url}/storage/v1/`).toString();
+  return resolveStorageSignedUrl(url, result.signedURL);
 }
 
 module.exports = async function handler(req, res) {
@@ -60,7 +58,7 @@ module.exports = async function handler(req, res) {
 
     const [profiles, documents, audits] = await Promise.all([
       rest(`merchant_profiles?user_id=eq.${encodeURIComponent(user.id)}&select=kyc_status,kyc_rejection_reason,kyc_full_name,kyc_country,kyc_document_type,kyc_submitted_at,kyc_decided_at,kyc_decided_by,verified_at`),
-      rest(`merchant_kyc_documents?merchant_id=eq.${encodeURIComponent(user.id)}&select=id,document_type,document_side,storage_path,created_at&order=created_at.desc`),
+      rest(`merchant_kyc_documents?merchant_id=eq.${encodeURIComponent(user.id)}&is_current=eq.true&select=id,document_type,document_side,storage_path,created_at&order=created_at.desc`),
       rest(`kyc_audit_logs?merchant_id=eq.${encodeURIComponent(user.id)}&select=actor_id,event_type,created_at&order=created_at.desc&limit=200`)
     ]);
     if (!profiles.ok || !documents.ok || !audits.ok) {
@@ -71,6 +69,9 @@ module.exports = async function handler(req, res) {
     const records = await documents.json();
     const auditRecords = await audits.json();
     const hasIdentity = records.some(document => document.document_type === "identity" && document.document_side === "front");
+    const hasRequiredBack = !["national_id", "driving_license"].includes(profile.kyc_document_type)
+      || records.some(document => document.document_type === "identity" && document.document_side === "back");
+    const hasSelfie = records.some(document => document.document_type === "selfie" && document.document_side === "supporting");
     const approved = auditRecords.some(entry =>
       entry.event_type === "approved"
       && entry.actor_id === profile.kyc_decided_by
@@ -82,7 +83,12 @@ module.exports = async function handler(req, res) {
       && profile.kyc_decided_at
       && profile.kyc_decided_by
       && profile.verified_at
+      && profile.kyc_full_name
+      && profile.kyc_country
+      && ["national_id", "passport", "driving_license"].includes(profile.kyc_document_type)
       && hasIdentity
+      && hasRequiredBack
+      && hasSelfie
       && approved;
     const status = profile.kyc_status === "verified" && !validVerified ? "none" : profile.kyc_status;
     const signedDocuments = await Promise.all(records.map(async document => ({

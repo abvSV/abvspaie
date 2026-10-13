@@ -59,6 +59,35 @@ test("requires MFA for KYC administrators", async t => {
   assert.match(JSON.parse(res.body).error, /MFA/i);
 });
 
+test("resolves root-relative signed document URLs against the Supabase Storage path", async t => {
+  const adminId = crypto.randomUUID();
+  const documentId = crypto.randomUUID();
+  const calls = [];
+  const token = await withMockAuth(t, { id: adminId, app_metadata: { kyc_admin: true } }, async (url, options) => {
+    calls.push({ url: String(url), options });
+    if (String(url).includes("/rest/v1/merchant_kyc_documents?")) {
+      return Response.json([{ storage_path: `${crypto.randomUUID()}/document.pdf` }]);
+    }
+    if (String(url).includes("/storage/v1/object/sign/merchant-kyc-documents/")) {
+      return Response.json({ signedURL: "/object/sign/merchant-kyc-documents/document?token=temporary" });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  });
+
+  const res = createResponse();
+  await handler({
+    method: "GET",
+    headers: { authorization: `Bearer ${token}` },
+    query: { document_id: documentId }
+  }, res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(
+    JSON.parse(res.body).url,
+    "https://supabase.example/storage/v1/object/sign/merchant-kyc-documents/document?token=temporary"
+  );
+  assert.equal(calls.length, 2);
+});
+
 test("rejects an administrator's attempt to review their own KYC dossier", async t => {
   const userId = crypto.randomUUID();
   const token = await withMockAuth(t, { id: userId, app_metadata: { kyc_admin: true } }, async () => {

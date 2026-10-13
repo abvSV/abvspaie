@@ -88,6 +88,18 @@ function json(res, status, body) {
   res.end(JSON.stringify(body));
 }
 
+function resolveStorageSignedUrl(storageUrl, signedPath) {
+  const storageBase = new URL(`${storageUrl.replace(/\/+$/, "")}/storage/v1/`);
+  const normalizedPath = signedPath.replace(/^\/+/, "").replace(/^storage\/v1\//, "");
+  const url = /^https?:\/\//i.test(signedPath)
+    ? new URL(signedPath)
+    : new URL(normalizedPath, storageBase);
+  if (url.origin !== storageBase.origin || !url.pathname.startsWith("/storage/v1/object/sign/")) {
+    throw new Error("Réponse de stockage invalide.");
+  }
+  return url.toString();
+}
+
 async function readRawBody(req, maxBytes) {
   const chunks = [];
   let size = 0;
@@ -112,4 +124,4 @@ function verifySignature(secret, timestamp, rawBody, signature) {
   return supplied.length === expected.length && crypto.timingSafeEqual(supplied, expected);
 }
 
-module.exports = { config, encryptSecret, decryptSecret, authUser, rest, json, readRawBody, verifySignature };
+module.exports = { config, encryptSecret, decryptSecret, authUser, rest, json, resolveStorageSignedUrl, readRawBody, verifySignature };

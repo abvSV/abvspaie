@@ -3,7 +3,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
-const { encryptSecret, decryptSecret, verifySignature, readRawBody, authUser } = require("../server/webhooks");
+const { encryptSecret, decryptSecret, verifySignature, readRawBody, authUser, resolveStorageSignedUrl } = require("../server/webhooks");
 const receiveWebhook = require("../api/webhooks/receive");
 
 test("encrypts and decrypts a webhook secret", () => {
@@ -36,6 +36,18 @@ test("rejects request bodies above the configured limit", async () => {
     yield Buffer.from("1234");
   })();
   await assert.rejects(readRawBody(request, 3), { status: 413 });
+});
+
+test("resolves relative Storage URLs and rejects links to another origin", () => {
+  assert.equal(
+    resolveStorageSignedUrl("https://supabase.example/", "/object/sign/merchant-kyc-documents/file?token=temp"),
+    "https://supabase.example/storage/v1/object/sign/merchant-kyc-documents/file?token=temp"
+  );
+  assert.equal(
+    resolveStorageSignedUrl("https://supabase.example", "/storage/v1/object/sign/merchant-kyc-documents/file?token=temp"),
+    "https://supabase.example/storage/v1/object/sign/merchant-kyc-documents/file?token=temp"
+  );
+  assert.throws(() => resolveStorageSignedUrl("https://supabase.example", "https://other.example/storage/v1/object/sign/file"));
 });
 
 test("authenticates existing sessions without email-MFA token claims", async t => {

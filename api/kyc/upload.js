@@ -89,6 +89,13 @@ module.exports = async function handler(req, res) {
       })
     });
     if (!metadata.ok) {
+      const errorBody = await metadata.text();
+      let databaseError = {};
+      try {
+        databaseError = JSON.parse(errorBody);
+      } catch (_) {
+        // Keep the generic response for non-JSON errors from PostgREST.
+      }
       const cleaned = await removeObject(url, serviceKey, path);
       if (!cleaned) console.error("KYC orphan cleanup failed for upload:", metadata.status);
       if (metadata.status === 401 || metadata.status === 403) {
@@ -96,6 +103,24 @@ module.exports = async function handler(req, res) {
         return json(res, 502, { error: cleaned
           ? "Le service KYC a refusé l’enregistrement du justificatif. Vérifie la configuration Supabase ou contacte le support."
           : "Le service KYC a refusé l’enregistrement et le nettoyage du fichier temporaire a échoué. Contacte le support." });
+      }
+      const message = typeof databaseError.message === "string" ? databaseError.message : "";
+      const code = typeof databaseError.code === "string" ? databaseError.code : "";
+      if (message.includes("déjà soumis ou vérifié")) {
+        return json(res, 409, { error: cleaned
+          ? "Ton dossier KYC est déjà soumis ou vérifié. Tu ne peux plus ajouter de justificatifs pour le moment."
+          : "Ton dossier KYC est déjà soumis ou vérifié et le nettoyage du fichier temporaire a échoué. Contacte le support." });
+      }
+      if (message.toLowerCase().includes("limite de huit justificatifs atteinte")) {
+        return json(res, 409, { error: cleaned
+          ? "La limite de 8 justificatifs est atteinte."
+          : "La limite de 8 justificatifs est atteinte et le nettoyage du fichier temporaire a échoué. Contacte le support." });
+      }
+      if (["23514", "42703", "42P01", "PGRST204", "PGRST205"].includes(code)) {
+        console.error("KYC metadata registration failed; verify the KYC database migration. PostgREST code:", code);
+        return json(res, 503, { error: cleaned
+          ? "La configuration de la base KYC doit être mise à jour. Réapplique schema_kyc.sql dans Supabase puis réessaie."
+          : "La configuration de la base KYC doit être mise à jour et le nettoyage du fichier temporaire a échoué. Contacte le support." });
       }
       return json(res, 409, {
         error: cleaned

@@ -166,6 +166,63 @@ test("removes the uploaded object when metadata registration fails", async t => 
   assert.match(JSON.parse(res.body).error, /pas pu être enregistré/i);
 });
 
+test("explains when the KYC case already prevents further uploads", async t => {
+  const userId = crypto.randomUUID();
+  const calls = [];
+  await withEnvironment(t, userId, async (url, options) => {
+    calls.push({ url: String(url), options });
+    if (String(url).includes("/storage/v1/object/merchant-kyc-documents/")) {
+      return new Response(null, { status: options.method === "DELETE" ? 200 : 201 });
+    }
+    if (String(url).endsWith("/rest/v1/merchant_kyc_documents")) {
+      return Response.json({ code: "P0001", message: "Le dossier KYC est déjà soumis ou vérifié" }, { status: 400 });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  });
+
+  const res = createResponse();
+  await handler(request(userId, Buffer.from("%PDF-1.7 test"), "application/pdf"), res);
+  assert.equal(res.statusCode, 409);
+  assert.match(JSON.parse(res.body).error, /dossier KYC est déjà soumis ou vérifié/i);
+  assert.equal(calls[2].options.method, "DELETE");
+});
+
+test("explains when the eight-document limit has been reached", async t => {
+  const userId = crypto.randomUUID();
+  await withEnvironment(t, userId, async (url, options) => {
+    if (String(url).includes("/storage/v1/object/merchant-kyc-documents/")) {
+      return new Response(null, { status: options.method === "DELETE" ? 200 : 201 });
+    }
+    if (String(url).endsWith("/rest/v1/merchant_kyc_documents")) {
+      return Response.json({ code: "P0001", message: "Limite de huit justificatifs atteinte" }, { status: 400 });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  });
+
+  const res = createResponse();
+  await handler(request(userId, Buffer.from("%PDF-1.7 test"), "application/pdf"), res);
+  assert.equal(res.statusCode, 409);
+  assert.match(JSON.parse(res.body).error, /limite de 8 justificatifs/i);
+});
+
+test("explains when the KYC database migration is missing or outdated", async t => {
+  const userId = crypto.randomUUID();
+  await withEnvironment(t, userId, async (url, options) => {
+    if (String(url).includes("/storage/v1/object/merchant-kyc-documents/")) {
+      return new Response(null, { status: options.method === "DELETE" ? 200 : 201 });
+    }
+    if (String(url).endsWith("/rest/v1/merchant_kyc_documents")) {
+      return Response.json({ code: "23514", message: "new row violates check constraint" }, { status: 400 });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  });
+
+  const res = createResponse();
+  await handler(request(userId, Buffer.from("%PDF-1.7 test"), "application/pdf"), res);
+  assert.equal(res.statusCode, 503);
+  assert.match(JSON.parse(res.body).error, /réapplique schema_kyc\.sql/i);
+});
+
 test("cleans up the uploaded file when metadata returns a non-JSON response", async t => {
   const userId = crypto.randomUUID();
   const calls = [];

@@ -25,7 +25,7 @@ abvspaie/
 2. `site/assets/abvs-config.js` : renseigner l'URL et la clé publique (`anon` / publishable) du projet (Settings > Data API). Ne jamais y placer la clé `service_role`.
 3. Supabase > Authentication > URL Configuration : Site URL = adresse Vercel ; Redirect URLs = `.../public/inscription-connexion.html` et `.../public/mot-de-passe-oublie.html`.
 4. Vercel : importer le dépôt GitHub, Framework « Other », aucune commande de build. Les fonctions de `api/` sont déployées avec le site.
-5. Test local : VS Code + extension Live Server, en ouvrant le dossier `site/`.
+5. Prévisualisation locale : VS Code + extension Live Server, en ouvrant le dossier `site/`. Le serveur statique local ne fournit pas les fonctions KYC de `api/` ; pour tester les dépôts, utiliser le domaine Vercel déployé ou démarrer l'environnement Vercel Functions avec `vercel dev`.
 
 Si un compte existant n'a pas de profil KYC, exécuter `supabase/repair_merchant_profiles.sql` dans le SQL Editor. Cette réparation idempotente crée uniquement les profils manquants et affiche le nombre restant. La page KYC récupère et initialise ensuite le profil du compte connecté via les fonctions sécurisées `ensure_merchant_profile` et `get_kyc_profile` définies dans `schema.sql`.
 
@@ -35,7 +35,9 @@ Les coordonnées recueillies au paiement servent à créer ou retrouver une fich
 
 Dans **Paramètres > KYC**, tout marchand peut démarrer sa vérification de sa propre initiative après activation de la MFA. Ce formulaire couvre uniquement les personnes physiques ; les profils d'entreprise et les structures complexes ne sont pas encore pris en charge. Le parcours se fait en trois étapes : informations légales et choix de la pièce, dépôt des faces requises et d'un selfie, puis vérification et soumission explicite du dossier. La règle technique actuelle demande recto et verso pour une carte nationale d'identité ou un permis, et la page d'identité pour un passeport. Un selfie JPG ou PNG est également obligatoire. Elle est identique pour les pays proposés dans le formulaire et ne constitue pas une validation réglementaire pays par pays ; vérifier les obligations locales avant la mise en production. Le marchand renseigne aussi son nom légal et son pays de résidence. Huit fichiers PDF, JPG ou PNG de 4 Mo maximum chacun sont acceptés. La fonction Vercel valide la signature binaire avant l'envoi au bucket privé `merchant-kyc-documents`, sous un chemin aléatoire ne contenant pas le nom d'origine. La consultation, le dépôt et la soumission exigent une session MFA AAL2 ; RLS limite l'accès au compte propriétaire. Pendant l'examen, le dossier et ses justificatifs ne peuvent pas être modifiés ; après un refus, le marchand peut déposer des pièces et soumettre à nouveau. Le marchand ne peut ni modifier son statut ni supprimer un justificatif enregistré. Une insertion incomplète autorise uniquement le nettoyage de son objet orphelin.
 
-La validation est manuelle. L'espace `site/compte/kyc-admin.html` et `/api/kyc/admin` permettent aux seuls utilisateurs dont `app_metadata.kyc_admin` vaut `true` d'examiner les dossiers en attente. L'API exige une session MFA AAL2, émet des liens de consultation des pièces valables 60 secondes, interdit l'auto-examen et consigne chaque dépôt, soumission et décision dans `kyc_audit_logs`. Une approbation exige les faces requises de la pièce d'identité, le selfie, les informations du profil et une trace de soumission. Le refus exige un motif ; après un refus, le marchand peut déposer des pièces et soumettre à nouveau. L'approbation KYC ne met pas Live en service.
+La validation est manuelle. L'espace `site/compte/kyc-admin.html` et `/api/kyc/admin` permettent aux seuls utilisateurs dont `app_metadata.kyc_admin` vaut `true` d'examiner les dossiers en attente. L'API exige une session MFA AAL2, émet des liens de consultation des pièces valables 60 secondes, interdit l'auto-examen et consigne chaque dépôt, soumission et décision dans `kyc_audit_logs`. Une approbation exige les faces requises de la pièce d'identité, le selfie, les informations du profil et une trace de soumission. Le refus exige un motif ; après un refus, le marchand peut remplacer les faces de sa pièce et son selfie : les anciennes versions restent conservées et marquées comme remplacées, et seules les versions actuelles sont présentées pour une nouvelle décision. La limite de huit fichiers s'applique à l'ensemble des versions. L'approbation KYC ne met pas Live en service.
+
+Si le dépôt indique que le dossier est déjà soumis ou que la limite est atteinte, vérifie le statut du profil et le nombre de justificatifs. Si l'API signale une configuration KYC incomplète, réapplique `supabase/schema_kyc.sql` dans Supabase, puis redéploie les fonctions Vercel. Réapplique également ce schéma pour activer le suivi des versions remplacées et réparer les anciens statuts vérifiés qui ne satisfont pas les preuves KYC requises.
 
 Pour utiliser la **méthode 1** et traiter les dossiers directement dans Supabase, réapplique d'abord `supabase/schema_kyc.sql` depuis le SQL Editor. Dans le SQL Editor, cette requête liste les dossiers en attente et les chemins de leurs documents :
 
@@ -43,7 +45,8 @@ Pour utiliser la **méthode 1** et traiter les dossiers directement dans Supabas
 select p.user_id, p.kyc_full_name, p.kyc_country, p.kyc_document_type,
        p.kyc_submitted_at, d.document_type, d.document_side, d.storage_path
 from public.merchant_profiles p
-left join public.merchant_kyc_documents d on d.merchant_id = p.user_id
+left join public.merchant_kyc_documents d
+  on d.merchant_id = p.user_id and d.is_current
 where p.kyc_status = 'pending'
 order by p.kyc_submitted_at, d.created_at;
 ```

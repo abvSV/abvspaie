@@ -1,6 +1,6 @@
 "use strict";
 
-const { config, authUser, rest, json } = require("../../server/webhooks");
+const { config, authUser, rest, json, resolveStorageSignedUrl } = require("../../server/webhooks");
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -43,7 +43,7 @@ async function signedDocumentUrl(documentId) {
   const result = await signedResponse.json();
   const signedPath = result.signedURL || result.signedUrl;
   if (typeof signedPath !== "string") throw new Error("Réponse de stockage invalide.");
-  return { url: new URL(signedPath, `${config().url}/storage/v1/`).toString() };
+  return { url: resolveStorageSignedUrl(config().url, signedPath) };
 }
 
 async function listPendingCases() {
@@ -57,6 +57,7 @@ async function listPendingCases() {
   const ids = profiles.map(profile => profile.user_id);
   const query = new URLSearchParams({
     merchant_id: `in.(${ids.join(",")})`,
+    is_current: "eq.true",
     select: "id,merchant_id,document_type,document_side,storage_path,created_at",
     order: "created_at.asc"
   });

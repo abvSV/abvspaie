@@ -226,7 +226,8 @@ f.addEventListener("submit",async e=>{e.preventDefault();
   const kycDocumentKinds={national_id:"Carte nationale d'identité",passport:"Passeport",driving_license:"Permis de conduire"};
   const kycSides={front:"Recto / page d'identité",back:"Verso",supporting:"Complémentaire"};
   const kycStatuses={none:["Aucun dossier déposé","warn"],pending:["En vérification","warn"],verified:["Vérifié",""],rejected:["Action requise","err"]};
-  let kycStep=0,kycDocuments=[],kycCanEdit=false,kycCanStart=false,kycHasMfa=false,kycStarted=false;
+  let kycStep=0,kycDocuments=[],kycCanEdit=false,kycCanReplaceDocuments=false,kycCanStart=false,kycHasMfa=false,kycStarted=false;
+  function kycCurrentDocuments(){return kycDocuments.filter(document=>document.is_current)}
   function showKycStep(step){
    kycStep=step;
    document.querySelectorAll("#kyc-form [data-step]").forEach(panel=>{
@@ -253,7 +254,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
   function updateKycReview(){
    document.getElementById("kyc-review-details").textContent=
     `Nom : ${document.getElementById("kyc-full-name").value.trim()} · Pays : ${document.getElementById("kyc-country").selectedOptions[0]?.textContent||""} · Pièce : ${kycDocumentKinds[document.getElementById("kyc-document-kind").value]||""}`;
-   const documents=kycDocuments.map(document=>`${kycTypes[document.document_type]||"Justificatif"}${document.document_type==="selfie"?"":` — ${kycSides[document.document_side]||"Côté non précisé"}`}`);
+   const documents=kycCurrentDocuments().map(document=>`${kycTypes[document.document_type]||"Justificatif"}${document.document_type==="selfie"?"":` — ${kycSides[document.document_side]||"Côté non précisé"}`}`);
    document.getElementById("kyc-review-documents").textContent=documents.length
     ?`Justificatifs déposés : ${documents.join(" ; ")}`
     :"Aucun justificatif déposé.";
@@ -318,23 +319,28 @@ f.addEventListener("submit",async e=>{e.preventDefault();
      document.getElementById("kyc-documents-area").hidden=true;
      return;
     }
-    const {data:documents,error:documentsError}=await ABVS.client.from("merchant_kyc_documents").select("id,document_type,document_side,storage_path,created_at").order("created_at",{ascending:false});
+    const {data:documents,error:documentsError}=await ABVS.client.from("merchant_kyc_documents").select("id,document_type,document_side,storage_path,created_at,is_current").order("created_at",{ascending:false});
     if(documentsError)throw new Error("Lecture des justificatifs refusée. Vérifie que schema_kyc.sql est appliqué et que ta MFA est active.");
     const records=documents||[];
     kycDocuments=records;
-    const hasIdentity=records.some(entry=>entry.document_type==="identity"&&entry.document_side==="front");
-    const hasApprovalEvidence=Boolean(profile.kyc_submitted_at&&profile.kyc_decided_at&&profile.kyc_decided_by&&profile.verified_at&&hasIdentity);
+    const currentDocuments=records.filter(entry=>entry.is_current);
+    const hasIdentity=currentDocuments.some(entry=>entry.document_type==="identity"&&entry.document_side==="front");
+    const hasRequiredBack=!["national_id","driving_license"].includes(profile.kyc_document_type)
+     ||currentDocuments.some(entry=>entry.document_type==="identity"&&entry.document_side==="back");
+    const hasSelfie=currentDocuments.some(entry=>entry.document_type==="selfie"&&entry.document_side==="supporting");
+    const hasApprovalEvidence=Boolean(profile.kyc_submitted_at&&profile.kyc_decided_at&&profile.kyc_decided_by&&profile.verified_at&&profile.kyc_full_name&&profile.kyc_country&&profile.kyc_document_type&&hasIdentity&&hasRequiredBack&&hasSelfie);
     const inconsistentVerified=profile.kyc_status==="verified"&&!hasApprovalEvidence;
     const displayStatus=inconsistentVerified?"none":profile.kyc_status;
     const [label,style]=inconsistentVerified?["À vérifier","err"]:kycStatuses[displayStatus]||["Statut inconnu","err"];
     status.textContent=label;status.className="tag "+style;
     const canEdit=displayStatus==="none"||displayStatus==="rejected";
+    kycCanReplaceDocuments=displayStatus==="rejected";
     kycCanStart=canEdit&&!inconsistentVerified;
     kycHasMfa=true;
     if(!canEdit||inconsistentVerified)kycStarted=false;
     note.textContent=inconsistentVerified
      ?"Ce compte est marqué comme vérifié sans justificatif ni preuve complète d'une décision manuelle. Il ne doit pas être considéré comme vérifié. La migration KYC doit être réappliquée par l'administrateur."
-     :displayStatus==="rejected"?`Dossier refusé : ${profile.kyc_rejection_reason||"consulte le support avant une nouvelle soumission."}`
+     :displayStatus==="rejected"?`Dossier refusé : ${profile.kyc_rejection_reason||"consulte le support avant une nouvelle soumission."} Tu peux remplacer les justificatifs concernés ; les anciens resteront dans l'historique.`
      :displayStatus==="pending"?"Ton dossier est en cours d'examen. Tu ne peux pas modifier les justificatifs pendant cette période."
      :displayStatus==="verified"?"Ton identité a été vérifiée. Aucun nouveau document ne peut être ajouté."
      :"Aucun dossier soumis. Tu peux commencer la vérification en renseignant tes informations et en déposant les faces requises de ta pièce.";
@@ -354,7 +360,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     if(records.length){
      const items=records.map(entry=>{
       const item=document.createElement("div");
-      item.textContent=`${kycTypes[entry.document_type]||"Justificatif"}${entry.document_type==="selfie"?"":entry.document_side?` — ${kycSides[entry.document_side]||entry.document_side}`:""} — ${new Date(entry.created_at).toLocaleString("fr-FR")}`;
+      item.textContent=`${kycTypes[entry.document_type]||"Justificatif"}${entry.document_type==="selfie"?"":entry.document_side?` — ${kycSides[entry.document_side]||entry.document_side}`:""}${entry.is_current?"":" — Ancien document remplacé"} — ${new Date(entry.created_at).toLocaleString("fr-FR")}`;
       const open=document.createElement("button");open.type="button";open.className="btn s";open.textContent="Préparer mon lien de consultation";
       open.addEventListener("click",async()=>{
        open.disabled=true;
@@ -374,6 +380,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
    }catch(error){
     setKycFormEnabled(form,false);
     kycCanStart=false;
+    kycCanReplaceDocuments=false;
     kycStarted=false;
     status.textContent="Configuration requise";
     status.className="tag err";
@@ -396,11 +403,11 @@ f.addEventListener("submit",async e=>{e.preventDefault();
    return documentType==="passport"?["front"]:["front","back"];
   }
   function hasRequiredIdentityDocuments(documents=kycDocuments){
-   const sides=new Set(documents.filter(document=>document.document_type==="identity").map(document=>document.document_side));
+   const sides=new Set(documents.filter(document=>document.is_current&&document.document_type==="identity").map(document=>document.document_side));
    return requiredIdentitySides().every(side=>sides.has(side));
   }
   function hasRequiredKycDocuments(documents=kycDocuments){
-   return hasRequiredIdentityDocuments(documents)&&documents.some(document=>document.document_type==="selfie"&&document.document_side==="supporting");
+   return hasRequiredIdentityDocuments(documents)&&documents.some(document=>document.is_current&&document.document_type==="selfie"&&document.document_side==="supporting");
   }
   let kycAudioContext=null;
   function playKycStepSound(){
@@ -482,25 +489,25 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     ?"Dépose les faces requises de ta pièce et un selfie. Le dépôt démarre automatiquement après le choix de chaque fichier."
     :"Choisis un fichier PDF, JPG ou PNG pour ajouter un justificatif complémentaire.";
    for(const [side,control] of Object.entries(kycFaceControls)){
-    const uploaded=kycDocuments.some(document=>document.document_type==="identity"&&document.document_side===side);
+    const uploaded=kycCurrentDocuments().some(document=>document.document_type==="identity"&&document.document_side===side);
     const selectedFile=control.input.files[0];
     const required=requiredIdentitySides().includes(side);
     if(!required&&selectedFile)control.input.value="";
     control.card.hidden=!required;
-    control.status.textContent=uploaded?`${control.title} déjà déposé.`:control.uploading?`Dépôt du ${control.title.toLowerCase()} en cours…`:control.input.files[0]?`Fichier sélectionné : ${control.input.files[0].name}`:required?`${control.title} requis pour ce document.`:`${control.title} non requis pour ce document.`;
+    control.status.textContent=uploaded&&kycCanReplaceDocuments?`${control.title} déjà déposé. Choisis un nouveau fichier pour le remplacer si nécessaire.`:uploaded?`${control.title} déjà déposé.`:control.uploading?`Dépôt du ${control.title.toLowerCase()} en cours…`:control.input.files[0]?`Fichier sélectionné : ${control.input.files[0].name}`:required?`${control.title} requis pour ce document.`:`${control.title} non requis pour ce document.`;
      control.status.dataset.uploaded=String(uploaded);
-     control.badge.textContent=uploaded?"Déposé":"À déposer";
+     control.badge.textContent=uploaded?(kycCanReplaceDocuments?"Remplacer":"Déposé"):"À déposer";
      control.badge.className=`tag ${uploaded?"":"mute"} kyc-face-badge`;
      control.card.classList.toggle("is-uploaded",uploaded);
-     control.input.disabled=!required||!kycCanEdit||kycDocuments.length>=8||uploaded||control.uploading;
+     control.input.disabled=!required||!kycCanEdit||kycDocuments.length>=8||(uploaded&&!kycCanReplaceDocuments)||control.uploading;
    }
-   const selfieUploaded=kycDocuments.some(document=>document.document_type==="selfie"&&document.document_side==="supporting");
-   kycSelfieStatus.textContent=selfieUploaded?"Selfie déjà déposé.":kycSelfieControl.uploading?"Dépôt du selfie en cours…":kycSelfieControl.input.files[0]?`Fichier sélectionné : ${kycSelfieControl.input.files[0].name}`:"Selfie requis.";
+   const selfieUploaded=kycCurrentDocuments().some(document=>document.document_type==="selfie"&&document.document_side==="supporting");
+   kycSelfieStatus.textContent=selfieUploaded&&kycCanReplaceDocuments?"Selfie déjà déposé. Choisis une nouvelle image pour le remplacer si nécessaire.":selfieUploaded?"Selfie déjà déposé.":kycSelfieControl.uploading?"Dépôt du selfie en cours…":kycSelfieControl.input.files[0]?`Fichier sélectionné : ${kycSelfieControl.input.files[0].name}`:"Selfie requis.";
    kycSelfieStatus.dataset.uploaded=String(selfieUploaded);
-   kycSelfieBadge.textContent=selfieUploaded?"Déposé":"À déposer";
+   kycSelfieBadge.textContent=selfieUploaded?(kycCanReplaceDocuments?"Remplacer":"Déposé"):"À déposer";
    kycSelfieBadge.className=`tag ${selfieUploaded?"":"mute"} kyc-face-badge`;
    kycSelfieCard.classList.toggle("is-uploaded",selfieUploaded);
-   kycSelfieInput.disabled=!isIdentity||!kycCanEdit||kycDocuments.length>=8||selfieUploaded||kycSelfieControl.uploading;
+   kycSelfieInput.disabled=!isIdentity||!kycCanEdit||kycDocuments.length>=8||(selfieUploaded&&!kycCanReplaceDocuments)||kycSelfieControl.uploading;
    kycSelfieCard.hidden=!isIdentity;
    kycContinueButton.disabled=!kycCanEdit||!hasRequiredKycDocuments()||Object.values(kycFaceControls).some(control=>control.uploading)||kycSelfieControl.uploading;
   }
@@ -510,6 +517,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
   document.getElementById("kyc-document-kind").addEventListener("change",updateKycSideOptions);
   async function uploadKycFile(file,type,side){
    if(!file)throw new Error("Sélectionne un justificatif.");
+   if(location.protocol==="file:")throw new Error("Le dépôt KYC ne fonctionne pas depuis un fichier local. Ouvre le site avec son adresse Vercel pour accéder à l'API sécurisée.");
    if(!["application/pdf","image/jpeg","image/png"].includes(file.type))throw new Error("Format refusé. Utilise un fichier PDF, JPG ou PNG.");
    if(file.size===0||file.size>4*1024*1024)throw new Error("Le fichier doit peser entre 1 octet et 4 Mo.");
     const {data:sessionData,error:sessionError}=await auth.getSession();
@@ -529,7 +537,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     try{result=JSON.parse(responseText)}
     catch(_){
      console.error("KYC upload endpoint returned a non-JSON response:",response.status,response.headers.get("content-type"));
-     if(response.status===401||response.status===403)throw new Error("Le serveur a refusé le dépôt. Reconnecte-toi et vérifie que ta session MFA est toujours active.");
+     if(response.status===401||response.status===403)throw new Error(`L'API de dépôt est inaccessible ou protégée (HTTP ${response.status}). Ce refus ne confirme pas un problème MFA : ouvre le site sur son adresse Vercel et vérifie que la fonction /api/kyc/upload est déployée et accessible.`);
      throw new Error(`Le serveur a renvoyé une réponse inattendue (HTTP ${response.status}). Réessaie ; si le problème persiste, contacte le support.`);
     }
     if(!response.ok)throw new Error(result.error||"Le justificatif n'a pas pu être déposé.");
