@@ -1,4 +1,4 @@
--- ABVSPAIE — dépôt privé des justificatifs KYC.
+-- ABVSPAIE — dépôt privé des justificatifs KYC et selfies.
 -- À exécuter après schema.sql. Les documents exigent une session MFA de niveau AAL2.
 
 create table if not exists public.merchant_kyc_documents (
@@ -17,6 +17,17 @@ create index if not exists merchant_kyc_documents_owner_created_idx
 alter table public.merchant_kyc_documents
   add column if not exists document_side text not null default 'front'
   check (document_side in ('front', 'back', 'supporting'));
+alter table public.merchant_kyc_documents
+  drop constraint if exists merchant_kyc_documents_document_type_check,
+  drop constraint if exists merchant_kyc_documents_document_side_check,
+  drop constraint if exists merchant_kyc_selfie_side_check;
+alter table public.merchant_kyc_documents
+  add constraint merchant_kyc_documents_document_type_check
+    check (document_type in ('identity', 'selfie', 'business', 'address', 'other')),
+  add constraint merchant_kyc_documents_document_side_check
+    check (document_side in ('front', 'back', 'supporting')),
+  add constraint merchant_kyc_selfie_side_check
+    check (document_type <> 'selfie' or document_side = 'supporting');
 
 alter table public.merchant_profiles
   add column if not exists kyc_rejection_reason text,
@@ -212,6 +223,23 @@ begin
   ) then
     raise exception 'Dépose au moins une pièce d''identité';
   end if;
+  if p_document_type in ('national_id', 'driving_license')
+     and not exists (
+       select 1 from public.merchant_kyc_documents d
+       where d.merchant_id = v_user_id
+         and d.document_type = 'identity'
+         and d.document_side = 'back'
+     ) then
+    raise exception 'Dépose le recto et le verso de ta pièce';
+  end if;
+  if not exists (
+    select 1 from public.merchant_kyc_documents d
+    where d.merchant_id = v_user_id
+      and d.document_type = 'selfie'
+      and d.document_side = 'supporting'
+  ) then
+    raise exception 'Dépose un selfie';
+  end if;
 
   update public.merchant_profiles
     set kyc_full_name = trim(p_full_name),
@@ -246,7 +274,7 @@ begin
     new.merchant_id,
     case when coalesce(auth.jwt() ->> 'role', '') = 'service_role' then null else auth.uid() end,
     'document_uploaded',
-    jsonb_build_object('document_id', new.id, 'document_type', new.document_type)
+    jsonb_build_object('document_id', new.id, 'document_type', new.document_type, 'document_side', new.document_side)
   );
   return new;
 end
@@ -272,13 +300,22 @@ as $$
 declare
   v_profile public.merchant_profiles%rowtype;
 begin
-  if coalesce(auth.jwt() ->> 'role', '') <> 'service_role' then
-    raise exception 'Opération serveur uniquement' using errcode = '42501';
+  if coalesce(auth.jwt() ->> 'role', '') <> 'service_role'
+     and session_user not in ('postgres', 'supabase_admin') then
+    raise exception 'Décision autorisée uniquement depuis le serveur KYC ou le SQL Editor Supabase' using errcode = '42501';
   end if;
   if p_admin_id is null or p_merchant_id = p_admin_id then
     raise exception 'Un administrateur ne peut pas examiner son propre dossier' using errcode = '42501';
   end if;
-  if p_decision not in ('verified', 'rejected') then
+  if not exists (
+    select 1
+    from auth.users u
+    where u.id = p_admin_id
+      and u.raw_app_meta_data -> 'kyc_admin' = 'true'::jsonb
+  ) then
+    raise exception 'L’identifiant fourni ne correspond pas à un administrateur KYC autorisé' using errcode = '42501';
+  end if;
+  if p_decision is null or p_decision not in ('verified', 'rejected') then
     raise exception 'Décision KYC invalide';
   end if;
   if p_decision = 'rejected' and (p_reason is null or char_length(trim(p_reason)) < 10 or char_length(trim(p_reason)) > 1000) then
@@ -303,6 +340,23 @@ begin
       where d.merchant_id = p_merchant_id
         and d.document_type = 'identity'
         and d.document_side = 'front'
+    )
+    or (
+      v_profile.kyc_document_type in ('national_id', 'driving_license')
+      and not exists (
+        select 1
+        from public.merchant_kyc_documents d
+        where d.merchant_id = p_merchant_id
+          and d.document_type = 'identity'
+          and d.document_side = 'back'
+      )
+    )
+    or not exists (
+      select 1
+      from public.merchant_kyc_documents d
+      where d.merchant_id = p_merchant_id
+        and d.document_type = 'selfie'
+        and d.document_side = 'supporting'
     )
     or not exists (
       select 1

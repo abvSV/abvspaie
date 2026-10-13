@@ -33,9 +33,41 @@ Les coordonnées recueillies au paiement servent à créer ou retrouver une fich
 
 ## Vérification d'identité (KYC)
 
-Dans **Paramètres > KYC**, tout marchand peut démarrer sa vérification de sa propre initiative après activation de la MFA. Le formulaire guide le marchand en trois étapes : informations légales, dépôt de justificatif avec contrôle des champs et du fichier, puis récapitulatif et soumission explicite du dossier. Il renseigne son nom légal, son pays de résidence et le type de pièce, dépose le recto (et éventuellement le verso) d'une pièce d'identité, puis soumet son dossier. Huit fichiers PDF, JPG ou PNG de 4 Mo maximum chacun sont acceptés. La fonction Vercel valide la signature binaire avant l'envoi au bucket privé `merchant-kyc-documents`, sous un chemin aléatoire ne contenant pas le nom d'origine. La consultation, le dépôt et la soumission exigent une session MFA AAL2 ; RLS limite l'accès au compte propriétaire. Pendant l'examen, le dossier et ses justificatifs ne peuvent pas être modifiés ; après un refus, le marchand peut déposer des pièces et soumettre à nouveau. Le marchand ne peut ni modifier son statut ni supprimer un justificatif enregistré. Une insertion incomplète autorise uniquement le nettoyage de son objet orphelin.
+Dans **Paramètres > KYC**, tout marchand peut démarrer sa vérification de sa propre initiative après activation de la MFA. Ce formulaire couvre uniquement les personnes physiques ; les profils d'entreprise et les structures complexes ne sont pas encore pris en charge. Le parcours se fait en trois étapes : informations légales et choix de la pièce, dépôt des faces requises et d'un selfie, puis vérification et soumission explicite du dossier. La règle technique actuelle demande recto et verso pour une carte nationale d'identité ou un permis, et la page d'identité pour un passeport. Un selfie JPG ou PNG est également obligatoire. Elle est identique pour les pays proposés dans le formulaire et ne constitue pas une validation réglementaire pays par pays ; vérifier les obligations locales avant la mise en production. Le marchand renseigne aussi son nom légal et son pays de résidence. Huit fichiers PDF, JPG ou PNG de 4 Mo maximum chacun sont acceptés. La fonction Vercel valide la signature binaire avant l'envoi au bucket privé `merchant-kyc-documents`, sous un chemin aléatoire ne contenant pas le nom d'origine. La consultation, le dépôt et la soumission exigent une session MFA AAL2 ; RLS limite l'accès au compte propriétaire. Pendant l'examen, le dossier et ses justificatifs ne peuvent pas être modifiés ; après un refus, le marchand peut déposer des pièces et soumettre à nouveau. Le marchand ne peut ni modifier son statut ni supprimer un justificatif enregistré. Une insertion incomplète autorise uniquement le nettoyage de son objet orphelin.
 
-La validation est manuelle. L'espace `site/compte/kyc-admin.html` et `/api/kyc/admin` permettent aux seuls utilisateurs dont `app_metadata.kyc_admin` vaut `true` d'examiner les dossiers en attente. L'API exige une session MFA AAL2, émet des liens de consultation des pièces valables 60 secondes, interdit l'auto-examen et consigne chaque dépôt, soumission et décision dans `kyc_audit_logs`. Une approbation exige un recto de pièce d'identité, les informations du profil et une trace de soumission ; l'administrateur doit confirmer dans l'interface avoir examiné le dossier. Le refus exige un motif ; après un refus, le marchand peut déposer des pièces et soumettre à nouveau. L'approbation KYC ne met pas Live en service.
+La validation est manuelle. L'espace `site/compte/kyc-admin.html` et `/api/kyc/admin` permettent aux seuls utilisateurs dont `app_metadata.kyc_admin` vaut `true` d'examiner les dossiers en attente. L'API exige une session MFA AAL2, émet des liens de consultation des pièces valables 60 secondes, interdit l'auto-examen et consigne chaque dépôt, soumission et décision dans `kyc_audit_logs`. Une approbation exige les faces requises de la pièce d'identité, le selfie, les informations du profil et une trace de soumission. Le refus exige un motif ; après un refus, le marchand peut déposer des pièces et soumettre à nouveau. L'approbation KYC ne met pas Live en service.
+
+Pour utiliser la **méthode 1** et traiter les dossiers directement dans Supabase, réapplique d'abord `supabase/schema_kyc.sql` depuis le SQL Editor. Dans le SQL Editor, cette requête liste les dossiers en attente et les chemins de leurs documents :
+
+```sql
+select p.user_id, p.kyc_full_name, p.kyc_country, p.kyc_document_type,
+       p.kyc_submitted_at, d.document_type, d.document_side, d.storage_path
+from public.merchant_profiles p
+left join public.merchant_kyc_documents d on d.merchant_id = p.user_id
+where p.kyc_status = 'pending'
+order by p.kyc_submitted_at, d.created_at;
+```
+
+Ouvre ensuite **Storage > merchant-kyc-documents** et retrouve les fichiers par leur chemin `storage_path` (dossier `user_id` puis nom de fichier aléatoire). Après examen, prends la décision dans le SQL Editor en appelant `public.decide_kyc` ; n'édite jamais directement `kyc_status`. Remplace les UUID d'exemple par l'identifiant du marchand et celui d'un compte administrateur autorisé (`auth.users.raw_app_meta_data.kyc_admin = true`) :
+
+```sql
+-- Lister les identifiants des administrateurs KYC autorisés
+select id
+from auth.users
+where raw_app_meta_data ->> 'kyc_admin' = 'true';
+
+-- Approuver après examen des pièces et du selfie
+select public.decide_kyc(
+  'UUID_DU_MARCHAND'::uuid, 'verified', null, 'UUID_ADMIN_KYC'::uuid
+);
+
+-- Refuser avec un motif de 10 à 1000 caractères
+select public.decide_kyc(
+  'UUID_DU_MARCHAND'::uuid, 'rejected', 'Motif détaillé du refus', 'UUID_ADMIN_KYC'::uuid
+);
+```
+
+Cette fonction vérifie que l'identifiant fourni appartient à un compte administrateur KYC, interdit l'auto-examen, confirme que le dossier est en attente et que les documents requis sont présents, puis met à jour le statut et écrit la décision dans `kyc_audit_logs` dans la même transaction. Le SQL Editor donne des privilèges élevés et ne transmet pas automatiquement l'identité de la personne qui exécute la requête : limite son accès aux personnes de confiance et utilise l'UUID de l'administrateur qui a réellement examiné le dossier pour l'audit. Le panneau KYC existant reste disponible comme alternative.
 
 Depuis l'espace d'examen KYC, **Dépendances techniques** récapitule les bibliothèques et services utilisés ainsi que les rubriques qui en dépendent. La page est réservée aux administrateurs KYC ayant une session MFA AAL2 ; les éléments sont affichés dans un ordre aléatoire.
 

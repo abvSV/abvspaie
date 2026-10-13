@@ -48,9 +48,12 @@ module.exports = async function handler(req, res) {
 
     const documentType = req.headers["x-kyc-document-type"];
     const documentSide = req.headers["x-kyc-document-side"];
-    if (!["identity", "business", "address", "other"].includes(documentType)
+    if (!["identity", "selfie", "business", "address", "other"].includes(documentType)
         || !["front", "back", "supporting"].includes(documentSide)) {
       return json(res, 400, { error: "Type ou côté du justificatif invalide." });
+    }
+    if (documentType === "selfie" && (documentSide !== "supporting" || !["image/jpeg", "image/png"].includes(contentType))) {
+      return json(res, 415, { error: "Le selfie doit être une image JPG ou PNG." });
     }
 
     const bytes = await readRawBody(req, MAX_FILE_BYTES);

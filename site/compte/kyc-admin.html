@@ -33,7 +33,7 @@
   [sections[i],sections[j]]=[sections[j],sections[i]];
  }
  sections.forEach(section=>section.parentElement.appendChild(section));
- const labels={identity:"Pièce d'identité",business:"Document d'entreprise",address:"Justificatif d'adresse",other:"Autre justificatif"};
+ const labels={identity:"Pièce d'identité",selfie:"Selfie",business:"Document d'entreprise",address:"Justificatif d'adresse",other:"Autre justificatif"};
  const sides={front:"Recto / page d'identité",back:"Verso",supporting:"Complémentaire"};
  const documentKinds={national_id:"Carte nationale d'identité",passport:"Passeport",driving_license:"Permis de conduire"};
  const escDate=value=>value?new Date(value).toLocaleString("fr-FR"):"Date inconnue";
@@ -66,7 +66,7 @@
   if(!item.documents.length)appendText(docs,"p","Aucun justificatif attaché.");
   item.documents.forEach(document=>{
    const row=document.createElement("p");row.className="row";
-   appendText(row,"span",`${labels[document.document_type]||"Justificatif"}${document.document_side?` · ${sides[document.document_side]||"Document"}`:""} — ${escDate(document.created_at)}`);
+   appendText(row,"span",`${labels[document.document_type]||"Justificatif"}${document.document_type==="selfie"?"":document.document_side?` · ${sides[document.document_side]||"Document"}`:""} — ${escDate(document.created_at)}`);
    const button=document.createElement("button");button.type="button";button.className="action";button.textContent="Préparer l'accès sécurisé";
    button.addEventListener("click",()=>openDocument(button,document.id));row.appendChild(button);docs.appendChild(row);
   });

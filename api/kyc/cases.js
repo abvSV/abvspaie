@@ -51,7 +51,7 @@ module.exports = async function handler(req, res) {
       });
       if (!result.ok) {
         const text = await result.text();
-        if (result.status === 400 || result.status === 403) return json(res, 400, { error: "Dossier incomplet ou informations invalides. Vérifie les champs et la présence du recto de ta pièce d’identité." });
+        if (result.status === 400 || result.status === 403) return json(res, 400, { error: "Dossier incomplet ou informations invalides. Vérifie les champs, les faces requises de ta pièce et la présence du selfie." });
         console.error("KYC submission RPC failed with HTTP status:", result.status, text.slice(0, 300));
         return json(res, 502, { error: "Le dossier KYC n’a pas pu être soumis." });
       }
