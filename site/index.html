@@ -808,6 +808,7 @@ body{background-color:#d9bf9d;background-image:linear-gradient(90deg,rgba(238,22
   .hero-copy .btns{display:flex;flex-direction:column;align-items:stretch;gap:3px;width:100%;max-width:420px;margin:0}
   .hero-copy .btns .btn{display:flex;min-height:52px;align-items:center;justify-content:center;padding:12px 16px;font-size:15px;line-height:1.25;text-align:center}
   .hero-copy .btns .btn.alt{min-height:42px;justify-content:flex-start;padding:8px 2px;border:0;background:transparent;box-shadow:none;color:#704a30;text-align:left;text-decoration:underline;text-underline-offset:3px}
+  .hero-copy .btns .login-link{display:flex;min-height:48px;justify-content:center;padding:10px 16px;border:1px solid rgba(147,97,61,.24);border-radius:12px;background:rgba(255,250,242,.92);box-shadow:0 5px 14px rgba(69,46,29,.08);color:#493425;text-align:center;text-decoration:none}
   .hero-copy .audit{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));justify-content:start;gap:8px;width:min(100%,360px);margin-top:17px}
   .hero-copy .audit span{padding:8px 10px;text-align:center;font-size:10px;letter-spacing:.015em;text-transform:none;white-space:nowrap}
 }
@@ -820,6 +821,7 @@ body{background-color:#d9bf9d;background-image:linear-gradient(90deg,rgba(238,22
 .main-links a:hover,.main-links a[aria-current=page]{border-color:#c9a783;background:#fffaf2;box-shadow:0 12px 26px rgba(69,46,29,.15);color:#815432}
 .main-links a:hover{animation-play-state:paused;translate:0 -3px}
 @keyframes top-link-float{0%,100%{translate:0 0}50%{translate:0 -3px}}
+.hero-copy .login-link{display:none}
 .nav .right.glass{display:flex;align-items:center;gap:9px;padding:0;border:0;background:transparent}
 .nav .right a.l,.nav .right .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 13px;border:1px solid rgba(147,97,61,.2);border-radius:999px;background:rgba(255,250,242,.88);box-shadow:0 8px 20px rgba(69,46,29,.09);color:#493a2d}
 .nav .right .btn{border-color:#895738;background:linear-gradient(135deg,#895738,#b77c4c);color:#fffaf4}
@@ -846,7 +848,8 @@ body{background-color:#d9bf9d;background-image:linear-gradient(90deg,rgba(238,22
   .nav .right .btn{width:100%;min-height:48px;border:0;box-shadow:0 7px 18px rgba(69,46,29,.16);font-size:15px;font-weight:700}
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script><script src="assets/abvs-config.js"></script><script src="assets/abvs-auth.js"></script></head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script><script src="assets/abvs-config.js"></script><script src="assets/abvs-auth.js"></script>
+</head>
 <body>
 <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
 <div class="matrix-rain" aria-hidden="true">
@@ -875,7 +878,7 @@ body{background-color:#d9bf9d;background-image:linear-gradient(90deg,rgba(238,22
       <a href="public/demarrage.html">Démarrage</a>
       <a href="public/tarification.html">Tarifs</a>
     </nav>
-    <div class="right glass"><a class="l" href="public/inscription-connexion.html">Connexion client</a><a class="l" href="public/connexion-admin.html">Administration</a><a class="btn" href="public/inscription-connexion.html">Commencer</a></div>
+    <div class="right glass"><a class="l" href="public/inscription-connexion.html">Connexion client</a><a class="btn" href="public/inscription-connexion.html">Commencer</a></div>
   </div>
 </header>
 
@@ -886,7 +889,8 @@ body{background-color:#d9bf9d;background-image:linear-gradient(90deg,rgba(238,22
     <p class="sub" aria-label="La couche de paiement de votre SaaS pour accepter les paiements et payer vos bénéficiaires en FCFA."><span class="typing-text" aria-hidden="true">La couche de paiement de votre SaaS pour accepter les paiements et payer vos bénéficiaires en FCFA.</span></p>
     <div class="btns">
       <a class="btn lg" href="public/inscription-connexion.html">Créer mon compte</a>
-      <a class="btn alt lg" href="public/plateforme.html">Voir les avantages</a>
+       <a class="btn alt lg login-link" href="public/inscription-connexion.html">Connexion</a>
+       <a class="btn alt lg" href="public/plateforme.html">Voir les avantages</a>
     </div>
     <div class="audit" aria-label="Moyens de paiement disponibles selon le pays">
       <span>Orange Money</span>

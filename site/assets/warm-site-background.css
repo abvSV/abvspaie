@@ -62,8 +62,7 @@ a:not(.btn):not(.button):not(.brand):hover{color:#93613d}
 .overview-hero .eyebrow,.overview-hero p{color:#fff3e4!important}
 .nav-button{color:#70482e!important;border-color:#ddc8b1!important;background:#fffaf2!important}
 .nav-button[aria-current=page]{color:#493220!important;border-color:#c9a783!important;background:#f1e3d2!important}
-.admin-identity{border-color:#ddc8b1!important;background:#fffaf2!important;color:#70482e!important}
-.admin-avatar,.kpi-icon,.icon-box{background:#f1e3d2!important;color:#815432!important}
+.kpi-icon,.icon-box{background:#f1e3d2!important;color:#815432!important}
 th{background:#f7eee3!important;color:#593d27!important}
 td,th,.table-wrap{border-color:#e2cfb9!important}
 .notice:not(.error):not(.success){border-color:#ddc8b1!important;background:#f7eee3!important;color:#593d27!important}

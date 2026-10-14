@@ -74,41 +74,15 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.m{animation:none;transform:rotate(var(--r))}}
 </style>
 <link rel="stylesheet" href="../assets/warm-site-background.css">
+<link rel="stylesheet" href="../assets/abvs-account-pages.css">
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-<div class="app"><main><div class="head l"><span class="pill">Facturation</span><h1>Facturation et abonnement</h1><p class="sub">Suivez vos commissions et téléchargez vos factures.</p></div><div class="grid"><div class="kpi card"><small>Offre actuelle</small><b>Active</b><p class="mute" style="margin:6px 0 0">Votre plan sera affiché ici après configuration.</p></div><div class="kpi card"><small>Commissions ce mois</small><b id="kfee">0 FCFA</b></div><div class="card"><a class="btn p w" style="margin:0" href="../public/tarifs.html">Voir les offres</a></div></div><div class="card" style="margin-top:16px"><h2>Factures</h2><div class="tw"><table id="fa"><thead><tr><th>Période</th><th>Montant</th><th>Statut</th><th></th></tr></thead><tbody><tr><td colspan="4">Aucune facture pour le moment.</td></tr></tbody></table></div></div></main>
+<div class="app"><main><div class="head l"><span class="pill">Facturation</span><h1>Facturation et abonnement</h1><p class="sub">Les tarifs dépendent de l'offre et des conditions confirmées pour votre compte.</p></div><div class="grid"><div class="kpi card"><small>Offre actuelle</small><b>Non configurée</b><p class="mute" style="margin:6px 0 0">Les informations d'abonnement ne sont pas encore reliées au compte.</p></div><div class="kpi card"><small>Commissions ce mois</small><b>Non disponibles</b><p class="mute" style="margin:6px 0 0">Le taux propre à votre compte n'est pas configuré ici.</p></div><div class="card"><a class="btn p w" style="margin:0" href="../public/tarifs.html">Voir les offres</a></div></div><div class="card" style="margin-top:16px"><h2>Factures</h2><p class="mute">L'historique des factures n'est pas encore connecté au compte.</p><div class="tw"><table id="fa"><thead><tr><th>Période</th><th>Montant</th><th>Statut</th><th></th></tr></thead><tbody><tr><td colspan="4">Historique indisponible.</td></tr></tbody></table></div></div></main>
 <style>.legal{margin:18px auto 90px;max-width:760px;padding:0 16px;text-align:center;font-size:12px;line-height:1.6;color:var(--mut,#6b7684)}.legal a{color:inherit;text-decoration:underline}</style>
 <p class="legal">🔒 Vos données sont chiffrées en transit et ne sont jamais revendues. <a href="../public/confidentialite.html">Confidentialité</a> · <a href="../public/cgu-cgv.html">CGU/CGV</a> · <a href="../public/mentions-legales.html">Mentions légales</a></p>
-</div><nav class="dock" aria-label="Navigation"><a href="tableau-de-bord.html" title="Tableau de bord" aria-label="Tableau de bord">🏠</a><a href="transactions.html" title="Transactions" aria-label="Transactions">↔️</a><a href="liens-de-paiement.html" title="Liens de paiement" aria-label="Liens de paiement">🔗</a><a href="decaissements.html" title="Décaissements" aria-label="Décaissements">💸</a><a href="developpeurs.html" title="Développeurs" aria-label="Développeurs">🔑</a><a href="rapprochement.html" title="Rapprochement" aria-label="Rapprochement">🧾</a><a href="equipe.html" title="Équipe" aria-label="Équipe">👥</a><a href="facturation.html" title="Facturation" aria-label="Facturation" class=on>🏷️</a><a href="parametres.html" title="Paramètres" aria-label="Paramètres">⚙️</a><a href="securite.html" title="Sécurité" aria-label="Sécurité">🛡️</a><a href="#" data-logout title="Se déconnecter" aria-label="Se déconnecter">🚪</a><a href="../public/fonctionnalites.html" title="Découvrir ABVSPAIE" aria-label="Découvrir ABVSPAIE">📚</a></nav>
-<script>
-(()=>{
-const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-window.toast=t=>{const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)};
-document.addEventListener('click',e=>{
- const c=e.target.closest('[data-copy]');if(c){try{navigator.clipboard.writeText(c.dataset.copy)}catch(_){}toast('Copié dans le presse-papiers')}
- const t=e.target.closest('[data-toast]');if(t)toast(t.dataset.toast);
- const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
- const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
-$$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
-
-})();
-(()=>{let z=10;
-document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
- const par=m.offsetParent||document.body,c=par.getBoundingClientRect(),dx=e.clientX-c.left-m.offsetLeft,dy=e.clientY-c.top-m.offsetTop;
- m.style.left=m.offsetLeft+"px";m.style.top=m.offsetTop+"px";m.style.right="auto";m.style.bottom="auto";
- m.classList.add("drag");m.style.zIndex=++z;m.setPointerCapture(e.pointerId);
- const mv=ev=>{const cc=par.getBoundingClientRect();m.style.left=(ev.clientX-cc.left-dx)+"px";m.style.top=(ev.clientY-cc.top-dy)+"px"};
- const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
- m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
-</script>
+</div>
+<script src="../assets/abvs-account-ui.js"></script>
 <script>document.addEventListener("click",e=>{if(e.target.closest("[data-logout]")){e.preventDefault();ABVS.signOut()}});</script>
-<script>
-(async()=>{if(!ABVS.ready)return;
- const d=new Date(),start=new Date(d.getFullYear(),d.getMonth(),1).toISOString();
- const {data,error}=await ABVS.client.from("transactions").select("amount").eq("status","succeeded").gte("created_at",start);if(error)return;
- const fee=Math.round(data.reduce((n,x)=>n+x.amount,0)*0.015);
- document.getElementById("kfee").textContent=fee.toLocaleString("fr-FR").replace(/[\u202f\u00a0]/g," ")+" FCFA"})();
-</script>
 </body>
 </html>

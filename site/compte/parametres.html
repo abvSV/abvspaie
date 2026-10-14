@@ -74,31 +74,12 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.m{animation:none;transform:rotate(var(--r))}}
 </style>
 <link rel="stylesheet" href="../assets/warm-site-background.css">
+<link rel="stylesheet" href="../assets/abvs-account-pages.css">
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-<div class="app"><main><div class="head l"><span class="pill">Paramètres</span><h1>Paramètres du compte</h1><p class="sub">Profil, sécurité et notifications.</p></div><div class="card"><h2>Profil</h2><p class="mute">La modification du profil et de la langue n'est pas encore connectée au serveur. Aucune modification ne peut être enregistrée ici.</p></div><div class="card"><h2>Sécurité</h2><form id="fpw"><label>Nouveau mot de passe<input name="b" type="password" placeholder="8 caractères minimum" autocomplete="new-password" required></label><button class="btn p" style="margin-top:12px">Mettre à jour le mot de passe</button></form></div><div class="card"><h2>Notifications</h2><p class="mute">Les préférences et envois de notifications ne sont pas configurés. Cette page ne modifie aucun réglage.</p></div><div class="card"><h2>Zone sensible</h2><p class="mute">La suppression du compte n'est pas disponible depuis cette page. Contactez le support pour toute demande concernant votre compte.</p></div><div class="card"><h2>Informations légales</h2><p class="mute">Les documents qui encadrent votre usage du service.</p><p><a href="../public/cgu-cgv.html">CGU/CGV</a> · <a href="../public/confidentialite.html">Politique de confidentialité</a> · <a href="../public/mentions-legales.html">Mentions légales</a></p></div></main></div><nav class="dock" aria-label="Navigation"><a href="tableau-de-bord.html" title="Tableau de bord" aria-label="Tableau de bord">🏠</a><a href="transactions.html" title="Transactions" aria-label="Transactions">↔️</a><a href="liens-de-paiement.html" title="Liens de paiement" aria-label="Liens de paiement">🔗</a><a href="decaissements.html" title="Décaissements" aria-label="Décaissements">💸</a><a href="developpeurs.html" title="Développeurs" aria-label="Développeurs">🔑</a><a href="rapprochement.html" title="Rapprochement" aria-label="Rapprochement">🧾</a><a href="equipe.html" title="Équipe" aria-label="Équipe">👥</a><a href="facturation.html" title="Facturation" aria-label="Facturation">🏷️</a><a href="parametres.html" title="Paramètres" aria-label="Paramètres" class=on>⚙️</a><a href="securite.html" title="Sécurité" aria-label="Sécurité">🛡️</a><a href="#" data-logout title="Se déconnecter" aria-label="Se déconnecter">🚪</a><a href="../public/fonctionnalites.html" title="Découvrir ABVSPAIE" aria-label="Découvrir ABVSPAIE">📚</a></nav>
-<script>
-(()=>{
-const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-window.toast=t=>{const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)};
-document.addEventListener('click',e=>{
- const c=e.target.closest('[data-copy]');if(c){try{navigator.clipboard.writeText(c.dataset.copy)}catch(_){}toast('Copié dans le presse-papiers')}
- const t=e.target.closest('[data-toast]');if(t)toast(t.dataset.toast);
- const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
- const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
-$$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
-
-})();
-(()=>{let z=10;
-document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
- const par=m.offsetParent||document.body,c=par.getBoundingClientRect(),dx=e.clientX-c.left-m.offsetLeft,dy=e.clientY-c.top-m.offsetTop;
- m.style.left=m.offsetLeft+"px";m.style.top=m.offsetTop+"px";m.style.right="auto";m.style.bottom="auto";
- m.classList.add("drag");m.style.zIndex=++z;m.setPointerCapture(e.pointerId);
- const mv=ev=>{const cc=par.getBoundingClientRect();m.style.left=(ev.clientX-cc.left-dx)+"px";m.style.top=(ev.clientY-cc.top-dy)+"px"};
- const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
- m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
-</script>
+<div class="app"><main><div class="head l"><span class="pill">Paramètres</span><h1>Paramètres du compte</h1><p class="sub">Profil, sécurité et notifications.</p></div><div class="card"><h2>Profil</h2><p class="mute">La modification du profil et de la langue n'est pas encore connectée au serveur. Aucune modification ne peut être enregistrée ici.</p></div><div class="card"><h2>Sécurité</h2><form id="fpw"><label>Nouveau mot de passe<input name="b" type="password" placeholder="8 caractères minimum" autocomplete="new-password" required></label><button class="btn p" style="margin-top:12px">Mettre à jour le mot de passe</button></form></div><div class="card"><h2>Notifications</h2><p class="mute">Les préférences et envois de notifications ne sont pas configurés. Cette page ne modifie aucun réglage.</p></div><div class="card"><h2>Zone sensible</h2><p class="mute">La suppression du compte n'est pas disponible depuis cette page. Contactez le support pour toute demande concernant votre compte.</p></div><div class="card"><h2>Informations légales</h2><p class="mute">Les documents qui encadrent votre usage du service.</p><p><a href="../public/cgu-cgv.html">CGU/CGV</a> · <a href="../public/confidentialite.html">Politique de confidentialité</a> · <a href="../public/mentions-legales.html">Mentions légales</a></p></div></main></div>
+<script src="../assets/abvs-account-ui.js"></script>
 <script>
 (()=>{const s=document.querySelector("select[name=lang]");if(!s)return;
 s.addEventListener("change",()=>{if(s.value==="English"){s.value="Français";toast("Version anglaise bientôt disponible")}})})();
@@ -218,11 +199,105 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     <article class="settings-option"><h3>Application d'authentification</h3><p>Utilise une application TOTP et un code temporaire à 6 chiffres.</p><a class="btn p" href="securite.html#mfa">Utiliser une application d'authentification</a></article>
    </div><div class="settings-actions"><a class="btn" href="securite.html#sessions">Gérer les connexions</a><a class="btn" href="securite.html#mfa">Gérer la double authentification</a></div></section>
    <section class="card settings-section" id="frais"><h2>Frais</h2><p class="mute">Consulte les frais et informations de facturation disponibles pour ton compte.</p><a class="btn" href="facturation.html">Ouvrir la facturation</a></section>
-   <section class="card settings-section" id="equipe"><h2>Équipe</h2><p class="mute">La gestion des membres et des rôles n'est pas encore configurée côté serveur.</p><a class="btn" href="equipe.html">Consulter l'équipe</a></section>
+   <section class="card settings-section" id="equipe"><h2>Équipe</h2><p class="mute">Invite des collaborateurs et limite leur accès selon leur rôle. Les invitations prennent effet après confirmation de l'adresse e-mail.</p><div id="team-manager" hidden><form id="team-invite-form" class="settings-form"><div class="row"><label for="team-email">Adresse e-mail<input id="team-email" name="email" type="email" autocomplete="email" maxlength="254" required></label><label for="team-role">Rôle<select id="team-role" name="role" required><option value="accountant">Comptable</option><option value="operator">Opérateur</option><option value="admin" id="team-admin-option" hidden>Administrateur</option></select></label></div><button class="btn p" type="submit">Inviter un collaborateur</button><p class="err" id="team-feedback" role="status" aria-live="polite"></p></form></div><p class="settings-note" id="team-status" role="status" aria-live="polite">Chargement des membres…</p><div class="tw" id="team-table-wrap" hidden><table><thead><tr><th scope="col">Adresse e-mail</th><th scope="col">Rôle</th><th scope="col">État</th><th scope="col">Actions</th></tr></thead><tbody id="team-table"></tbody></table></div></section>
    <section class="card settings-section" id="mot-de-passe"><h2>Mot de passe</h2><p class="mute">Choisis un mot de passe différent et difficile à deviner.</p><form id="fpw"><label>Nouveau mot de passe<input name="b" type="password" autocomplete="new-password" minlength="8" required></label><button class="btn p" type="submit">Mettre à jour le mot de passe</button></form></section>
    <section class="card settings-section" id="legal"><h2>Informations légales</h2><p class="mute">Les documents qui encadrent l'utilisation du service.</p><p><a href="../public/cgu-cgv.html">CGU/CGV</a> · <a href="../public/confidentialite.html">Politique de confidentialité</a> · <a href="../public/mentions-legales.html">Mentions légales</a></p></section>
    </div></div>`;
+   const kycStartButton=document.getElementById("kyc-start-button");
+   kycStartButton.hidden=true;
+   document.getElementById("kyc-form").hidden=true;
+   document.getElementById("kyc-mfa-note").hidden=true;
+   main.querySelector("#kyc-start > p").textContent="L’examen des dossiers KYC n’est pas disponible actuellement. Pour éviter de transmettre des pièces qui ne pourraient pas être examinées, cette page ne permet plus de créer un dossier ni de déposer des justificatifs. Les statuts et documents déjà enregistrés restent consultables.";
+   main.querySelector('#kyc-form [data-step="2"] .settings-note').textContent="Les nouveaux dossiers ne peuvent pas être soumis tant que l’examen KYC n’est pas disponible.";
   const toast=message=>{const node=document.createElement("div");node.className="toast";node.textContent=message;document.body.appendChild(node);setTimeout(()=>node.remove(),2600)};
+  const teamRoles={owner:"Propriétaire",admin:"Administrateur",accountant:"Comptable",operator:"Opérateur"};
+  const teamStates={active:"Actif",invited:"Invitation en attente",suspended:"Suspendu"};
+  let teamOwner=false;
+  function teamMessage(message){document.getElementById("team-feedback").textContent=message}
+  async function loadTeam(){
+   const status=document.getElementById("team-status"),wrap=document.getElementById("team-table-wrap"),body=document.getElementById("team-table");
+   wrap.hidden=true;body.replaceChildren();
+   if(!ABVS.ready||!auth){status.textContent="Service d'authentification indisponible.";return}
+   try{
+    const [{data:userData,error:userError},{data:members,error:membersError}]=await Promise.all([
+     auth.getUser(),
+     ABVS.client.from("merchant_members").select("user_id,member_email,member_role,status,created_at").order("created_at",{ascending:true})
+    ]);
+    if(userError)throw userError;
+    if(membersError)throw membersError;
+    if(!userData.user||!Array.isArray(members))throw new Error("Réponse invalide.");
+    const ownMembership=members.find(member=>member.user_id===userData.user.id);
+    if(!ownMembership){status.textContent="Aucun rôle marchand actif n'est associé à ce compte.";return}
+    const canManage=["owner","admin"].includes(ownMembership.member_role)&&ownMembership.status==="active";
+    teamOwner=ownMembership.member_role==="owner";
+    document.getElementById("team-manager").hidden=!canManage;
+    document.getElementById("team-admin-option").hidden=!teamOwner;
+    status.textContent=ownMembership.status==="active"
+     ?`${members.length} membre${members.length>1?"s":""} visible${members.length>1?"s":""}. Les invitations en attente ne donnent pas encore accès au compte.`
+     :"L'accès au compte marchand n'est pas actif.";
+    members.forEach(member=>{
+     const row=document.createElement("tr");
+     const email=document.createElement("td");email.textContent=member.member_email||"Adresse indisponible";
+     const role=document.createElement("td");role.textContent=teamRoles[member.member_role]||"Rôle inconnu";
+     const state=document.createElement("td");state.textContent=teamStates[member.status]||"État inconnu";
+     const actions=document.createElement("td");
+     const canEdit=canManage&&member.member_role!=="owner"&&member.user_id!==userData.user.id
+      &&(teamOwner||member.member_role!=="admin");
+     if(canEdit){
+      const select=document.createElement("select");
+      select.setAttribute("aria-label","Rôle de "+(member.member_email||"ce membre"));
+      ["accountant","operator"].concat(teamOwner?["admin"]:[]).forEach(value=>{
+       const option=document.createElement("option");option.value=value;option.textContent=teamRoles[value];select.appendChild(option);
+      });
+      select.value=member.member_role;
+      const save=document.createElement("button");save.type="button";save.className="btn s";save.textContent="Enregistrer";
+      save.addEventListener("click",async()=>{
+       save.disabled=true;teamMessage("");
+       try{
+        const {error}=await ABVS.client.rpc("set_merchant_member_role",{p_user_id:member.user_id,p_role:select.value});
+        if(error)throw error;
+        teamMessage("Rôle mis à jour.");await loadTeam();
+       }catch(_){teamMessage("Le rôle n'a pas pu être modifié. Vérifie les autorisations et réessaie.");save.disabled=false}
+      });
+      const remove=document.createElement("button");remove.type="button";remove.className="btn s";remove.textContent="Retirer";
+      remove.addEventListener("click",async()=>{
+       if(!confirm("Retirer l'accès de "+(member.member_email||"ce membre")+" à ce compte marchand ?"))return;
+       remove.disabled=true;teamMessage("");
+       try{
+        const {error}=await ABVS.client.rpc("remove_merchant_member",{p_user_id:member.user_id});
+        if(error)throw error;
+        teamMessage("Accès retiré.");await loadTeam();
+       }catch(_){teamMessage("L'accès n'a pas pu être retiré. Vérifie les autorisations et réessaie.");remove.disabled=false}
+      });
+      actions.append(select,save,remove);
+     }else actions.textContent="—";
+     row.append(email,role,state,actions);body.appendChild(row);
+    });
+    wrap.hidden=false;
+   }catch(_){status.textContent="Impossible de charger les membres. Vérifie la migration des rôles et les autorisations."}
+  }
+  document.getElementById("team-invite-form").addEventListener("submit",async event=>{
+   event.preventDefault();
+   const form=event.currentTarget,button=form.querySelector("button[type=submit]");
+   if(!auth){teamMessage("Service d'authentification indisponible.");return}
+   button.disabled=true;teamMessage("");
+   try{
+    const {data,error}=await auth.getSession();
+    if(error||!data.session)throw new Error("Session invalide.");
+    const response=await fetch("/api/merchant/members",{
+     method:"POST",
+     headers:{authorization:"Bearer "+data.session.access_token,"content-type":"application/json"},
+     body:JSON.stringify({email:document.getElementById("team-email").value,role:document.getElementById("team-role").value})
+    });
+    let result;
+    try{result=await response.json()}catch(_){throw new Error("Le serveur a retourné une réponse invalide.")}
+    if(!response.ok)throw new Error(result.error||"Invitation impossible.");
+    teamMessage("Invitation envoyée à "+result.member.email+".");
+    form.reset();document.getElementById("team-role").value="accountant";
+    await loadTeam();
+   }catch(error){teamMessage(error.message||"L'invitation n'a pas pu être envoyée. Réessaie.")}
+   finally{button.disabled=false}
+  });
   const kycTypes={identity:"Pièce d'identité",selfie:"Selfie",business:"Document d'entreprise",address:"Justificatif d'adresse",other:"Autre document demandé"};
   const kycDocumentKinds={national_id:"Carte nationale d'identité",passport:"Passeport",driving_license:"Permis de conduire"};
   const kycSides={front:"Recto / page d'identité",back:"Verso",supporting:"Complémentaire"};
@@ -288,7 +363,6 @@ f.addEventListener("submit",async e=>{e.preventDefault();
    try{
     const {data:userData,error:userError}=await auth.getUser();
     if(userError||!userData.user)throw new Error("Session expirée. Reconnecte-toi puis réessaie.");
-    const user=userData.user;
     const [{data:profiles,error:profileError},{data:assurance,error:assuranceError}]=await Promise.all([
      ABVS.client.rpc("get_kyc_profile"),
      auth.mfa.getAuthenticatorAssuranceLevel()
@@ -300,26 +374,19 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     document.getElementById("kyc-full-name").value=profile.kyc_full_name||"";
     document.getElementById("kyc-country").value=profile.kyc_country||"";
     document.getElementById("kyc-document-kind").value=profile.kyc_document_type||"";
-    if(user.app_metadata&&(user.app_metadata.kyc_admin===true||user.app_metadata.platform_admin===true)&&!document.getElementById("kyc-admin-link")){
-     const adminLink=document.createElement("a");adminLink.id="kyc-admin-link";adminLink.className="btn";adminLink.href="kyc-admin.html";adminLink.textContent="Ouvrir l'espace d'examen KYC";note.after(adminLink);
-    }
-    if(user.app_metadata&&user.app_metadata.platform_admin===true&&!document.getElementById("platform-admin-link")){
-     const adminLink=document.createElement("a");adminLink.id="platform-admin-link";adminLink.className="btn";adminLink.href="admin.html";adminLink.textContent="Ouvrir l'administration";note.after(adminLink);
-    }
     const hasMfa=assurance.currentLevel==="aal2";
-    const statusAllowsStart=profile.kyc_status==="none"||profile.kyc_status==="rejected";
     kycHasMfa=hasMfa;
-    kycCanStart=statusAllowsStart;
-    mfaNote.hidden=hasMfa||!statusAllowsStart;
-    document.getElementById("kyc-start-button").disabled=!statusAllowsStart;
+    kycCanStart=false;
+    mfaNote.hidden=true;
+    document.getElementById("kyc-start-button").disabled=true;
     if(!hasMfa){
      kycStarted=false;
      document.getElementById("kyc-start").hidden=false;
      const needsConfirmation=profile.kyc_status==="verified";
      const [label,style]=needsConfirmation?["À vérifier","err"]:kycStatuses[profile.kyc_status]||["Statut inconnu","err"];
      status.textContent=label;status.className="tag "+style;
-     note.textContent=needsConfirmation?"Le statut ne peut pas être confirmé sans vérifier les justificatifs. Active la MFA avant de te fier à cette information.":"Le formulaire est prêt. Active la MFA pour commencer la vérification.";
-     list.textContent="Active la MFA pour consulter les justificatifs et déposer les fichiers.";
+     note.textContent=needsConfirmation?"Le statut ne peut pas être confirmé sans vérifier les justificatifs.":"L’examen KYC n’est pas disponible. Aucun nouveau justificatif ne peut être déposé.";
+     list.textContent="Active la MFA pour consulter les justificatifs déjà déposés.";
      document.getElementById("kyc-documents-area").hidden=true;
      return;
     }
@@ -337,17 +404,17 @@ f.addEventListener("submit",async e=>{e.preventDefault();
     const displayStatus=inconsistentVerified?"none":profile.kyc_status;
     const [label,style]=inconsistentVerified?["À vérifier","err"]:kycStatuses[displayStatus]||["Statut inconnu","err"];
     status.textContent=label;status.className="tag "+style;
-    const canEdit=displayStatus==="none"||displayStatus==="rejected";
-    kycCanReplaceDocuments=displayStatus==="rejected";
-    kycCanStart=canEdit&&!inconsistentVerified;
+    const canEdit=false;
+    kycCanReplaceDocuments=false;
+    kycCanStart=false;
     kycHasMfa=true;
     if(!canEdit||inconsistentVerified)kycStarted=false;
     note.textContent=inconsistentVerified
-     ?"Ce compte est marqué comme vérifié sans justificatif ni preuve complète d'une décision manuelle. Il ne doit pas être considéré comme vérifié. La migration KYC doit être réappliquée par l'administrateur."
-     :displayStatus==="rejected"?`Dossier refusé : ${profile.kyc_rejection_reason||"consulte le support avant une nouvelle soumission."} Tu peux remplacer les justificatifs concernés ; les anciens resteront dans l'historique.`
-     :displayStatus==="pending"?"Ton dossier est en cours d'examen. Tu ne peux pas modifier les justificatifs pendant cette période."
+     ?"Ce compte est marqué comme vérifié sans justificatif ni preuve complète d'une décision manuelle. Il ne doit pas être considéré comme vérifié. Réapplique la migration KYC pour corriger ce statut."
+     :displayStatus==="rejected"?`Dossier refusé : ${profile.kyc_rejection_reason||"consulte le support."} L’examen KYC n’est pas disponible actuellement ; tu ne peux pas déposer de nouvelles pièces.`
+     :displayStatus==="pending"?"Ton dossier reste en attente. L’examen KYC n’est pas disponible actuellement et son statut ne pourra pas progresser."
      :displayStatus==="verified"?"Ton identité a été vérifiée. Aucun nouveau document ne peut être ajouté."
-     :"Aucun dossier soumis. Tu peux commencer la vérification en renseignant tes informations et en déposant les faces requises de ta pièce.";
+     :"Aucun dossier soumis. La création de dossier et le dépôt de justificatifs sont suspendus tant que l’examen KYC n’est pas disponible.";
     setKycFormEnabled(form,canEdit&&!inconsistentVerified);
     updateKycSideOptions();
     const startButton=document.getElementById("kyc-start-button");
@@ -521,17 +588,19 @@ f.addEventListener("submit",async e=>{e.preventDefault();
   document.querySelectorAll("#kyc-form [data-step-back]").forEach(button=>button.addEventListener("click",()=>showKycStep(Math.max(0,kycStep-1))));
   document.getElementById("kyc-document-kind").addEventListener("change",updateKycSideOptions);
   async function uploadKycFile(file,type,side){
+   if(!kycCanEdit)throw new Error("Le dépôt de justificatifs KYC est temporairement indisponible.");
    if(!file)throw new Error("Sélectionne un justificatif.");
    if(location.protocol==="file:")throw new Error("Le dépôt KYC ne fonctionne pas depuis un fichier local. Ouvre le site avec son adresse Vercel pour accéder à l'API sécurisée.");
    if(!["application/pdf","image/jpeg","image/png"].includes(file.type))throw new Error("Format refusé. Utilise un fichier PDF, JPG ou PNG.");
    if(file.size===0||file.size>4*1024*1024)throw new Error("Le fichier doit peser entre 1 octet et 4 Mo.");
     const {data:sessionData,error:sessionError}=await auth.getSession();
     if(sessionError||!sessionData.session)throw new Error("Session expirée. Reconnecte-toi.");
+    const token = sessionData.session.access_token;
     const response=await fetch("/api/kyc/upload",{
     method:"POST",
     headers:{
-     Authorization:`Bearer ${sessionData.session.access_token}`,
-     "Content-Type":file.type,
+     authorization:"Bearer " + token,
+     "Content-Type": file.type,
      "X-KYC-Document-Type":type,
      "X-KYC-Document-Side":side
     },
@@ -606,6 +675,7 @@ f.addEventListener("submit",async e=>{e.preventDefault();
   document.getElementById("kyc-add-document").addEventListener("click",()=>showKycStep(1));
   document.getElementById("kyc-submit-case").addEventListener("click",async()=>{
    const button=document.getElementById("kyc-submit-case"),message=document.getElementById("kyc-error");
+   if(!kycCanEdit){message.textContent="La soumission KYC est temporairement indisponible.";return}
    if(!validateKycStep(0)){showKycStep(0);return}
    if(!hasRequiredKycDocuments()){
     message.textContent=hasRequiredIdentityDocuments()?"Dépose d'abord un selfie.":"Dépose toutes les faces requises pour le type de pièce choisi.";
@@ -701,8 +771,8 @@ f.addEventListener("submit",async e=>{e.preventDefault();
   }));
   window.addEventListener("hashchange",()=>showSettingsSection(location.hash.slice(1)));
   showSettingsSection(location.hash.slice(1));
-  loadProfile();loadMfa();loadKyc();
+  loadProfile();loadMfa();loadKyc();loadTeam();
  })();
  </script>
- </body>
+</body>
 </html>

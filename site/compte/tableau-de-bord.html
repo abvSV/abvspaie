@@ -46,14 +46,20 @@ td{padding:12px 10px;border-bottom:1px solid var(--line)}tr:last-child td{border
 .key code{flex:1;white-space:nowrap}
 .btn{border:0;background:var(--grad);color:#fff;font:600 13px Inter,sans-serif;padding:8px 14px;border-radius:10px;cursor:pointer}
 .btn.alt{background:var(--solid);color:var(--ink);border:1px solid var(--line)}
-.lkform{display:grid;grid-template-columns:1fr 1.4fr auto;gap:10px}
-.lkform input{padding:12px 14px;border:1px solid var(--line);background:var(--in);color:var(--ink);border-radius:11px;font:14px Inter,sans-serif;width:100%}
+.lkform{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.lkform>input,.lkform>label input{padding:12px 14px;border:1px solid var(--line);background:var(--in);color:var(--ink);border-radius:11px;font:14px Inter,sans-serif;width:100%}
+.link-expiry,.link-reusable{display:grid;gap:5px;color:var(--mute);font-size:12px}
+.link-methods{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 16px;border:1px solid var(--line);border-radius:12px;padding:10px}
+.link-methods legend{padding:0 5px;color:var(--mute);font-size:12px}
+.link-methods label,.link-reusable{display:flex;align-items:center;gap:5px;font-size:12px}
+.link-methods input,.link-reusable input{width:auto;margin:0}
+.lkform>button{grid-column:1/-1}
 .lkerr{color:var(--err);font-size:12px;min-height:14px;margin-top:6px}
 .lk{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}.lk:last-child{border-bottom:0}
 .lk small{display:block;color:var(--mute);font-size:12px;margin-top:2px}
 .lk .r{text-align:right}.lk .r b{display:block;margin-bottom:4px}
 .act{display:flex;gap:6px}.act a{text-decoration:none}
-@media(max-width:820px){.lkform{grid-template-columns:1fr}.lk{grid-template-columns:1fr 1fr}.lk .act{grid-column:1/-1}}
+@media(max-width:820px){.lkform{grid-template-columns:1fr}.link-methods,.lkform>button{grid-column:1}.lk{grid-template-columns:1fr 1fr}.lk .act{grid-column:1/-1}}
 .pform{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .pform input,.pform select,.pform textarea,.card textarea{padding:12px 14px;border:1px solid var(--line);background:var(--in);color:var(--ink);border-radius:11px;font:14px Inter,sans-serif;width:100%}
 .pform .full{grid-column:1/-1}
@@ -86,14 +92,18 @@ body aside{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom
 body aside .logo{display:none}
 body #nav{flex-direction:row;gap:4px;flex:initial;overflow-x:auto;scrollbar-width:none;max-width:calc(100vw - 40px)}
 body #nav button{position:relative;flex-direction:column;justify-content:center;align-items:center;width:46px;height:46px;min-width:46px;padding:0;border-radius:14px;font-size:0;gap:0}
+body #nav .nav-icon{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex-shrink:0;color:currentColor}
+body #nav .nav-icon svg{display:block;width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+body #nav .nav-label{display:none;line-height:1.2}
 body #nav button span{font-size:20px;transition:transform .2s}
 body #nav button:hover span{transform:translateY(-4px) scale(1.25)}
 body #nav button.on{background:var(--in);box-shadow:inset 0 0 0 1px var(--line)}
 body #nav button.on:after{content:"";position:absolute;bottom:3px;width:5px;height:5px;border-radius:50%;background:var(--pri)}
 body #nav a{flex:0 0 46px}
+body #nav a{display:flex;align-items:center;justify-content:center;width:46px;height:46px;min-width:46px;padding:0;border-radius:14px;font-size:0}
 body #nav a .nav-label{display:none}
 @media(min-width:821px){body #nav{overflow:visible}
-body #nav button:hover:before{content:attr(title);position:absolute;bottom:58px;background:var(--ink);color:var(--solid);font:600 11px Inter,sans-serif;padding:5px 9px;border-radius:8px;white-space:nowrap}}
+body #nav button:hover:before,body #nav a:hover:before{content:attr(title);position:absolute;bottom:58px;background:var(--ink);color:var(--solid);font:600 11px Inter,sans-serif;padding:5px 9px;border-radius:8px;white-space:nowrap}}
 .brand{position:fixed;top:16px;left:20px;z-index:10;font-weight:800;font-size:18px;letter-spacing:-.02em;padding:9px 14px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--solid) 80%,transparent);backdrop-filter:blur(10px)}.brand span{color:var(--pri)}
 .account-actions{position:fixed;top:16px;right:20px;z-index:10;display:flex;align-items:center;gap:8px}
 .account-actions a,.account-actions button{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:9px 13px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--solid) 80%,transparent);backdrop-filter:blur(10px);color:var(--ink);font:600 13px Inter,sans-serif;text-decoration:none;cursor:pointer}
@@ -130,7 +140,11 @@ body main{max-width:1200px;margin:0 auto;padding-top:100px}
 .profile-menu{margin-left:auto!important}
 .profile-menu>summary{max-width:270px}
 .profile-menu .topbar-avatar{border-radius:50%}
-@media(max-width:760px){.topbar{gap:8px;min-height:62px;padding:8px 10px}.topbar-brand{display:none}.workspace-menu>summary{width:min(200px,38vw)}.profile-menu>summary{max-width:190px}.topbar-search{max-width:none}.topbar-search input{font-size:12px}body main{padding-top:86px}}
+.topbar-logout{display:inline-flex;align-items:center;justify-content:center;gap:7px;flex:none;min-height:42px;padding:0 12px;border:1px solid color-mix(in srgb,var(--err) 30%,var(--line));border-radius:12px;background:color-mix(in srgb,var(--err) 8%,var(--solid));color:var(--err);font:600 12px Inter,sans-serif;white-space:nowrap;cursor:pointer}
+.topbar-logout:hover{background:color-mix(in srgb,var(--err) 14%,var(--solid))}
+.topbar-logout:focus-visible{outline:2px solid var(--err);outline-offset:2px}
+@media(min-width:761px) and (max-width:1100px){.topbar{gap:8px;padding-right:16px;padding-left:16px}.topbar-brand{display:none}.workspace-menu>summary{width:min(190px,22vw)}.profile-menu>summary{max-width:180px}.topbar-search{min-width:100px}}
+@media(max-width:760px){.topbar{gap:8px;min-height:62px;padding:8px 10px}.topbar-brand{display:none}.workspace-menu>summary{width:min(160px,30vw)}.profile-menu>summary{max-width:190px}.topbar-search{min-width:80px;max-width:none}.topbar-search input{font-size:12px}.topbar-logout{width:42px;padding:0}.topbar-logout span:last-child{display:none}body main{padding-top:86px}}
 @media(max-width:480px){.topbar{gap:6px}.workspace-menu>summary{width:46px;justify-content:center;padding:6px}.workspace-menu .topbar-identity,.workspace-menu .topbar-chevron{display:none}.profile-menu>summary{max-width:46px;justify-content:center;padding:6px}.profile-menu .topbar-identity,.profile-menu .topbar-chevron{display:none}.topbar-search{min-width:60px;padding:0 8px}.topbar-search input::placeholder{font-size:11px}}
 .card{background:color-mix(in srgb,var(--solid) 84%,transparent);backdrop-filter:blur(10px);border-radius:24px}
 .canvas{position:relative;height:540px;margin-top:6px}
@@ -381,8 +395,22 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
 @media(min-width:821px) and (max-width:1099px){body #nav{gap:6px;max-width:calc(100vw - 60px);overflow-x:auto;scrollbar-width:none}body #nav button{width:46px;min-width:46px}body #nav a{width:46px;min-width:46px;flex-basis:46px}}
 @media(max-width:820px){body aside{width:calc(100vw - 20px);max-width:520px;padding:8px;border-radius:20px}body #nav{width:100%;max-width:100%;gap:7px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}body #nav::-webkit-scrollbar{display:none}body #nav button,body #nav a{width:48px;height:48px;min-width:48px;flex-basis:48px;scroll-snap-align:center}body #nav button span,body #nav a span{font-size:19px}body main{padding-left:16px;padding-right:16px}body .brand{top:calc(12px + env(safe-area-inset-top,0px));left:12px}}
 @media(min-width:821px){body #nav a:hover:before{content:attr(title);position:absolute;bottom:58px;background:var(--ink);color:var(--solid);font:600 11px Inter,sans-serif;padding:5px 9px;border-radius:8px;white-space:nowrap}}
+body aside{gap:4px;padding:7px 9px;border-color:#d8c4ad;background:rgba(255,250,242,.97);box-shadow:0 12px 28px rgba(53,39,24,.16)}
+body #nav{gap:2px}
+body #nav button,body #nav a{width:44px;height:44px;min-width:44px;flex-basis:44px;border-radius:12px}
+body #nav button.on,body #nav a[aria-current=page]{background:#f1e3d2;color:#493220;box-shadow:inset 0 0 0 1px #d8c4ad}
+body #nav button.on:after{background:#815432}
+body #nav button:hover,body #nav a:hover{background:#f7eee3;color:#493220}
+body #nav button:focus-visible,body #nav a:focus-visible{outline:2px solid #815432;outline-offset:1px}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) body aside{border-color:var(--line);background:rgba(27,34,44,.97)}:root:not([data-theme="light"]) body #nav button.on,:root:not([data-theme="light"]) body #nav a[aria-current=page]{background:#303a48;color:var(--ink);box-shadow:inset 0 0 0 1px #59677a}:root:not([data-theme="light"]) body #nav button:hover,:root:not([data-theme="light"]) body #nav a:hover{background:#283240;color:var(--ink)}}
+:root[data-theme="dark"] body aside{border-color:var(--line);background:rgba(27,34,44,.97)}
+:root[data-theme="dark"] body #nav button.on,:root[data-theme="dark"] body #nav a[aria-current=page]{background:#303a48;color:var(--ink);box-shadow:inset 0 0 0 1px #59677a}
+:root[data-theme="dark"] body #nav button:hover,:root[data-theme="dark"] body #nav a:hover{background:#283240;color:var(--ink)}
+@media(min-width:1100px){body #nav{gap:2px}body #nav button,body #nav a{width:44px;height:44px;min-width:44px;flex-basis:44px}body aside{padding:7px 9px}}
+@media(max-width:820px){body #nav{gap:2px}body #nav button,body #nav a{width:42px;height:42px;min-width:42px;flex-basis:42px}body #nav button span,body #nav a span{font-size:19px}}
 </style>
 <link rel="stylesheet" href="../assets/warm-site-background.css">
+<link rel="stylesheet" href="../assets/abvs-account-pages.css">
 </head>
 <body>
 <aside>
@@ -423,26 +451,41 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
       <a href="parametres.html#profil">Mon profil</a>
       <a href="parametres.html#entreprise">Paramètres de l’entreprise</a>
       <a href="parametres.html#kyc">Vérification d’identité</a>
-      <button type="button" data-logout>Déconnexion</button>
       <p id="profile-load-error" role="status" aria-live="polite" hidden></p>
     </div>
   </details>
+  <button class="topbar-logout" type="button" data-logout title="Se déconnecter" aria-label="Se déconnecter"><span aria-hidden="true">🚪</span><span>Déconnexion</span></button>
 </header>
 <main>
   <section id="home">
     <header class="overview-head">
-      <div><span class="overview-kicker">Espace marchand</span><h1>Bonjour 👋</h1><p class="sub">Voici un aperçu de vos encaissements et de votre activité.</p></div>
+      <div><span class="overview-kicker">Espace marchand</span><h1>Bonjour 👋</h1><p class="sub">Voici un aperçu de vos paiements et de vos fonds rapprochés.</p></div>
       <div class="overview-actions"><span class="overview-updated" id="overview-updated" aria-live="polite">Chargement…</span><button class="overview-refresh" id="overview-refresh" type="button"><span aria-hidden="true">↻</span> Actualiser</button></div>
     </header>
     <div id="loadError" class="overview-error" role="alert" hidden><span>Impossible de charger les données du compte.</span><button class="overview-refresh" type="button" data-retry>Réessayer</button></div>
+    <div class="overview-period" aria-label="Période du tableau de bord">
+      <label for="dashboard-period">Période</label>
+      <select id="dashboard-period"><option value="today">Aujourd'hui</option><option value="7d">7 jours</option><option value="30d" selected>30 jours</option><option value="custom">Période personnalisée</option></select>
+      <label for="dashboard-start" class="dashboard-custom-label" hidden>Du</label><input id="dashboard-start" class="dashboard-custom-field" type="date" hidden>
+      <label for="dashboard-end" class="dashboard-custom-label" hidden>Au</label><input id="dashboard-end" class="dashboard-custom-field" type="date" hidden>
+      <p id="dashboard-period-message" role="status" aria-live="polite"></p>
+    </div>
     <div class="overview-stats" aria-label="Indicateurs du compte">
-      <article class="overview-stat"><span class="overview-stat-label"><span class="overview-stat-icon" aria-hidden="true">↗</span>Encaissements réussis</span><strong class="overview-stat-value" id="stat-volume">—</strong><span class="overview-stat-note">Sur les transactions chargées</span></article>
-      <article class="overview-stat"><span class="overview-stat-label"><span class="overview-stat-icon" aria-hidden="true">☷</span>Transactions réussies</span><strong class="overview-stat-value" id="stat-transactions">—</strong><span class="overview-stat-note">Sur les 200 dernières transactions</span></article>
-      <article class="overview-stat"><span class="overview-stat-label"><span class="overview-stat-icon" aria-hidden="true">↗</span>Liens actifs</span><strong class="overview-stat-value" id="stat-links">—</strong><span class="overview-stat-note">Liens de paiement actuellement actifs</span></article>
+      <article class="overview-stat"><span class="overview-stat-label"><span class="overview-stat-icon" aria-hidden="true">↗</span>Volume des paiements</span><strong class="overview-stat-value" id="stat-volume">—</strong><span class="overview-stat-note" id="stat-volume-note">Paiements réussis sur la période</span></article>
+      <article class="overview-stat"><span class="overview-stat-label"><span class="overview-stat-icon" aria-hidden="true">◉</span>Solde disponible</span><strong class="overview-stat-value" id="stat-available">—</strong><span class="overview-stat-note">Solde rapproché, disponible au reversement</span></article>
+      <article class="overview-stat"><span class="overview-stat-label"><span class="overview-stat-icon" aria-hidden="true">◷</span>Paiements en attente</span><strong class="overview-stat-value" id="stat-pending">—</strong><span class="overview-stat-note" id="stat-pending-note">Nombre et montant sur la période</span></article>
+      <article class="overview-stat"><span class="overview-stat-label"><span class="overview-stat-icon" aria-hidden="true">↘</span>Revenus nets</span><strong class="overview-stat-value" id="stat-net">—</strong><span class="overview-stat-note" id="stat-net-note">Après les frais configurés, paiements Live uniquement</span></article>
+      <article class="overview-stat"><span class="overview-stat-label"><span class="overview-stat-icon" aria-hidden="true">¤</span>Commissions ABVS</span><strong class="overview-stat-value" id="stat-fees">—</strong><span class="overview-stat-note" id="stat-fees-note">Frais enregistrés, paiements Live uniquement</span></article>
+      <article class="overview-stat"><span class="overview-stat-label"><span class="overview-stat-icon" aria-hidden="true">⇢</span>Reversements</span><strong class="overview-stat-value" id="stat-payouts">Non disponible</strong><span class="overview-stat-note">Le suivi apparaîtra avec le module Reversements</span></article>
+    </div>
+    <div class="overview-grid overview-charts">
+      <section class="overview-panel" aria-labelledby="dashboard-volume-heading"><div class="overview-panel-head"><h2 id="dashboard-volume-heading">Volume des paiements</h2></div><div id="dashboard-volume-chart" class="dashboard-chart" role="status" aria-live="polite">Chargement du volume…</div></section>
+      <section class="overview-panel" aria-labelledby="dashboard-method-heading"><div class="overview-panel-head"><h2 id="dashboard-method-heading">Moyens de paiement</h2></div><div id="dashboard-method-chart" class="dashboard-methods" role="status" aria-live="polite">Chargement des moyens de paiement…</div></section>
     </div>
     <div class="overview-grid">
       <section class="overview-panel" aria-labelledby="recent-heading"><div class="overview-panel-head"><h2 id="recent-heading">Transactions récentes</h2><a href="#" data-section="tx">Voir les transactions</a></div><div id="tHome" class="overview-transactions" aria-live="polite"><div class="overview-empty">Chargement des transactions…</div></div></section>
       <section class="overview-panel" aria-labelledby="quick-heading"><div class="overview-panel-head"><h2 id="quick-heading">Raccourci</h2></div><div class="overview-quick-action"><span class="overview-quick-action-icon" aria-hidden="true">↗</span><h3>Créer un lien de paiement</h3><p>Partagez un lien avec votre client pour commencer un encaissement.</p><button class="btn" type="button" data-section="links">Créer un lien <span aria-hidden="true">→</span></button></div></section>
+      <section class="overview-panel overview-actions-panel" aria-labelledby="payout-shortcut-heading"><div class="overview-panel-head"><h2 id="payout-shortcut-heading">Besoin d'un reversement ?</h2></div><div class="overview-quick-action"><span class="overview-quick-action-icon" aria-hidden="true">⇢</span><h3>Demander un reversement</h3><p>Consultez les fonds disponibles et le suivi de vos demandes.</p><button class="btn" type="button" data-section="retraits">Voir les reversements <span aria-hidden="true">→</span></button></div></section>
     </div>
   </section>
 
@@ -464,14 +507,14 @@ body #nav a:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
     <nav class="link-rubric-nav" aria-label="Rubriques des liens de paiement"><button type="button" data-link-rubric="link-create" aria-pressed="false"><span aria-hidden="true">＋</span>Nouveau lien</button><button type="button" data-link-rubric="link-list" aria-pressed="false"><span aria-hidden="true">🔗</span>Vos liens</button></nav>
     <section class="link-rubric-panel" id="link-create" hidden><div class="card">
       <h2>Créer un lien de paiement</h2><a class="btn alt" href="../public/paiement.html" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;margin:0 0 14px">Aperçu de la page de paiement</a>
-      <form id="lkForm" class="lkform" novalidate><input id="lkAmt" type="number" min="1" placeholder="Montant (FCFA)"><input id="lkDesc" placeholder="Description du paiement"><button class="btn" type="submit">Créer le lien</button></form><div class="lkerr" id="lkErr"></div>
+      <form id="lkForm" class="lkform" novalidate><input id="lkTitle" type="text" maxlength="120" placeholder="Nom du produit ou de la commande" aria-label="Nom du produit ou de la commande"><input id="lkAmt" type="number" min="100" max="100000000" step="1" placeholder="Montant (XOF)" aria-label="Montant en XOF"><input id="lkDesc" maxlength="500" placeholder="Description facultative" aria-label="Description facultative"><input id="lkOrderRef" maxlength="120" placeholder="Référence de commande (facultative)" aria-label="Référence de commande facultative"><label class="link-expiry">Expiration facultative<input id="lkExpiry" type="datetime-local"></label><fieldset class="link-methods"><legend>Moyens de paiement</legend><label><input type="checkbox" name="lkMethod" value="Orange Money" checked> Orange Money</label><label><input type="checkbox" name="lkMethod" value="MTN MoMo" checked> MTN MoMo</label><label><input type="checkbox" name="lkMethod" value="Moov" checked> Moov</label><label><input type="checkbox" name="lkMethod" value="Wave" checked> Wave</label><label><input type="checkbox" name="lkMethod" value="Carte" checked> Carte</label></fieldset><label class="link-reusable"><input id="lkReusable" type="checkbox" checked> Réutilisable (décocher pour un paiement unique)</label><button class="btn" type="submit">Créer le lien</button></form><p id="lkPermissionNote" class="sub" hidden>La création et la désactivation des liens sont réservées au propriétaire et aux administrateurs.</p><div class="lkerr" id="lkErr" role="status" aria-live="polite"></div>
     </div></section>
     <section class="link-rubric-panel" id="link-list" hidden><div class="card"><h2>Vos liens</h2><div id="lkList"></div></div></section>
   </section>
 
   <section id="pay" class="hide rubric-page">
-    <h1>Décaissements</h1>    <p class="sub">Le traitement des décaissements n'est pas encore disponible.</p>
-    <div class="card"><p class="sub" style="margin:0">Cette fonction sera activée après l'intégration d'un prestataire de paiement et la mise en place de ses contrôles côté serveur.</p></div>
+   <h1>Reversements</h1>    <p class="sub">Les demandes de reversement ne sont pas encore disponibles.</p>
+   <div class="card"><p class="sub" style="margin:0">Aucun prestataire de décaissement n'est connecté. Les demandes resteront indisponibles jusqu'à l'intégration d'un prestataire et la mise en place de ses contrôles côté serveur.</p></div>
   </section>
 
   <section id="keys" class="hide rubric-page">
@@ -496,22 +539,30 @@ function renderNotifications(){
  if(!TX.length){list.innerHTML="<div class='notification-empty'>Aucune activité récente. Les nouvelles transactions apparaîtront ici.</div>";return}
  list.innerHTML=TX.slice(0,5).map(t=>{
   const status=["succeeded","pending","failed"].includes(t[3])?t[3]:"pending";
-  return `<article class="notification-item"><strong>${esc(t[0]||"Transaction")} · ${L[status]}</strong>${esc(t[2])} FCFA · ${esc(t[1]||"Moyen non précisé")}<small>${esc(t[4])}</small></article>`;
+  return `<article class="notification-item"><strong>${esc(t[0]||"Transaction")} · ${L[status]}</strong>${esc(t[2])} · ${esc(t[1]||"Moyen non précisé")}<small>${t[6]==="test"?"Test":"Live"} · ${esc(t[4])}</small></article>`;
  }).join("");
 }
-const rows=a=>"<tr><th>Référence</th><th>Méthode</th><th>Montant (FCFA)</th><th>Statut</th><th>Date</th></tr>"+(a.length?a.map(t=>`<tr><td>${esc(t[0])}</td><td>${esc(t[1])}</td><td><b>${esc(t[2])}</b></td><td><span class="tag ${t[3]}">${L[t[3]]}</span></td><td>${esc(t[4])}</td></tr>`).join(""):"<tr><td colspan='5'>Aucune transaction pour le moment.</td></tr>");
+const rows=a=>"<tr><th>Référence</th><th>Méthode</th><th>Montant</th><th>Statut</th><th>Date</th></tr>"+(a.length?a.map(t=>`<tr><td>${esc(t[0])}<small>${t[6]==="test"?"Test":"Live"}</small></td><td>${esc(t[1])}</td><td><b>${esc(t[2])}</b></td><td><span class="tag ${t[3]}">${L[t[3]]}</span></td><td>${esc(t[4])}</td></tr>`).join(""):"<tr><td colspan='5'>Aucune transaction pour le moment.</td></tr>");
 let curF=null;
 function drawTx(){
- const succeeded=TX.filter(t=>t[3]==="succeeded");
- const volume=succeeded.reduce((total,t)=>total+(Number.isFinite(t[5])?t[5]:0),0);
- $("stat-volume").textContent=fmt(volume)+" FCFA";
- $("stat-transactions").textContent=fmt(succeeded.length);
- $("tHome").innerHTML=TX.length?TX.slice(0,4).map(t=>{const status=["succeeded","pending","failed"].includes(t[3])?t[3]:"pending";return "<div class='overview-transaction'><div><span class='overview-transaction-ref'>"+esc(t[0])+"</span><span class='overview-transaction-meta'>"+esc(t[1])+" · "+esc(t[4])+"</span></div><strong class='overview-transaction-amount'>"+esc(t[2])+" FCFA</strong><span class='tag "+status+"'>"+(L[status]||"En attente")+"</span></div>"}).join(""):"<div class='overview-empty'><strong>Aucune transaction pour le moment</strong>Les nouvelles transactions apparaîtront ici après leur enregistrement.</div>";
+ $("tHome").innerHTML=TX.length?TX.slice(0,4).map(t=>{const status=["succeeded","pending","failed"].includes(t[3])?t[3]:"pending",mode=t[6]==="test"?"Test":"Live";return "<div class='overview-transaction'><div><span class='overview-transaction-ref'>"+esc(t[0])+"</span><span class='overview-transaction-meta'>"+esc(t[1])+" · "+mode+" · "+esc(t[4])+"</span></div><strong class='overview-transaction-amount'>"+esc(t[2])+"</strong><span class='tag "+status+"'>"+(L[status]||"En attente")+"</span></div>"}).join(""):"<div class='overview-empty'><strong>Aucune transaction pour le moment</strong>Les nouvelles transactions apparaîtront ici après leur enregistrement.</div>";
  $("tAll").innerHTML=rows(curF==="all"?TX:TX.filter(t=>t[3]===curF));
  renderNotifications();
 }
 drawTx();
-function resetSubsections(section){section.querySelectorAll("[data-subpanel]").forEach(button=>button.setAttribute("aria-pressed","false"));section.querySelectorAll(".section-subpanel").forEach(panel=>panel.hidden=true);section.querySelectorAll("[data-link-rubric]").forEach(button=>button.setAttribute("aria-pressed","false"));section.querySelectorAll(".link-rubric-panel").forEach(panel=>panel.hidden=true);if(section.id==="tx"){$("tx-table-wrap").hidden=true;curF=null;document.querySelectorAll("#filters button").forEach(button=>{button.classList.remove("on");button.setAttribute("aria-pressed","false")})}}
+function resetSubsections(section){
+ const subButtons=[...section.querySelectorAll("[data-subpanel]")],subPanels=[...section.querySelectorAll(".section-subpanel")];
+ subButtons.forEach((button,index)=>button.setAttribute("aria-pressed",String(index===0)));
+ subPanels.forEach((panel,index)=>{panel.hidden=index!==0});
+ const linkButtons=[...section.querySelectorAll("[data-link-rubric]")],linkPanels=[...section.querySelectorAll(".link-rubric-panel")];
+ linkButtons.forEach((button,index)=>button.setAttribute("aria-pressed",String(index===0)));
+ linkPanels.forEach((panel,index)=>{panel.hidden=index!==0});
+ if(section.id==="tx"){
+  $("tx-table-wrap").hidden=false;curF="all";
+  document.querySelectorAll("#filters button").forEach(button=>{const active=button.dataset.f==="all";button.classList.toggle("on",active);button.setAttribute("aria-pressed",String(active))});
+  drawTx();
+ }
+}
 function go(v,updateLocation=true){if(v==="settings"){window.location.href="parametres.html";return}const sections=[...document.querySelectorAll("main > section")],selected=sections.find(section=>section.id===v);if(!selected)return;document.querySelectorAll("#nav button").forEach(x=>{const active=x.dataset.v===v;x.classList.toggle("on",active);if(active)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current")});sections.forEach(e=>e.classList.toggle("hide",e!==selected));resetSubsections(selected);if(updateLocation&&location.hash!=="#"+v)location.hash=v;scrollTo(0,0)}
 $("home").addEventListener("click",e=>{const target=e.target.closest("[data-section]");if(!target)return;e.preventDefault();go(target.dataset.section)});
 $("filters").onclick=e=>{const button=e.target.closest("button[data-f]");if(!button)return;
@@ -531,7 +582,7 @@ document.querySelector("main").addEventListener("click",event=>{
 let recentWebhook=null;
 function setWebhookMessage(id,message,isError=false){const target=$(id);target.textContent=message;target.dataset.error=String(isError)}
 async function webhookToken(){const {data,error}=await ABVS.client.auth.getSession();if(error||!data.session)throw new Error("Votre session a expiré. Reconnectez-vous.");return data.session.access_token}
-async function webhookRequest(path,options={}){const token=await webhookToken();const response=await fetch(path,{...options,headers:{"Authorization":`Bearer ${token}`,...(options.headers||{})}});const result=await response.json();if(!response.ok)throw new Error(result.error||"La requête webhook a échoué.");return result}
+async function webhookRequest(path,options={}){const token=await webhookToken();const response=await fetch(path,{...options,headers:{...(options.headers||{}),authorization:"Bearer "+token}});const result=await response.json();if(!response.ok)throw new Error(result.error||"La requête webhook a échoué.");return result}
 async function loadWebhookEndpoints(){
  const list=$("hookEndpointList");list.textContent="Chargement des endpoints…";setWebhookMessage("hookSetupMessage","");
  if(!ABVS.ready){list.textContent="Service de compte indisponible.";return}
@@ -598,8 +649,15 @@ linkRubrics.forEach(button=>button.addEventListener("click",()=>{
  linkPanels.forEach(panel=>{panel.hidden=panel.id!==selected});
  linkRubrics.forEach(item=>item.setAttribute("aria-pressed",String(item===button)));
 }));
-let LK=[];
-function drawLinks(){$("stat-links").textContent=fmt(LK.length);$("lkList").innerHTML=LK.map((l,i)=>`<div class="lk"><div><b>${esc(l.d)}</b><small>${esc(l.u)}</small></div><div class="r"><b>${fmt(l.a)} FCFA</b><span class="tag ${l.s==="succeeded"?"succeeded":"pending"}">${l.s==="succeeded"?"Payé":"En attente"}</span></div><div class="act"><button class="btn alt" data-c="${i}">Copier</button><a class="btn alt" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=${encodeURIComponent(l.d+" : "+fmt(l.a)+" FCFA - "+l.u)}">WhatsApp</a></div></div>`).join("")||"<div class='overview-empty'><strong>Aucun lien actif</strong>Créez un lien pour commencer à partager une demande de paiement.</div>"}
+let LK=[],canManageLinks=false;
+function drawLinks(){
+ $("stat-links").textContent=fmt(LK.filter(link=>link.active).length);
+ $("lkList").innerHTML=LK.map((link,index)=>{
+  const expired=link.expires_at&&new Date(link.expires_at)<=new Date(),state=!link.active?"Désactivé":expired?"Expiré":!link.reusable&&link.succeeded?"Déjà payé":!link.reusable&&link.pending?"Paiement en traitement":link.succeeded?"Paiement reçu":"Actif";
+  const details=[link.mode==="test"?"Test · aucun fonds":"Live",link.order_reference,link.reusable?"Réutilisable":"Paiement unique",`${link.succeeded} paiement(s) Live réussi(s)`,link.pending?`${link.pending} en attente`:null,link.expires_at?"Expire le "+new Date(link.expires_at).toLocaleString("fr-FR"):null].filter(Boolean).join(" · ");
+  return `<div class="lk"><div><b>${esc(link.title)}</b><small>${esc(details)}</small><small>${esc(link.url)}</small></div><div class="r"><b>${fmt(link.amount)} ${esc(link.currency||"XOF")}</b><span class="tag ${link.active&&!expired?"succeeded":"pending"}">${state}</span></div><div class="act"><button class="btn alt" data-c="${index}">Copier</button>${link.active&&canManageLinks?`<button class="btn alt" data-link-disable="${esc(link.id)}">Désactiver</button>`:""}<a class="btn alt" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=${encodeURIComponent(link.title+" : "+fmt(link.amount)+" "+(link.currency||"XOF")+" - "+link.url)}">WhatsApp</a></div></div>`;
+ }).join("")||"<div class='overview-empty'><strong>Aucun lien</strong>Créez un lien pour commencer à partager une demande de paiement.</div>"
+}
 drawLinks();
 const searchInput=$("global-search"),searchResults=$("search-results");
 const topbarSearch=$("topbar-search-input");
@@ -609,7 +667,7 @@ function runSearch(){
  if(!query){const empty=document.createElement("p");empty.className="search-empty";empty.textContent="Saisissez un terme pour lancer la recherche.";searchResults.appendChild(empty);return}
  const results=[];
  TX.forEach(t=>{const haystack=t.join(" ").toLocaleLowerCase("fr");if(haystack.includes(query))results.push({type:"Transaction",title:t[0],detail:[t[1],t[2]+" FCFA",L[t[3]],t[4]].join(" · ")})});
- LK.forEach(l=>{const haystack=[l.d,l.a,l.u,l.s].join(" ").toLocaleLowerCase("fr");if(haystack.includes(query))results.push({type:"Lien de paiement",title:l.d,detail:fmt(l.a)+" FCFA · "+(l.s==="succeeded"?"Payé":"En attente"),url:l.u})});
+ LK.forEach(l=>{const haystack=[l.title,l.amount,l.url,l.order_reference,l.active,l.succeeded,l.pending].join(" ").toLocaleLowerCase("fr");if(haystack.includes(query))results.push({type:"Lien de paiement",title:l.title,detail:fmt(l.amount)+" "+(l.currency||"XOF")+" · "+(l.active?"Actif":"Désactivé"),url:l.url})});
  if(!results.length){const empty=document.createElement("p");empty.className="search-empty";empty.textContent="Aucun résultat pour « "+searchInput.value.trim()+" ».";searchResults.appendChild(empty);return}
  results.slice(0,50).forEach(result=>{
   const item=result.url?document.createElement("a"):document.createElement("article");
@@ -632,14 +690,32 @@ topbarSearch.addEventListener("input",()=>{
 });
 topbarSearch.addEventListener("keydown",event=>{if(event.key==="Escape"){topbarSearch.value="";searchInput.value="";runSearch()}});
 runSearch();
-$("lkList").onclick=async e=>{const i=e.target.dataset.c;if(i===undefined)return;try{await navigator.clipboard.writeText(LK[i].u);e.target.textContent="Copié ✓"}catch(x){e.target.textContent="Copie impossible"}setTimeout(drawLinks,1200)};
-$("lkForm").onsubmit=async e=>{e.preventDefault();const a=parseInt($("lkAmt").value,10),d=$("lkDesc").value.trim();
-  if(!(a>=100)){$("lkErr").textContent="Montant minimum : 100 FCFA.";return}
-  if(d.length<2){$("lkErr").textContent="Ajoutez une description.";return}
-  if(!ABVS.ready){$("lkErr").textContent="Service indisponible.";return}
-  const {error}=await ABVS.client.from("payment_links").insert({title:d,amount:a});
-  if(error){$("lkErr").textContent="Création impossible. Réessayez.";return}
-  $("lkErr").textContent="";$("lkAmt").value="";$("lkDesc").value="";if(window.__reload)window.__reload()};
+$("lkList").onclick=async event=>{
+ const copy=event.target.closest("[data-c]");if(copy){const link=LK[Number(copy.dataset.c)];if(!link)return;try{await navigator.clipboard.writeText(link.url);copy.textContent="Copié ✓"}catch(error){toast("Copie refusée par le navigateur.","error")}setTimeout(drawLinks,1200);return}
+ const disable=event.target.closest("[data-link-disable]");if(!disable)return;
+ disable.disabled=true;
+ try{const {error}=await ABVS.client.from("payment_links").update({active:false}).eq("id",disable.dataset.linkDisable).eq("active",true);if(error)throw error;toast("Lien désactivé.");if(window.__reload)await window.__reload()}
+ catch(error){disable.disabled=false;toast(error.message||"Désactivation impossible.","error")}
+};
+$("lkForm").onsubmit=async event=>{
+ event.preventDefault();
+ const button=$("lkForm").querySelector("button[type=submit]"),title=$("lkTitle").value.trim(),amount=Math.floor(Number($("lkAmt").value)),description=$("lkDesc").value.trim()||null,orderReference=$("lkOrderRef").value.trim()||null,expiration=$("lkExpiry").value,allowedMethods=[...document.querySelectorAll("[name=lkMethod]:checked")].map(input=>input.value),reusable=$("lkReusable").checked;
+ $("lkErr").textContent="";
+ if(title.length<2){$("lkErr").textContent="Indiquez un nom de deux caractères minimum.";return}
+ if(!(amount>=100&&amount<=100000000)){$("lkErr").textContent="Le montant doit être compris entre 100 et 100 000 000 XOF.";return}
+ if(orderReference&&orderReference.length>120){$("lkErr").textContent="La référence ne peut pas dépasser 120 caractères.";return}
+ if(!allowedMethods.length){$("lkErr").textContent="Sélectionnez au moins un moyen de paiement.";return}
+ let expiresAt=null;
+ if(expiration){const value=new Date(expiration);if(Number.isNaN(value.getTime())||value<=new Date()){$("lkErr").textContent="La date d'expiration doit être dans le futur.";return}expiresAt=value.toISOString()}
+ if(!ABVS.ready){$("lkErr").textContent="Service indisponible.";return}
+ button.disabled=true;
+ try{
+  const {error}=await ABVS.client.from("payment_links").insert({title,amount,description,order_reference:orderReference,expires_at:expiresAt,reusable,allowed_methods:allowedMethods});
+  if(error)throw error;
+  $("lkForm").reset();$("lkErr").textContent="Lien créé.";if(window.__reload)await window.__reload();
+ }catch(error){$("lkErr").textContent=error.message||"Création impossible.";toast($("lkErr").textContent,"error")}
+ finally{button.disabled=false}
+};
 const tr=(a,h)=>"<tr>"+a.map(c=>h?"<th>"+c+"</th>":"<td>"+c+"</td>").join("")+"</tr>";
 const tbl=(h,r,id)=>"<div class='card'><div class='wrap'><table"+(id?" id='"+id+"'":"")+">"+tr(h,1)+r.map(x=>tr(x)).join("")+"</table></div></div>";
 const tg=(c,t)=>"<span class='tag "+c+"'>"+t+"</span>";
@@ -722,57 +798,112 @@ $("clientForm").addEventListener("submit",async event=>{
  finally{button.disabled=false}
 });
 sec('stats','Statistiques','Répartition de vos encaissements (30 jours).',[
- ["stats-overview","▦","Vue d'ensemble",`<div class="card stats-card"><div class="stats-refresh-row"><button id="statsRefresh" class="overview-refresh" type="button">↻ Actualiser</button></div><h2>Activité des 30 derniers jours</h2><p class="sub">Les volumes incluent uniquement les paiements réussis. Les paiements en attente et échoués restent comptés dans le taux de réussite.</p><div id="statsOverviewContent" class="stats-message" role="status" aria-live="polite">Chargement des statistiques…</div></div>`],
- ["stats-methods","◈","Moyens de paiement",`<div class="card stats-card"><div class="stats-refresh-row"><button id="statsMethodsRefresh" class="overview-refresh" type="button">↻ Actualiser</button></div><h2>Résultats par moyen de paiement</h2><p class="sub">Nombre et volume des paiements réussis sur les 30 derniers jours.</p><div id="statsMethodsContent" class="stats-message" role="status" aria-live="polite">Chargement des statistiques…</div></div>`]
+ ["stats-overview","▦","Vue d'ensemble",`<div class="card stats-card"><div class="stats-refresh-row"><button id="statsRefresh" class="overview-refresh" type="button">↻ Actualiser</button><button id="statsExport" class="overview-refresh" type="button">Exporter CSV</button></div><div class="overview-period"><label for="stats-period">Période</label><select id="stats-period"><option value="today">Aujourd'hui</option><option value="7d">7 jours</option><option value="30d" selected>30 jours</option><option value="custom">Période personnalisée</option></select><label for="stats-start" class="stats-custom-label" hidden>Du</label><input id="stats-start" class="stats-custom-field" type="date" hidden><label for="stats-end" class="stats-custom-label" hidden>Au</label><input id="stats-end" class="stats-custom-field" type="date" hidden></div><p id="stats-period-message" class="sub" role="status" aria-live="polite"></p><h2>Rapport d'activité et de revenus</h2><p class="sub">Le volume brut compte les paiements réussis. Le net et les commissions ne sont affichés que lorsqu'ils sont enregistrés dans la transaction.</p><div id="statsOverviewContent" class="stats-message" role="status" aria-live="polite">Chargement des statistiques…</div></div>`],
+ ["stats-methods","◈","Moyens de paiement",`<div class="card stats-card"><h2>Résultats par moyen de paiement</h2><p class="sub">Nombre et volume des paiements réussis, ventilés par devise.</p><div id="statsMethodsContent" class="stats-message" role="status" aria-live="polite">Chargement des statistiques…</div></div>`]
 ]);
 let STATS_DATA=null,STATS_ERROR="";
 const STATS_METHODS=["Orange Money","MTN MoMo","Moov","Wave","Carte"];
 function statsDateKey(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}
 function statsFormatAmount(amount,currency="XOF"){return `${fmt(amount)} ${currency}`}
 function statsSetMessage(id,message,isError=false){const target=$(id);target.textContent=message;target.dataset.error=String(isError)}
+const statsPeriod=$("stats-period"),statsStart=$("stats-start"),statsEnd=$("stats-end");
+function statsRange(){
+ const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ if(statsPeriod.value==="custom"){
+  if(!statsStart.value||!statsEnd.value)return null;
+  const start=new Date(statsStart.value+"T00:00:00"),end=new Date(statsEnd.value+"T23:59:59.999");
+  if(Number.isNaN(start.getTime())||Number.isNaN(end.getTime())||start>end)return null;
+  return {start,end,days:Math.floor((new Date(statsEnd.value+"T00:00:00")-start)/86400000)+1};
+ }
+ const days=statsPeriod.value==="today"?1:statsPeriod.value==="7d"?7:30,start=new Date(today);
+ start.setDate(start.getDate()-days+1);return {start,end:now,days};
+}
+function statsSetPeriodControls(){
+ const custom=statsPeriod.value==="custom";
+ document.querySelectorAll(".stats-custom-label,.stats-custom-field").forEach(field=>{field.hidden=!custom;field.required=custom});
+ if(custom&&!statsStart.value&&!statsEnd.value){const today=statsDateKey(new Date());statsStart.value=today;statsEnd.value=today}
+}
+function statsCurrencyGroups(rows,field){
+ const groups=new Map();
+ rows.forEach(row=>{if(row[field]===null||row[field]===undefined)return;const currency=row.currency||"XOF";groups.set(currency,(groups.get(currency)||0)+Number(row[field]||0))});
+ return [...groups].map(([currency,amount])=>`${fmt(amount)} ${currency}`);
+}
+function statsCsvCell(value){
+ let text=String(value??"");
+ if(/^[=+\-@]/.test(text))text="'"+text;
+ return '"'+text.replace(/"/g,'""')+'"';
+}
 function renderStats(){
  if(STATS_ERROR){statsSetMessage("statsOverviewContent",STATS_ERROR,true);statsSetMessage("statsMethodsContent",STATS_ERROR,true);return}
  if(!STATS_DATA)return;
- const {rows,start}=STATS_DATA,successful=rows.filter(row=>row.status==="succeeded"),total=rows.length;
- const volume=successful.reduce((sum,row)=>sum+Number(row.amount||0),0),average=successful.length?Math.round(volume/successful.length):0;
- const successRate=total?Math.round(successful.length/total*100):0;
- const days=Array.from({length:30},(_,index)=>{const date=new Date(start);date.setDate(date.getDate()+index);return {date,key:statsDateKey(date),volume:0}});
- const byDay=new Map(days.map(day=>[day.key,day]));
- successful.forEach(row=>{const day=byDay.get(statsDateKey(new Date(row.created_at)));if(day)day.volume+=Number(row.amount||0)});
- const maxDaily=Math.max(...days.map(day=>day.volume),0);
- const currency=successful[0]?.currency||rows[0]?.currency||"XOF";
- const chart=days.map(day=>{const height=maxDaily?Math.max(day.volume/maxDaily*100,3):3;return `<span class="stats-bar${day.volume?"":" stats-bar-empty"}" title="${esc(day.date.toLocaleDateString("fr-FR"))} · ${esc(statsFormatAmount(day.volume,currency))}"><i style="height:${height}%"></i></span>`}).join("");
+ const {rows,start,range}=STATS_DATA,successful=rows.filter(row=>row.status==="succeeded"),pending=rows.filter(row=>row.status==="pending"),failed=rows.filter(row=>row.status==="failed"),total=rows.length;
+ const knownFees=successful.filter(row=>row.fee_amount!==null),knownNet=successful.filter(row=>row.net_amount!==null);
+ const volume=statsCurrencyGroups(successful,"amount"),fees=successful.length&&knownFees.length===successful.length?statsCurrencyGroups(knownFees,"fee_amount"):[],net=successful.length&&knownNet.length===successful.length?statsCurrencyGroups(knownNet,"net_amount"):[];
+ const rate=total?Math.round(successful.length/total*100):0;
+ const currencies=[...new Set(successful.map(row=>row.currency||"XOF"))];
+ const charts=currencies.map(currency=>{
+  const bucketCount=Math.max(1,Math.min(30,range.days)),buckets=Array.from({length:bucketCount},(_,index)=>{
+   const fromOffset=Math.floor(index*range.days/bucketCount),toOffset=Math.max(fromOffset,Math.floor((index+1)*range.days/bucketCount)-1);
+   const from=new Date(start);from.setDate(from.getDate()+fromOffset);
+   const to=new Date(start);to.setDate(to.getDate()+toOffset);
+   return {from,to,volume:0};
+  });
+  successful.filter(row=>(row.currency||"XOF")===currency).forEach(row=>{
+   const elapsed=Math.max(0,Math.floor((new Date(row.created_at)-start)/86400000));
+   const index=Math.min(bucketCount-1,Math.floor(elapsed/(range.days/bucketCount)));
+   buckets[index].volume+=Number(row.amount||0);
+  });
+  const max=Math.max(...buckets.map(bucket=>bucket.volume),0),bars=buckets.map(bucket=>{
+   const from=bucket.from.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}),to=bucket.to.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"});
+   const label=from===to?from:`${from}–${to}`;
+   return `<span class="stats-bar${bucket.volume?"":" stats-bar-empty"}" title="${esc(label)} · ${esc(statsFormatAmount(bucket.volume,currency))}"><i style="height:${max?Math.max(bucket.volume/max*100,3):3}%"></i></span>`;
+  }).join("");
+  return `<h3>${esc(currency)}</h3><div class="stats-chart" role="img" aria-label="Volume des paiements réussis sur la période en ${esc(currency)}">${bars}</div>`;
+ }).join("");
  $("statsOverviewContent").className="";
- $("statsOverviewContent").innerHTML=total?`<div class="stats-kpis"><article class="stats-kpi"><span>Volume encaissé</span><strong>${esc(statsFormatAmount(volume,currency))}</strong><small>${successful.length} paiement(s) réussi(s)</small></article><article class="stats-kpi"><span>Transactions</span><strong>${fmt(total)}</strong><small>${fmt(total-successful.length)} en attente ou échouée(s)</small></article><article class="stats-kpi"><span>Taux de réussite</span><strong>${successRate} %</strong><small>Ticket moyen : ${esc(statsFormatAmount(average,currency))}</small></article></div><h3>Volume encaissé par jour</h3><div class="stats-chart" role="img" aria-label="Volume quotidien des paiements réussis sur 30 jours">${chart}</div><div class="stats-axis"><span>${esc(days[0].date.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}))}</span><span>${esc(days[6].date.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}))}</span><span>${esc(days[12].date.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}))}</span><span>${esc(days[18].date.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}))}</span><span>${esc(days[24].date.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}))}</span><span>${esc(days[29].date.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}))}</span></div><div class="stats-legend"><i aria-hidden="true"></i>Encaissements réussis</div>`:`<div class="stats-message">Aucune transaction sur les 30 derniers jours. Les indicateurs apparaîtront après vos premiers paiements.</div>`;
- const methodRows=STATS_METHODS.map(method=>{const payments=successful.filter(row=>row.method===method),amount=payments.reduce((sum,row)=>sum+Number(row.amount||0),0);return {method,count:payments.length,amount}}).filter(method=>method.count);
- const totalMethodVolume=methodRows.reduce((sum,row)=>sum+row.amount,0),maxMethod=Math.max(...methodRows.map(row=>row.amount),0);
+ $("statsOverviewContent").innerHTML=`<div class="stats-kpis"><article class="stats-kpi"><span>Volume brut réussi</span><strong>${esc(volume.join(" · ")||"0 XOF")}</strong><small>${fmt(successful.length)} paiement(s) Live réussi(s)</small></article><article class="stats-kpi"><span>Net marchand</span><strong>${esc(net.join(" · ")||"Non disponible")}</strong><small>${net.length?"Après les frais enregistrés":"Les frais ne sont pas configurés pour toutes les opérations"}</small></article><article class="stats-kpi"><span>Commissions ABVS</span><strong>${esc(fees.join(" · ")||"Non disponible")}</strong><small>${fees.length?"Frais effectivement enregistrés":"Tarif manquant pour au moins une opération"}</small></article><article class="stats-kpi"><span>Paiements réussis</span><strong>${fmt(successful.length)}</strong><small>Sur ${fmt(total)} transaction(s) Live</small></article><article class="stats-kpi"><span>Paiements échoués</span><strong>${fmt(failed.length)}</strong><small>${fmt(pending.length)} en attente</small></article><article class="stats-kpi"><span>Taux de réussite</span><strong>${rate} %</strong><small>Test exclu des rapports financiers</small></article></div><h3>Volume brut quotidien par devise</h3>${charts||"<div class='stats-message'>Aucun paiement réussi sur la période.</div>"}<p class="stats-message">Remboursements, contestations et reversements : ces données ne sont pas encore disponibles dans le système et ne sont donc pas incluses dans ce rapport.</p>`;
+ const methodMap=new Map();
+ successful.forEach(row=>{const method=row.method||"Non précisé",currency=row.currency||"XOF",key=method+"::"+currency,item=methodMap.get(key)||{method,currency,count:0,amount:0};item.count++;item.amount+=Number(row.amount||0);methodMap.set(key,item)});
+ const methodRows=[...methodMap.values()],totals=new Map();
+ methodRows.forEach(row=>totals.set(row.currency,(totals.get(row.currency)||0)+row.amount));
  $("statsMethodsContent").className="";
- $("statsMethodsContent").innerHTML=methodRows.length?`<div class="stats-breakdown">${methodRows.map(row=>`<div class="stats-method"><strong class="stats-method-name">${esc(row.method)}</strong><span class="stats-method-track" role="img" aria-label="${Math.round(row.amount/(totalMethodVolume||1)*100)} % du volume"><i style="width:${Math.max(row.amount/(maxMethod||1)*100,2)}%"></i></span><span class="stats-method-value">${row.count} · ${esc(statsFormatAmount(row.amount,currency))}</span></div>`).join("")}</div>`:`<div class="stats-message">Aucun paiement réussi par moyen de paiement sur les 30 derniers jours.</div>`;
+ $("statsMethodsContent").innerHTML=methodRows.length?`<div class="stats-breakdown">${methodRows.map(row=>`<div class="stats-method"><strong class="stats-method-name">${esc(row.method)} · ${esc(row.currency)}</strong><span class="stats-method-track" role="img" aria-label="${Math.round(row.amount/(totals.get(row.currency)||1)*100)} % du volume"><i style="width:${Math.max(row.amount/(totals.get(row.currency)||1)*100,2)}%"></i></span><span class="stats-method-value">${row.count} · ${esc(statsFormatAmount(row.amount,row.currency))}</span></div>`).join("")}</div>`:`<div class="stats-message">Aucun paiement réussi par moyen de paiement sur cette période.</div>`;
 }
 async function loadStats(){
  const refresh=$("statsRefresh");if(refresh)refresh.disabled=true;
  statsSetMessage("statsOverviewContent","Chargement des statistiques…");statsSetMessage("statsMethodsContent","Chargement des statistiques…");
  if(!ABVS.ready){STATS_ERROR="Service de compte indisponible.";renderStats();if(refresh)refresh.disabled=false;return}
  try{
-  const now=new Date(),start=new Date(now);start.setDate(start.getDate()-29);start.setHours(0,0,0,0);
+  const range=statsRange();
+  if(!range){STATS_DATA=null;STATS_ERROR="Sélectionne une période personnalisée valide.";renderStats();return}
+  $("stats-period-message").textContent=`Période du ${range.start.toLocaleDateString("fr-FR")} au ${range.end.toLocaleDateString("fr-FR")}.`;
+  const start=range.start,now=range.end;
   const rows=[];let from=0;
   while(true){
-   const {data,error}=await ABVS.client.from("transactions").select("amount,currency,method,status,created_at").gte("created_at",start.toISOString()).lte("created_at",now.toISOString()).order("created_at",{ascending:true}).range(from,from+999);
+   const {data,error}=await ABVS.client.from("transactions").select("reference,amount,currency,method,status,mode,created_at,completed_at,fee_amount,provider_fee_amount,net_amount,failure_code").eq("mode","live").gte("created_at",start.toISOString()).lte("created_at",now.toISOString()).order("created_at",{ascending:true}).range(from,from+999);
    if(error)throw error;
    rows.push(...(data||[]));
    if(!data||data.length<1000)break;
    from+=1000;
   }
-  STATS_DATA={rows,start};STATS_ERROR="";renderStats();
+  STATS_DATA={rows,start,range};STATS_ERROR="";renderStats();
  }catch(error){
   STATS_DATA=null;STATS_ERROR=`Chargement impossible : ${error.message||"erreur de lecture Supabase."}`;renderStats();
  }finally{if(refresh)refresh.disabled=false}
 }
 $("statsRefresh").addEventListener("click",loadStats);
-$("statsMethodsRefresh").addEventListener("click",loadStats);
-sec('retraits','Retraits','Transférez votre solde vers votre compte.',[
- ["withdraw-request","＋","Demande de retrait",`<div class="card"><p class="sub" style="margin:0">Le traitement des retraits n'est pas encore disponible.</p></div>`],
- ["withdraw-history","▤","Historique",`<div class="card"><p class="sub" style="margin:0">L'historique des retraits n'est pas encore connecté aux données du compte.</p></div>`]
+statsPeriod.addEventListener("change",()=>{statsSetPeriodControls();loadStats()});
+[statsStart,statsEnd].forEach(input=>input.addEventListener("change",loadStats));
+$("statsExport").addEventListener("click",()=>{
+ if(!STATS_DATA)return toast("Les données du rapport ne sont pas disponibles.","error");
+ const lines=[["Référence ABVS","Date","Montant brut","Devise","Moyen","Statut","Frais ABVS","Frais prestataire","Net marchand","Motif d'échec"].map(statsCsvCell).join(";")]
+  .concat(STATS_DATA.rows.map(row=>[row.reference,row.created_at,row.amount,row.currency,row.method,row.status,row.fee_amount,row.provider_fee_amount,row.net_amount,row.failure_code].map(statsCsvCell).join(";")));
+ const link=document.createElement("a");link.href=URL.createObjectURL(new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv;charset=utf-8"}));link.download="rapport-paiements.csv";link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);
+});
+statsSetPeriodControls();
+sec('retraits','Reversements','Suivez vos transferts vers votre compte de réception.',[
+ ["withdraw-request","＋","Demande de reversement",`<div class="card"><p class="sub" style="margin:0">Aucune demande n'est acceptée tant qu'un prestataire de décaissement n'est pas connecté et contrôlé côté serveur.</p></div>`],
+ ["withdraw-history","▤","Historique",`<div class="card"><p class="sub" style="margin:0">L'historique apparaîtra après le raccordement d'un prestataire de décaissement.</p></div>`]
 ]);
 sec('hooks','Webhooks','Recevez les événements en temps réel sur votre serveur.',[
  ["hooks-setup","⌘","Configuration",`<div class="card"><article class="webhook-card"><div class="webhook-heading"><span class="webhook-icon" aria-hidden="true">⌘</span><div><span class="webhook-eyebrow">RÉCEPTION SÉCURISÉE</span><h2>Créer un endpoint</h2><p>Générez une URL publique et une clé de signature pour votre application.</p></div><span class="webhook-badge">POST · JSON · HMAC-SHA256</span></div><form id="hookEndpointForm" class="webhook-form"><input id="hookEndpointName" required minlength="2" maxlength="80" placeholder="Nom (ex. Mon application)" aria-label="Nom de l'endpoint"><button id="hookCreateButton" class="btn" type="submit">Créer l'endpoint</button></form><p id="hookSetupMessage" class="webhook-message" role="status" aria-live="polite"></p><div id="hookSecretReveal" class="webhook-secret" hidden></div><div id="hookEndpointList"></div><p class="webhook-note">Chaque requête doit contenir un horodatage récent et une signature HMAC-SHA256. Le secret n'est affiché qu'une seule fois ; gardez-le dans les variables secrètes de votre application.</p></article></div>`],
@@ -797,10 +928,159 @@ sec("pricing","Tarification","Des frais d’encaissement à partir de 2 %.",[
  ["pricing-payout","↙","Décaissement",`<div class="card">${tbl(["Moyen","Frais de décaissement"],[["Orange Money","100 FCFA"],["Wave","100 FCFA"],["MTN MoMo","100 FCFA"],["Moov","100 FCFA"],["Carte bancaire","—"]])}</div>`]
 ]);
 
-sec("support","Assistance","Contactez notre équipe en cas de besoin.",[
- ["support-contact","✉","Contacter le support",`<div class="card"><p class="sub" style="margin:0">Utilisez la page de contact pour joindre notre équipe.</p><a href="a-propos-contact.html">Contacter le support</a></div>`],
- ["support-info","i","Informations",`<div class="card"><p class="sub" style="margin:0">Pour toute demande d'assistance, contactez notre équipe depuis la page de contact.</p></div>`]
+const supportLabels={billing:"Facturation",technical:"Technique",payment:"Paiement",account:"Compte",security:"Sécurité",other:"Autre"};
+const supportStatusLabels={open:"Ouvert",in_progress:"En cours",waiting_for_customer:"En attente",resolved:"Résolu",closed:"Fermé"};
+const supportPriorityLabels={low:"Faible",normal:"Normal",high:"Urgent"};
+let supportSelectedTicketId = null;
+let supportTicketMessages = new Map();
+
+sec("support","Assistance","Créez un ticket et suivez l'état de votre demande.",[
+ ["support-create","✉","Nouvelle demande",`<div class="card"><form id="supportForm" class="pform"><label class="full">Catégorie<select id="supportCategory" required><option value="billing">Facturation</option><option value="technical">Technique</option><option value="payment">Paiement</option><option value="account">Compte</option><option value="security">Sécurité</option><option value="other">Autre</option></select></label><label class="full">Objet<input id="supportSubject" type="text" maxlength="160" minlength="4" required placeholder="Ex. Demande de remboursement pour une transaction"></label><label class="full">Référence de transaction (facultatif)<input id="supportTransactionRef" type="text" maxlength="80" placeholder="ABV-... ou référence externe"></label><label class="full">Description<textarea id="supportDescription" required minlength="10" maxlength="5000" placeholder="Décrivez votre demande, les symptômes observés et les éléments utiles pour le support."></textarea></label><label class="full">Pièces jointes sécurisées (facultatif)<input id="supportAttachments" type="file" multiple accept="image/*,.pdf,.doc,.docx,.txt"></label><p class="sub" style="margin:0">Ne communiquez jamais votre mot de passe, vos clés API ou vos jetons secrets dans un ticket.</p><p id="supportMessage" class="client-message" role="status" aria-live="polite"></p><button class="btn" type="submit">Envoyer la demande</button></form></div>`],
+ ["support-list","▤","Mes demandes",`<div class="card"><div id="supportTicketsList" class="client-list">Chargement des tickets…</div><div id="supportDetailPanel"></div></div>`]
 ]);
+
+function renderSupportDetail(ticketId){
+ const panel = document.getElementById("supportDetailPanel");
+ if(!panel) return;
+ const list = document.getElementById("supportTicketsList");
+ let ticket = null;
+ if(list && list.dataset.tickets){
+  try { ticket = JSON.parse(list.dataset.tickets).find(item => item.id === ticketId) || null; } catch (_) { ticket = null; }
+ }
+ if(!ticket){
+  panel.innerHTML = "<div class='client-activity-empty'>Sélectionnez un ticket pour afficher son historique.</div>";
+  return;
+ }
+ const messages = supportTicketMessages.get(ticketId) || [];
+ panel.innerHTML = `
+   <div class="card" style="margin-top:16px">
+     <h3 style="margin:0 0 10px">Ticket : ${esc(ticket.subject || "Sans objet")}</h3>
+     <p class="sub" style="margin:0 0 12px">${esc(supportLabels[ticket.category] || "Autre")} · ${esc(ticket.transaction_ref || "Pas de référence")}</p>
+     <div class="client-activity-list" style="display:grid;gap:10px;">
+       ${messages.length ? messages.map(message => `
+         <div class="client-activity-item" style="align-items:flex-start; padding:12px 14px; border:1px solid var(--line); border-radius:12px; background:var(--in);">
+           <div style="min-width:0">
+             <strong>${esc(message.author_name || (message.author_type === "support" ? "Support ABVS" : "Marchand"))}</strong>
+             <small>${esc(new Date(message.created_at).toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" }))}</small>
+             <p class="sub" style="margin:8px 0 0; white-space:pre-wrap;">${esc(message.message || "")}</p>
+           </div>
+         </div>
+       `).join("") : "<div class='client-activity-empty'>Aucun message n'a encore été enregistré sur ce ticket.</div>"}
+     </div>
+     <form id="supportReplyForm" style="margin-top:18px; display:grid; gap:10px;">
+       <input type="hidden" name="ticket_id" value="${esc(ticket.id)}">
+       <label>Réponse<textarea id="supportReplyMessage" required maxlength="5000" minlength="1" placeholder="Rédigez votre message…"></textarea></label>
+       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+         <button class="btn" type="submit">Ajouter une réponse</button>
+         <span id="supportReplyStatus" class="sub" style="font-size:12px"></span>
+       </div>
+     </form>
+   </div>
+ `;
+ const replyForm = document.getElementById("supportReplyForm");
+ if(replyForm){replyForm.addEventListener("submit", async function(event){
+  event.preventDefault();
+  const status = document.getElementById("supportReplyStatus");
+  const message = document.getElementById("supportReplyMessage").value.trim();
+  if(!message){ status.textContent = "Saisissez un message avant d'envoyer votre réponse."; status.style.color = "var(--err)"; return; }
+  try{
+   status.textContent = "Envoi de la réponse…";
+   status.style.color = "var(--mute)";
+   const { data: sessionData } = await ABVS.client.auth.getSession();
+   const token = sessionData && sessionData.session ? sessionData.session.access_token : "";
+   if(!token){throw new Error("Session introuvable.");}
+   const response = await fetch("/api/merchant/support", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+    body: JSON.stringify({ action: "reply", ticket_id: ticket.id, message })
+  });
+const payload = await response.json().catch(()=>({}));
+   if(!response.ok){throw new Error(payload.error || "La réponse n'a pas pu être envoyée.");}
+   status.textContent = "Réponse ajoutée.";
+   status.style.color = "var(--ok)";
+   document.getElementById("supportReplyMessage").value = "";
+   await loadSupportTickets();
+  }catch(error){
+   status.textContent = error.message || "Une erreur est survenue.";
+   status.style.color = "var(--err)";
+  }
+ });
+}
+
+async function loadSupportTickets(){
+ const list=document.getElementById("supportTicketsList");
+ if(!ABVS.ready || !ABVS.client){list.textContent="Service de compte indisponible.";return}
+ try{
+  const { data: sessionData } = await ABVS.client.auth.getSession();
+  const token = sessionData && sessionData.session ? sessionData.session.access_token : "";
+  if(!token){list.textContent="Session introuvable. Reconnectez-vous pour voir vos tickets.";return}
+  const response = await fetch("/api/merchant/support", { headers: { Authorization: "Bearer " + token } });
+  const payload = await response.json().catch(()=>({}));
+  if(!response.ok){throw new Error(payload.error || "Impossible de charger les tickets.");}
+  const tickets = Array.isArray(payload.tickets) ? payload.tickets : [];
+  if(!tickets.length){list.innerHTML="<div class='client-activity-empty'>Aucun ticket pour le moment. Décrivez votre besoin ci-contre pour ouvrir une demande.</div>";return}
+  list.innerHTML = `<table><thead><tr><th>Catégorie</th><th>Objet</th><th>Transaction</th><th>Statut</th><th>Mis à jour</th></tr></thead><tbody>${tickets.map(ticket => `
+    <tr>
+      <td>${esc(supportLabels[ticket.category] || ticket.category || "Autre")}</td>
+      <td><strong>${esc(ticket.subject || "Sans objet")}</strong><small>${esc(ticket.description ? ticket.description.slice(0, 80) : "")}</small></td>
+      <td>${esc(ticket.transaction_ref || "—")}</td>
+      <td><span class="tag ${ticket.status === "open" ? "pending" : ticket.status === "closed" ? "failed" : "succeeded"}">${esc(supportStatusLabels[ticket.status] || ticket.status || "Ouvert")}</span></td>
+      <td>${esc(ticket.updated_at ? new Date(ticket.updated_at).toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—")}</td>
+    </tr>`).join("")}</tbody></table>`;
+ }catch(error){
+  list.textContent = error.message || "Impossible de charger les tickets.";
+ }
+}
+
+async function createSupportTicket(event){
+ event.preventDefault();
+ const form = event.currentTarget;
+ const category = document.getElementById("supportCategory").value;
+ const subject = document.getElementById("supportSubject").value.trim();
+ const transactionRef = document.getElementById("supportTransactionRef").value.trim();
+ const description = document.getElementById("supportDescription").value.trim();
+ const attachments = [...(document.getElementById("supportAttachments").files || [])].slice(0, 5).map(file => ({ name: file.name, type: file.type || "application/octet-stream", size: file.size }));
+ const message = document.getElementById("supportMessage");
+ const submit = form.querySelector("button[type='submit']");
+
+ if(!category || subject.length < 4 || description.length < 10){
+  message.textContent = "Vérifiez le sujet et la description avant d'envoyer votre demande.";
+  message.style.color = "var(--err)";
+  return;
+ }
+
+ try{
+  submit.disabled = true;
+  message.textContent = "Envoi de votre demande…";
+  message.style.color = "var(--mute)";
+  const { data: sessionData } = await ABVS.client.auth.getSession();
+  const token = sessionData && sessionData.session ? sessionData.session.access_token : "";
+  if(!token){throw new Error("Session invalide. Reconnectez-vous pour continuer.");}
+  const response = await fetch("/api/merchant/support", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify({ category, subject, transaction_ref: transactionRef || undefined, description, attachments })
+  });
+const payload = await response.json().catch(()=>({}));
+  if(!response.ok){throw new Error(payload.error || "Le ticket n'a pas pu être envoyé.");}
+  form.reset();
+  message.textContent = "Votre demande a bien été enregistrée. L'équipe de support la traitera prochainement.";
+  message.style.color = "var(--ok)";
+  await loadSupportTickets();
+ }catch(error){
+  message.textContent = error.message || "Une erreur est survenue.";
+  message.style.color = "var(--err)";
+ }finally{
+  submit.disabled = false;
+ }
+}
+
+const supportForm = document.getElementById("supportForm");
+if(supportForm){supportForm.addEventListener("submit", createSupportTicket);}
+loadSupportTickets();
 (async()=>{const sb=ABVS.ready?ABVS.client:null;
  async function loadAll(){
  const refresh=$("overview-refresh"),retry=$("loadError").querySelector("[data-retry]");
@@ -826,12 +1106,173 @@ sec("support","Assistance","Contactez notre équipe en cas de besoin.",[
   $("overview-updated").textContent="Actualisation impossible";
  }finally{[refresh,retry].forEach(button=>{if(button)button.disabled=false})}
 }
+const dashboardSelect=$("dashboard-period"),dashboardStart=$("dashboard-start"),dashboardEnd=$("dashboard-end");
+function localDateInput(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`}
+function dashboardRange(){
+ const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ if(dashboardSelect.value==="custom"){
+  if(!dashboardStart.value||!dashboardEnd.value)return null;
+  const start=new Date(dashboardStart.value+"T00:00:00"),end=new Date(dashboardEnd.value+"T23:59:59.999");
+  if(Number.isNaN(start.getTime())||Number.isNaN(end.getTime())||start>end)return null;
+  return {start,end,days:Math.floor((new Date(dashboardEnd.value+"T00:00:00")-start)/86400000)+1};
+ }
+ const days=dashboardSelect.value==="today"?1:dashboardSelect.value==="7d"?7:30;
+ const start=new Date(today);start.setDate(start.getDate()-days+1);
+ return {start,end:now,days};
+}
+function setDashboardPeriodControls(){
+ const custom=dashboardSelect.value==="custom";
+ document.querySelectorAll(".dashboard-custom-label,.dashboard-custom-field").forEach(field=>{field.hidden=!custom;field.required=custom});
+ if(custom&&!dashboardStart.value&&!dashboardEnd.value){const today=localDateInput(new Date());dashboardStart.value=today;dashboardEnd.value=today}
+}
+function amountByCurrency(rows,amountField){
+ const totals=new Map();
+ rows.forEach(row=>{if(row[amountField]===null||row[amountField]===undefined)return;const currency=row.currency||"XOF";totals.set(currency,(totals.get(currency)||0)+Number(row[amountField]||0))});
+ return [...totals].map(([currency,amount])=>`${fmt(amount)} ${currency}`).join(" · ");
+}
+function displayDashboardAmounts(id,rows,amountField,missing){
+ const target=$(id),value=amountByCurrency(rows,amountField);
+ target.textContent=rows.some(row=>row[amountField]===null||row[amountField]===undefined)?missing:(value||missing);
+}
+function renderDashboardCharts(rows,range){
+ const successful=rows.filter(row=>row.status==="succeeded"&&row.mode==="live");
+ const bucketCount=Math.max(1,Math.min(30,range.days)),buckets=new Map();
+ successful.forEach(row=>{
+  const date=new Date(row.created_at),elapsed=Math.max(0,Math.floor((date-range.start)/86400000));
+  const index=Math.min(bucketCount-1,Math.floor(elapsed/(range.days/bucketCount))),currency=row.currency||"XOF";
+  if(!buckets.has(currency))buckets.set(currency,new Map());
+  const values=buckets.get(currency);values.set(index,(values.get(index)||0)+Number(row.amount||0));
+ });
+ const volumeTarget=$("dashboard-volume-chart");
+ if(!successful.length){volumeTarget.textContent="Aucun paiement réussi sur cette période.";volumeTarget.className="dashboard-chart dashboard-chart-message"}
+ else{
+  const maxByCurrency=new Map([...buckets].map(([currency,values])=>[currency,Math.max(...values.values(),1)]));
+  volumeTarget.className="dashboard-chart";
+  volumeTarget.innerHTML=[...buckets].map(([currency,values])=>{
+   const bars=Array.from({length:bucketCount},(_,index)=>{
+    const amount=values.get(index)||0,startOffset=Math.floor(index*range.days/bucketCount),endOffset=Math.max(startOffset,Math.floor((index+1)*range.days/bucketCount)-1);
+    const labelStart=new Date(range.start);labelStart.setDate(labelStart.getDate()+startOffset);
+    const labelEnd=new Date(range.start);labelEnd.setDate(labelEnd.getDate()+endOffset);
+    const label=startOffset===endOffset?labelStart.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}):`${labelStart.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})}–${labelEnd.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})}`;
+    const title=amount?`${fmt(amount)} ${currency}`:`0 ${currency}`;
+    return `<span class="dashboard-chart-bar${amount?"":" empty"}" title="${esc(label)} · ${esc(title)}"><i style="height:${amount?Math.max(amount/maxByCurrency.get(currency)*100,2):2}%"></i></span>`;
+   }).join("");
+   return `<div class="dashboard-chart-series"><strong>${esc(currency)}</strong><div class="dashboard-chart">${bars}</div></div>`;
+  }).join("");
+ }
+ const methods=new Map();
+ successful.forEach(row=>{const method=row.method||"Non précisé",currency=row.currency||"XOF",key=method+" · "+currency,entry=methods.get(key)||{method,currency,amount:0,count:0};entry.amount+=Number(row.amount||0);entry.count++;methods.set(key,entry)});
+ const methodRows=[...methods.values()].sort((a,b)=>b.amount-a.amount),methodTotal=Math.max(...methodRows.map(item=>item.amount),0);
+ const methodsTarget=$("dashboard-method-chart");
+ methodsTarget.className="dashboard-methods";
+ methodsTarget.innerHTML=methodRows.length?methodRows.map(item=>`<div class="dashboard-method"><strong>${esc(item.method)} · ${esc(item.currency)}</strong><span class="dashboard-method-track" role="img" aria-label="${fmt(item.count)} paiement(s), ${fmt(item.amount)} ${esc(item.currency)}"><i style="width:${Math.max(item.amount/methodTotal*100,2)}%"></i></span><span class="dashboard-method-value">${fmt(item.count)} · ${fmt(item.amount)}</span></div>`).join(""):"<p class='dashboard-methods-message'>Aucun paiement réussi sur cette période.</p>";
+}
+async function loadAll(){
+ const refresh=$("overview-refresh"),retry=$("loadError").querySelector("[data-retry]");
+ [refresh,retry].forEach(button=>{if(button)button.disabled=true});
+ $("overview-updated").textContent="Actualisation…";
+ const range=dashboardRange();
+ if(!range){$("dashboard-period-message").textContent="Sélectionne des dates valides pour afficher les indicateurs."; $("overview-updated").textContent="Période invalide";[refresh,retry].forEach(button=>{if(button)button.disabled=false});return}
+ $("dashboard-period-message").textContent=`Période du ${range.start.toLocaleDateString("fr-FR")} au ${range.end.toLocaleDateString("fr-FR")}.`;
+ try{
+  if(!sb)throw new Error("Le service de compte est indisponible.");
+  const start=range.start.toISOString(),end=range.end.toISOString();
+  const [recent,links,balances]=await Promise.all([
+   sb.from("transactions").select("reference,created_at,amount,currency,method,status,mode,link_id").order("created_at",{ascending:false}).limit(50),
+   sb.from("payment_links").select("id,slug,title,amount,currency,mode,active,expires_at,reusable,order_reference").order("created_at",{ascending:false}),
+   sb.from("merchant_balances").select("currency,bucket,balance_minor").eq("bucket","available")
+  ]);
+  if(recent.error)throw new Error("Les données de transactions n'ont pas pu être chargées.");
+  let linkFeatureError=links.error;
+  if(!linkFeatureError){
+   try{
+    const {data:currentUser,error:authError}=await sb.auth.getUser();
+    if(authError||!currentUser.user)throw new Error("Impossible de vérifier les droits du compte.");
+    const {data:membership,error:membershipError}=await sb.from("merchant_members").select("member_role").eq("user_id",currentUser.user.id).eq("status","active").maybeSingle();
+    if(membershipError)throw membershipError;
+    canManageLinks=!!membership&&["owner","admin"].includes(membership.member_role);
+    $("lkForm").hidden=!canManageLinks;$("lkPermissionNote").hidden=canManageLinks;
+    const linkPayments=[];let linkFrom=0;
+    while(links.data&&links.data.length){
+     const {data,error}=await sb.from("transactions").select("link_id,status,mode").in("link_id",links.data.map(link=>link.id)).order("created_at",{ascending:false}).range(linkFrom,linkFrom+999);
+     if(error)throw error;
+     linkPayments.push(...(data||[]));
+     if(!data||data.length<1000)break;
+     linkFrom+=1000;
+    }
+    const paymentCounts=new Map();
+    linkPayments.forEach(row=>{const count=paymentCounts.get(row.link_id)||{succeeded:0,pending:0};if(row.mode==="live"&&row.status==="succeeded")count.succeeded++;if(row.mode==="live"&&row.status==="pending")count.pending++;paymentCounts.set(row.link_id,count)});
+    const base=new URL("../public/paiement.html",location.href).href;
+    LK=(links.data||[]).map(x=>({id:x.id,title:x.title,amount:x.amount,currency:x.currency,mode:x.mode,active:x.active,expires_at:x.expires_at,reusable:x.reusable,order_reference:x.order_reference,url:base+"?l="+encodeURIComponent(x.slug),...(paymentCounts.get(x.id)||{succeeded:0,pending:0})}));
+   }catch(error){linkFeatureError=error}
+  }
+  if(linkFeatureError){
+   canManageLinks=false;LK=[];$("lkForm").hidden=true;$("lkPermissionNote").hidden=true;
+   $("lkErr").textContent="Liens indisponibles : "+(linkFeatureError.message||"erreur de chargement.");
+   $("lkList").innerHTML="<div class='overview-empty'>Les liens ne peuvent pas être chargés. Vérifiez la migration des liens et les autorisations du compte.</div>";
+  }else{$("lkErr").textContent=""}
+  const filtered=[];let from=0;
+  while(true){
+   const {data,error}=await sb.from("transactions").select("id,amount,currency,method,status,mode,created_at,completed_at").gte("created_at",start).lte("created_at",end).order("created_at",{ascending:true}).range(from,from+999);
+   if(error)throw error;
+   filtered.push(...(data||[]));
+   if(!data||data.length<1000)break;
+   from+=1000;
+  }
+  let financeError=null;
+  try{
+   const financeRows=[];from=0;
+   while(true){
+    const {data,error}=await sb.from("transactions").select("id,net_amount,fee_amount,provider_fee_amount").eq("mode","live").gte("created_at",start).lte("created_at",end).order("created_at",{ascending:true}).range(from,from+999);
+    if(error)throw error;
+    financeRows.push(...(data||[]));
+    if(!data||data.length<1000)break;
+    from+=1000;
+   }
+   const byId=new Map(financeRows.map(row=>[row.id,row]));
+   filtered.forEach(row=>Object.assign(row,byId.get(row.id)||{}));
+  }catch(error){financeError=error}
+  TX=(recent.data||[]).map(x=>[x.reference,x.method,`${fmt(x.amount)} ${x.currency||"XOF"}`,x.status,new Date(x.created_at).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}).replace(",",""),Number(x.amount),x.mode]);
+  const liveRows=filtered.filter(row=>row.mode==="live"),successful=liveRows.filter(row=>row.status==="succeeded"),pending=liveRows.filter(row=>row.status==="pending");
+  displayDashboardAmounts("stat-volume",successful,"amount","0 XOF");
+  $("stat-volume-note").textContent=`${fmt(successful.length)} paiement(s) réussi(s) sur la période`;
+  displayDashboardAmounts("stat-pending",pending,"amount","0 XOF");
+  $("stat-pending-note").textContent=`${fmt(pending.length)} paiement(s) en attente`;
+  displayDashboardAmounts("stat-net",successful,"net_amount","Non disponible");
+  displayDashboardAmounts("stat-fees",successful,"fee_amount","Non disponible");
+  if(financeError){
+   $("stat-net-note").textContent="Données nettes indisponibles : "+(financeError.message||"erreur de lecture.");
+   $("stat-fees-note").textContent="Données de frais indisponibles : "+(financeError.message||"erreur de lecture.");
+  }else{
+   $("stat-net-note").textContent="Après les frais configurés, paiements Live uniquement";
+   $("stat-fees-note").textContent="Frais enregistrés, paiements Live uniquement";
+  }
+  if(balances.error){$("stat-available").textContent="Non disponible";$("stat-available").title="Le grand livre est indisponible. Applique la migration financière.";$("stat-available").nextElementSibling.textContent="Grand livre indisponible : "+(balances.error.message||"erreur de lecture.")}
+  else{
+   const values=(balances.data||[]).map(item=>({currency:item.currency,available:Number(item.balance_minor||0)}));
+   $("stat-available").textContent=values.length?values.map(item=>`${fmt(item.available)} ${item.currency}`).join(" · "):"0 XOF";
+   $("stat-available").title="Solde calculé à partir des écritures rapprochées disponibles.";
+   $("stat-available").nextElementSibling.textContent="Solde rapproché, disponible au reversement";
+  }
+  $("stat-payouts").textContent="Non disponible";
+  renderDashboardCharts(filtered,range);
+  drawTx();if(!linkFeatureError)drawLinks();if(window.refreshSearch)window.refreshSearch();
+  $("loadError").hidden=true;
+  $("overview-updated").textContent="Mis à jour à "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+ }catch(error){
+  $("loadError").querySelector("span").textContent=error.message||"Impossible de charger les données. Réessayez.";
+  $("loadError").hidden=false;
+  $("overview-updated").textContent="Actualisation impossible";
+ }finally{[refresh,retry].forEach(button=>{if(button)button.disabled=false})}
+}
 window.__reload=loadAll;
+dashboardSelect.addEventListener("change",()=>{setDashboardPeriodControls();loadAll()});
+[dashboardStart,dashboardEnd].forEach(input=>input.addEventListener("change",loadAll));
 $("overview-refresh").addEventListener("click",loadAll);
 $("loadError").querySelector("[data-retry]").addEventListener("click",loadAll);
+setDashboardPeriodControls();
 await loadAll();})();
-const NAV=[["home","🏠","Tableau de bord"],["wallet","👛","Portefeuille"],["tx","↔️","Transactions"],["links","🔗","Liens de paiement"],["sessions","🧾","Sessions de paiement"],["clients","👥","Clients"],["stats","📈","Statistiques"],["retraits","🏦","Retraits"],["keys","🔑","Développement"],["hooks","🪝","Webhooks"],["hooklog","📜","Journal des webhooks"],["disputes","⚖️","Litiges"],["pricing","🏷️","Tarification"],["support","💬","Assistance"],["settings","⚙️","Paramètres"]];
-$("nav").innerHTML=NAV.map((n,i)=>"<button title='"+n[2]+"' aria-label='"+n[2]+"' data-v='"+n[0]+"'"+(i?"":" class='on' aria-current='page'")+"><span>"+n[1]+"</span>"+n[2]+"</button>").join("");
+window.ABVS_ACCOUNT_NAV.renderDashboard($("nav"));
 async function loadAccountIdentity(){
  const error=$("profile-load-error");
  try{
@@ -839,11 +1280,12 @@ async function loadAccountIdentity(){
   const {data,error:authError}=await ABVS.client.auth.getUser();
   if(authError||!data.user)throw new Error("Impossible de charger le profil du compte.");
   const user=data.user,metadata=user.user_metadata||{},company=String(metadata.company||"").trim()||"Espace marchand";
-  const displayName=String(metadata.full_name||"").trim()||user.email||"Mon compte";
+  const fullName=String(metadata.full_name||"").trim();
+  const displayName=fullName||"Mon compte";
   const email=user.email||"Adresse e-mail indisponible";
   const countries={CI:"Côte d’Ivoire",SN:"Sénégal",BF:"Burkina Faso",ML:"Mali",BJ:"Bénin",TG:"Togo",NE:"Niger",GW:"Guinée-Bissau"};
   const country=countries[metadata.country]||"Compte marchand";
-  const initials=displayName.split(/\s+/).filter(Boolean).slice(0,2).map(part=>Array.from(part)[0]).join("").toLocaleUpperCase("fr")||"AB";
+  const initials=(fullName||email.split("@")[0]).split(/[\s._-]+/).filter(Boolean).slice(0,2).map(part=>Array.from(part)[0]).join("").toLocaleUpperCase("fr")||"AB";
   const companyInitials=company.split(/\s+/).filter(Boolean).slice(0,2).map(part=>Array.from(part)[0]).join("").toLocaleUpperCase("fr")||"AB";
   $("workspace-name").textContent=company;
   $("workspace-detail").textContent=company;

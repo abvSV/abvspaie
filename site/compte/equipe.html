@@ -74,34 +74,15 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.m{animation:none;transform:rotate(var(--r))}}
 </style>
 <link rel="stylesheet" href="../assets/warm-site-background.css">
+<link rel="stylesheet" href="../assets/abvs-account-pages.css">
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
 <div class="app"><main><div class="head l"><span class="pill">Équipe</span><h1>Équipe et droits</h1><p class="sub">La gestion des membres et des rôles sera disponible après la mise en place du service d'invitations et des permissions serveur.</p></div><div class="grid two" style="grid-template-columns:1fr 1.4fr"><div class="card"><h2>Inviter un membre</h2><p class="sub">Les invitations ne sont pas configurées. Aucun e-mail ne sera envoyé depuis cette page.</p><button class="btn p w" type="button" disabled>Invitations indisponibles</button></div><div class="card"><h2>Membres de l'équipe</h2><p class="sub">Aucun membre n'est chargé. Les rôles et statuts ne sont pas encore fournis par le serveur.</p></div></div><div class="card" style="margin-top:16px"><h2>Permissions par rôle</h2><p class="sub">Les permissions ne sont pas configurées côté serveur. N'accordez pas d'accès sur la base de ces informations.</p></div></main>
 <style>.legal{margin:18px auto 90px;max-width:760px;padding:0 16px;text-align:center;font-size:12px;line-height:1.6;color:var(--mut,#6b7684)}.legal a{color:inherit;text-decoration:underline}</style>
 <p class="legal">🔒 Vos données sont chiffrées en transit et ne sont jamais revendues. <a href="../public/confidentialite.html">Confidentialité</a> · <a href="../public/cgu-cgv.html">CGU/CGV</a> · <a href="../public/mentions-legales.html">Mentions légales</a></p>
-</div><nav class="dock" aria-label="Navigation"><a href="tableau-de-bord.html" title="Tableau de bord" aria-label="Tableau de bord">🏠</a><a href="transactions.html" title="Transactions" aria-label="Transactions">↔️</a><a href="liens-de-paiement.html" title="Liens de paiement" aria-label="Liens de paiement">🔗</a><a href="decaissements.html" title="Décaissements" aria-label="Décaissements">💸</a><a href="developpeurs.html" title="Développeurs" aria-label="Développeurs">🔑</a><a href="rapprochement.html" title="Rapprochement" aria-label="Rapprochement">🧾</a><a href="equipe.html" title="Équipe" aria-label="Équipe" class=on>👥</a><a href="facturation.html" title="Facturation" aria-label="Facturation">🏷️</a><a href="parametres.html" title="Paramètres" aria-label="Paramètres">⚙️</a><a href="securite.html" title="Sécurité" aria-label="Sécurité">🛡️</a><a href="#" data-logout title="Se déconnecter" aria-label="Se déconnecter">🚪</a><a href="../public/fonctionnalites.html" title="Découvrir ABVSPAIE" aria-label="Découvrir ABVSPAIE">📚</a></nav>
-<script>
-(()=>{
-const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-window.toast=t=>{const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)};
-document.addEventListener('click',e=>{
- const c=e.target.closest('[data-copy]');if(c){try{navigator.clipboard.writeText(c.dataset.copy)}catch(_){}toast('Copié dans le presse-papiers')}
- const t=e.target.closest('[data-toast]');if(t)toast(t.dataset.toast);
- const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
- const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
-$$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
-
-})();
-(()=>{let z=10;
-document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
- const par=m.offsetParent||document.body,c=par.getBoundingClientRect(),dx=e.clientX-c.left-m.offsetLeft,dy=e.clientY-c.top-m.offsetTop;
- m.style.left=m.offsetLeft+"px";m.style.top=m.offsetTop+"px";m.style.right="auto";m.style.bottom="auto";
- m.classList.add("drag");m.style.zIndex=++z;m.setPointerCapture(e.pointerId);
- const mv=ev=>{const cc=par.getBoundingClientRect();m.style.left=(ev.clientX-cc.left-dx)+"px";m.style.top=(ev.clientY-cc.top-dy)+"px"};
- const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
- m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
-</script>
+</div>
+<script src="../assets/abvs-account-ui.js"></script>
 <script>document.addEventListener("click",e=>{if(e.target.closest("[data-logout]")){e.preventDefault();ABVS.signOut()}});</script>
 </body>
 </html>

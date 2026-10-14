@@ -8,8 +8,8 @@
 <style id="abvs-gate">html{visibility:hidden}</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script><script src="../assets/abvs-config.js"></script><script src="../assets/abvs-auth.js"></script><script>ABVS.requireSession()</script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ABVSPAIE — Décaissements</title>
-<meta name="description" content="Retirez votre solde ou payez vos bénéficiaires, à l'unité ou en masse.">
+<title>ABVSPAIE — Reversements</title>
+<meta name="description" content="Consultez la disponibilité des reversements vers un compte autorisé.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234a6283'/%3E%3Ctext x='32' y='45' font-size='36' text-anchor='middle' fill='%23fff' font-family='Arial%2Csans-serif' font-weight='800'%3EA%3C/text%3E%3C/svg%3E">
 <meta name="theme-color" content="#eee3d4" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#eee3d4" media="(prefers-color-scheme: dark)">
 <meta name="robots" content="noindex, nofollow">
@@ -74,34 +74,15 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.m{animation:none;transform:rotate(var(--r))}}
 </style>
 <link rel="stylesheet" href="../assets/warm-site-background.css">
+<link rel="stylesheet" href="../assets/abvs-account-pages.css">
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-<div class="app"><main><div class="head l"><span class="pill">Décaissements</span><h1>Décaissements</h1><p class="sub">Suivez vos transferts sortants lorsqu'un prestataire de paiement sera raccordé.</p></div><div class="grid"><div class="kpi card"><small>Solde disponible</small><b id="kbal">—</b></div><div class="kpi card"><small>En attente</small><b id="kpend">—</b></div><div class="card"><small class="mute">Paiement en masse</small><p style="margin:6px 0">Le traitement des décaissements n'est pas encore disponible.</p></div></div><div class="grid two" style="grid-template-columns:1fr 1.4fr;margin-top:16px"><div class="card"><h2>Nouveau décaissement</h2><p class="mute">Cette fonction sera activée après intégration et validation d'un prestataire de paiement.</p></div><div class="card"><h2>Historique</h2><div class="tw"><table id="dc" data-cols="benef,op,montant"><thead><tr><th>Bénéficiaire</th><th>Opérateur</th><th>Montant</th><th>Statut</th></tr></thead><tbody><tr><td colspan="4">Aucun décaissement enregistré.</td></tr></tbody></table></div></div></div></main>
+<div class="app"><main><div class="head l"><span class="pill">Reversements</span><h1>Reversements</h1><p class="sub">Suivez les transferts vers votre compte de réception.</p></div><div class="grid"><div class="kpi card"><small>Solde disponible</small><b id="kbal">Non disponible</b></div><div class="kpi card"><small>En attente</small><b id="kpend">Non disponible</b></div><div class="card"><small class="mute">Demandes de reversement</small><p style="margin:6px 0">Indisponibles avant l'intégration d'un prestataire de décaissement.</p></div></div><div class="grid two" style="grid-template-columns:1fr 1.4fr;margin-top:16px"><div class="card"><h2>Demander un reversement</h2><p class="mute">La demande et son exécution resteront indisponibles jusqu'à l'intégration du prestataire et des contrôles serveur.</p></div><div class="card"><h2>Historique</h2><p class="mute">L'historique sera disponible après le raccordement d'un prestataire.</p><div class="tw"><table id="dc" data-cols="benef,op,montant"><thead><tr><th>Bénéficiaire</th><th>Opérateur</th><th>Montant</th><th>Statut</th></tr></thead><tbody><tr><td colspan="4">Aucun reversement disponible.</td></tr></tbody></table></div></div></div></main>
 <style>.legal{margin:18px auto 90px;max-width:760px;padding:0 16px;text-align:center;font-size:12px;line-height:1.6;color:var(--mut,#6b7684)}.legal a{color:inherit;text-decoration:underline}</style>
 <p class="legal">🔒 Vos données sont chiffrées en transit et ne sont jamais revendues. <a href="../public/confidentialite.html">Confidentialité</a> · <a href="../public/cgu-cgv.html">CGU/CGV</a> · <a href="../public/mentions-legales.html">Mentions légales</a></p>
-</div><nav class="dock" aria-label="Navigation"><a href="tableau-de-bord.html" title="Tableau de bord" aria-label="Tableau de bord">🏠</a><a href="transactions.html" title="Transactions" aria-label="Transactions">↔️</a><a href="liens-de-paiement.html" title="Liens de paiement" aria-label="Liens de paiement">🔗</a><a href="decaissements.html" title="Décaissements" aria-label="Décaissements" class=on>💸</a><a href="developpeurs.html" title="Développeurs" aria-label="Développeurs">🔑</a><a href="rapprochement.html" title="Rapprochement" aria-label="Rapprochement">🧾</a><a href="equipe.html" title="Équipe" aria-label="Équipe">👥</a><a href="facturation.html" title="Facturation" aria-label="Facturation">🏷️</a><a href="parametres.html" title="Paramètres" aria-label="Paramètres">⚙️</a><a href="securite.html" title="Sécurité" aria-label="Sécurité">🛡️</a><a href="#" data-logout title="Se déconnecter" aria-label="Se déconnecter">🚪</a><a href="../public/fonctionnalites.html" title="Découvrir ABVSPAIE" aria-label="Découvrir ABVSPAIE">📚</a></nav>
-<script>
-(()=>{
-const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-window.toast=t=>{const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)};
-document.addEventListener('click',e=>{
- const c=e.target.closest('[data-copy]');if(c){try{navigator.clipboard.writeText(c.dataset.copy)}catch(_){}toast('Copié dans le presse-papiers')}
- const t=e.target.closest('[data-toast]');if(t)toast(t.dataset.toast);
- const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
- const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
-$$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
-
-})();
-(()=>{let z=10;
-document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
- const par=m.offsetParent||document.body,c=par.getBoundingClientRect(),dx=e.clientX-c.left-m.offsetLeft,dy=e.clientY-c.top-m.offsetTop;
- m.style.left=m.offsetLeft+"px";m.style.top=m.offsetTop+"px";m.style.right="auto";m.style.bottom="auto";
- m.classList.add("drag");m.style.zIndex=++z;m.setPointerCapture(e.pointerId);
- const mv=ev=>{const cc=par.getBoundingClientRect();m.style.left=(ev.clientX-cc.left-dx)+"px";m.style.top=(ev.clientY-cc.top-dy)+"px"};
- const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
- m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
-</script>
+</div>
+<script src="../assets/abvs-account-ui.js"></script>
 <script>document.addEventListener("click",e=>{if(e.target.closest("[data-logout]")){e.preventDefault();ABVS.signOut()}});</script>
 </body>
 </html>

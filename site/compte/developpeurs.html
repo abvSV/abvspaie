@@ -74,33 +74,147 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.m{animation:none;transform:rotate(var(--r))}}
 </style>
 <link rel="stylesheet" href="../assets/warm-site-background.css">
+<link rel="stylesheet" href="../assets/abvs-account-pages.css">
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-<div class="app"><main><div class="head l"><span class="pill">Développeurs</span><h1>Intégration des paiements</h1><p class="sub">Utilisez les liens de paiement hébergés et les webhooks entrants disponibles dans votre tableau de bord.</p></div><div class="card"><h2>Liens de paiement</h2><p class="mute">Créez un lien dans le tableau de bord puis partagez son URL de paiement hébergé. Le client confirme sur une page sécurisée ; vous consultez les transactions depuis votre compte.</p><a class="btn p" href="tableau-de-bord.html#links">Créer ou consulter un lien</a></div><div class="card"><h2>Clés API marchand</h2><p class="mute">Aucune clé API serveur n'est actuellement proposée. N'utilisez jamais une clé Supabase de service dans le navigateur ou dans une application cliente.</p></div><div class="card"><h2>Webhooks entrants</h2><p class="mute">Vous pouvez créer un endpoint signé dans la rubrique Webhooks du tableau de bord. Il reçoit les événements envoyés par votre application, pas les confirmations d'un prestataire de paiement.</p><a class="btn" href="tableau-de-bord.html#hooks">Configurer les webhooks</a></div></main>
+<div class="app"><main><div class="head l"><span class="pill">Développeurs</span><h1>Intégration des paiements</h1><p class="sub">Utilisez les liens de paiement hébergés, les clés d'API et les webhooks entrants du compte marchand.</p></div><div class="card"><h2>Liens de paiement</h2><p class="mute">Créez un lien dans le tableau de bord puis partagez son URL de paiement hébergé. Le client confirme sur une page sécurisée ; vous consultez les transactions depuis votre compte.</p><a class="btn p" href="tableau-de-bord.html#links">Créer ou consulter un lien</a></div><div class="card"><h2>Clés API marchand</h2><p class="mute">Les clés sont reliées au compte marchand et ne doivent être utilisées qu'en environnement serveur. Elles ne sont jamais exposées dans le navigateur après leur création.</p><div id="api-key-status" class="note">Chargement des clés…</div><form id="api-key-form"><div class="row"><label for="api-key-name">Nom de la clé<input id="api-key-name" name="name" maxlength="80" placeholder="Notifications serveur" required></label><label for="api-key-env">Environnement<select id="api-key-env" name="environment"><option value="sandbox">Test / Sandbox</option><option value="production">Production</option></select></label></div><div class="row"><label>Autorisations</label></div><div style="display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 18px"><label class="chk"><input type="checkbox" name="scope" value="transactions:read" checked>Transactions</label><label class="chk"><input type="checkbox" name="scope" value="payments:read" checked>Paiements</label><label class="chk"><input type="checkbox" name="scope" value="payments:write">Écriture paiements</label><label class="chk"><input type="checkbox" name="scope" value="webhooks:write">Webhooks</label><label class="chk"><input type="checkbox" name="scope" value="reports:read">Rapports</label></div><button class="btn p" type="submit">Créer une clé API</button><p class="err" id="api-key-error" role="status" aria-live="polite"></p></form><div id="api-key-secret" hidden style="margin-top:18px"><h3>Nouvelle clé</h3><p class="mute">Copiez cette clé maintenant. Elle ne sera plus affichée dans l'interface.</p><pre id="api-key-secret-value" style="white-space:pre-wrap"></pre><button class="btn s" type="button" id="api-key-copy">Copier la clé</button></div><div class="tw" style="margin-top:18px"><table><thead><tr><th>Nom</th><th>Environnement</th><th>Préfixe</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="api-key-list"></tbody></table></div></div><div class="card"><h2>Webhooks entrants</h2><p class="mute">Vous pouvez créer un endpoint signé dans la rubrique Webhooks du tableau de bord. Il reçoit les événements envoyés par votre application, pas les confirmations d'un prestataire de paiement.</p><a class="btn" href="tableau-de-bord.html#hooks">Configurer les webhooks</a></div></main>
 <style>.legal{margin:18px auto 90px;max-width:760px;padding:0 16px;text-align:center;font-size:12px;line-height:1.6;color:var(--mut,#6b7684)}.legal a{color:inherit;text-decoration:underline}</style>
 <p class="legal">🔒 Vos données sont chiffrées en transit et ne sont jamais revendues. <a href="../public/confidentialite.html">Confidentialité</a> · <a href="../public/cgu-cgv.html">CGU/CGV</a> · <a href="../public/mentions-legales.html">Mentions légales</a></p>
-</div><nav class="dock" aria-label="Navigation"><a href="tableau-de-bord.html" title="Tableau de bord" aria-label="Tableau de bord">🏠</a><a href="transactions.html" title="Transactions" aria-label="Transactions">↔️</a><a href="liens-de-paiement.html" title="Liens de paiement" aria-label="Liens de paiement">🔗</a><a href="decaissements.html" title="Décaissements" aria-label="Décaissements">💸</a><a href="developpeurs.html" title="Développeurs" aria-label="Développeurs" class=on>🔑</a><a href="rapprochement.html" title="Rapprochement" aria-label="Rapprochement">🧾</a><a href="equipe.html" title="Équipe" aria-label="Équipe">👥</a><a href="facturation.html" title="Facturation" aria-label="Facturation">🏷️</a><a href="parametres.html" title="Paramètres" aria-label="Paramètres">⚙️</a><a href="securite.html" title="Sécurité" aria-label="Sécurité">🛡️</a><a href="#" data-logout title="Se déconnecter" aria-label="Se déconnecter">🚪</a><a href="../public/fonctionnalites.html" title="Découvrir ABVSPAIE" aria-label="Découvrir ABVSPAIE">📚</a></nav>
+</div>
+<script src="../assets/abvs-account-ui.js"></script>
 <script>
-(()=>{
-const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-window.toast=t=>{const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)};
-document.addEventListener('click',e=>{
- const c=e.target.closest('[data-copy]');if(c){try{navigator.clipboard.writeText(c.dataset.copy)}catch(_){}toast('Copié dans le presse-papiers')}
- const t=e.target.closest('[data-toast]');if(t)toast(t.dataset.toast);
- const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
- const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
-$$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
+(() => {
+  const auth = ABVS.ready ? ABVS.client.auth : null;
+  const keyStatus = document.getElementById("api-key-status");
+  const keyError = document.getElementById("api-key-error");
+  const keyList = document.getElementById("api-key-list");
+  const keyForm = document.getElementById("api-key-form");
+  const secretBox = document.getElementById("api-key-secret");
+  const secretValue = document.getElementById("api-key-secret-value");
+  const copyBtn = document.getElementById("api-key-copy");
 
+  function setStatus(message, tone = "warn") {
+    keyStatus.className = tone === "ok" ? "tag" : tone === "err" ? "tag err" : "tag warn";
+    keyStatus.textContent = message;
+  }
+
+  function renderKeys(keys) {
+    keyList.innerHTML = "";
+    if (!Array.isArray(keys) || !keys.length) {
+      const row = document.createElement("tr");
+      row.innerHTML = '<td colspan="5"><span class="mute">Aucune clé API active pour ce compte marchand.</span></td>';
+      keyList.appendChild(row);
+      return;
+    }
+
+    keys.forEach(key => {
+      const tr = document.createElement("tr");
+      const statusText = key.status === "revoked" ? "Révoquée" : "Active";
+      const statusClass = key.status === "revoked" ? "tag err" : "tag";
+      tr.innerHTML = `
+        <td>${(key.name || "Clé API").replace(/</g, "&lt;")}</td>
+        <td>${key.environment === "production" ? "Production" : "Test"}</td>
+        <td>${(key.key_prefix || "—").replace(/</g, "&lt;")}</td>
+        <td><span class="${statusClass}">${statusText}</span></td>
+        <td>${key.status === "revoked" ? "—" : '<button class="btn s" type="button" data-revoke="' + key.id + '">Révoquer</button>'}</td>
+      `;
+      keyList.appendChild(tr);
+    });
+  }
+
+  async function loadKeys() {
+    if (!ABVS.ready || !auth) {
+      setStatus("Service de compte indisponible.", "err");
+      return;
+    }
+    try {
+      const { data, error } = await auth.getSession();
+      if (error || !data.session) throw new Error("Session invalide.");
+      const response = await fetch("/api/merchant/api-keys", {
+        headers: { authorization: "Bearer " + data.session.access_token }
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "La liste des clés API est indisponible.");
+      renderKeys(Array.isArray(result.keys) ? result.keys : []);
+      setStatus(result.keys && result.keys.length ? "Clés chargées." : "Aucune clé active pour ce marchand.", "ok");
+    } catch (error) {
+      setStatus(error.message || "Les clés API ne sont pas disponibles.", "err");
+      renderKeys([]);
+    }
+  }
+
+  keyForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!ABVS.ready || !auth) {
+      keyError.textContent = "Service de compte indisponible.";
+      return;
+    }
+
+    keyError.textContent = "";
+    const name = document.getElementById("api-key-name").value.trim();
+    const environment = document.getElementById("api-key-env").value;
+    const scopes = Array.from(document.querySelectorAll('input[name="scope"]:checked')).map(input => input.value);
+    const payload = { name, environment, scopes: scopes.length ? scopes : ["transactions:read", "payments:read"] };
+
+    try {
+      const { data, error } = await auth.getSession();
+      if (error || !data.session) throw new Error("Session invalide.");
+      const response = await fetch("/api/merchant/api-keys", {
+        method: "POST",
+        headers: { authorization: "Bearer " + data.session.access_token, "content-type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "La clé API n'a pas pu être créée.");
+      secretValue.textContent = result.secret || "";
+      secretBox.hidden = false;
+      setStatus("Clé API créée. Copiez-la maintenant.", "ok");
+      keyForm.reset();
+      document.getElementById("api-key-env").value = "sandbox";
+      await loadKeys();
+    } catch (error) {
+      keyError.textContent = error.message || "La création de la clé API a échoué.";
+      setStatus("Échec de la création de la clé.", "err");
+    }
+  });
+
+  document.addEventListener("click", async event => {
+    const revokeButton = event.target.closest("[data-revoke]");
+    if (revokeButton) {
+      const keyId = revokeButton.getAttribute("data-revoke");
+      if (!keyId) return;
+      if (!confirm("Révoquer cette clé API ? Elle cessera immédiatement d'être valide.")) return;
+
+      try {
+        const { data, error } = await auth.getSession();
+        if (error || !data.session) throw new Error("Session invalide.");
+        const response = await fetch("/api/merchant/api-keys", {
+          method: "POST",
+          headers: { authorization: "Bearer " + data.session.access_token, "content-type": "application/json" },
+          body: JSON.stringify({ action: "revoke", id: keyId })
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || "La révocation a échoué.");
+        setStatus("Clé API révoquée.", "ok");
+        await loadKeys();
+      } catch (error) {
+        setStatus(error.message || "La révocation a échoué.", "err");
+      }
+    }
+
+    if (event.target.closest("#api-key-copy")) {
+      if (!secretValue.textContent.trim()) return;
+      navigator.clipboard.writeText(secretValue.textContent).then(() => {
+        setStatus("Clé copiée dans le presse-papiers.", "ok");
+      }).catch(() => {
+        setStatus("La clé est affichée ci-dessus, vous pouvez la copier manuellement.", "warn");
+      });
+    }
+  });
+
+  loadKeys();
 })();
-(()=>{let z=10;
-document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
- const par=m.offsetParent||document.body,c=par.getBoundingClientRect(),dx=e.clientX-c.left-m.offsetLeft,dy=e.clientY-c.top-m.offsetTop;
- m.style.left=m.offsetLeft+"px";m.style.top=m.offsetTop+"px";m.style.right="auto";m.style.bottom="auto";
- m.classList.add("drag");m.style.zIndex=++z;m.setPointerCapture(e.pointerId);
- const mv=ev=>{const cc=par.getBoundingClientRect();m.style.left=(ev.clientX-cc.left-dx)+"px";m.style.top=(ev.clientY-cc.top-dy)+"px"};
- const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
- m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
 </script>
 <script>document.addEventListener("click",e=>{if(e.target.closest("[data-logout]")){e.preventDefault();ABVS.signOut()}});</script>
 </body>

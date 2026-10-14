@@ -74,56 +74,76 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.m{animation:none;transform:rotate(var(--r))}}
 </style>
 <link rel="stylesheet" href="../assets/warm-site-background.css">
+<link rel="stylesheet" href="../assets/abvs-account-pages.css">
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-<div class="app"><main><div class="head l"><span class="pill">Liens de paiement</span><h1>Liens de paiement</h1><p class="sub">Encaissez sans écrire de code : créez un lien et partagez-le.</p></div><div class="grid two" style="grid-template-columns:1fr 1.4fr"><div class="card"><h2>Nouveau lien</h2><form id="fl" novalidate><label>Titre<input name="titre" type="text" placeholder="Abonnement Pro" required></label><label>Montant (FCFA)<input name="montant" type="number" min="1" step="1" placeholder="15000" required></label><button class="btn p w">Créer le lien</button></form></div><div class="card"><h2>Vos liens</h2><div class="tw"><table id="lk" data-cols="titre,montant"><thead><tr><th>Titre</th><th>Montant</th><th>Lien</th></tr></thead><tbody></tbody></table></div></div></div></main>
+<div class="app"><main><div class="head l"><span class="pill">Liens de paiement</span><h1>Liens de paiement</h1><p class="sub">Encaissez sans écrire de code : créez et partagez des liens de paiement.</p></div><div class="grid two" style="grid-template-columns:1fr 1.4fr"><div class="card"><h2>Nouveau lien</h2><form id="fl" novalidate><label>Nom du produit ou de la commande<input name="titre" type="text" maxlength="120" placeholder="Abonnement Pro" required></label><label>Montant (XOF)<input name="montant" type="number" min="100" max="100000000" step="1" placeholder="15000" required></label><label>Description facultative<textarea name="description" maxlength="500" rows="3" placeholder="Détails utiles sur le paiement"></textarea></label><label>Référence de commande facultative<input name="reference" type="text" maxlength="120" placeholder="CMD-1042"></label><label>Date d'expiration facultative<input name="expiration" type="datetime-local"></label><fieldset class="methods"><legend>Moyens de paiement autorisés</legend><label class="chk"><input type="checkbox" name="moyen" value="Orange Money" checked> Orange Money</label><label class="chk"><input type="checkbox" name="moyen" value="MTN MoMo" checked> MTN MoMo</label><label class="chk"><input type="checkbox" name="moyen" value="Moov" checked> Moov</label><label class="chk"><input type="checkbox" name="moyen" value="Wave" checked> Wave</label><label class="chk"><input type="checkbox" name="moyen" value="Carte" checked> Carte bancaire</label></fieldset><label class="chk"><input type="checkbox" name="reutilisable" checked> Lien réutilisable (décocher pour un seul paiement)</label><button class="btn p w" type="submit">Créer le lien</button><p id="link-status" class="err" role="status" aria-live="polite"></p></form><p id="link-permission-note" class="mute" hidden>La création et la désactivation des liens sont réservées au propriétaire et aux administrateurs.</p></div><div class="card"><h2>Vos liens</h2><p class="mute">Les paiements de test ne sont pas comptés comme des encaissements réels.</p><div class="tw"><table id="lk" data-cols="titre,montant"><thead><tr><th>Titre</th><th>Montant</th><th>Statut / paiements</th><th>Lien et actions</th></tr></thead><tbody aria-live="polite"></tbody></table></div></div></div></main>
 <style>.legal{margin:18px auto 90px;max-width:760px;padding:0 16px;text-align:center;font-size:12px;line-height:1.6;color:var(--mut,#6b7684)}.legal a{color:inherit;text-decoration:underline}</style>
 <p class="legal">🔒 Vos données sont chiffrées en transit et ne sont jamais revendues. <a href="../public/confidentialite.html">Confidentialité</a> · <a href="../public/cgu-cgv.html">CGU/CGV</a> · <a href="../public/mentions-legales.html">Mentions légales</a></p>
-</div><nav class="dock" aria-label="Navigation"><a href="tableau-de-bord.html" title="Tableau de bord" aria-label="Tableau de bord">🏠</a><a href="transactions.html" title="Transactions" aria-label="Transactions">↔️</a><a href="liens-de-paiement.html" title="Liens de paiement" aria-label="Liens de paiement" class=on>🔗</a><a href="decaissements.html" title="Décaissements" aria-label="Décaissements">💸</a><a href="developpeurs.html" title="Développeurs" aria-label="Développeurs">🔑</a><a href="rapprochement.html" title="Rapprochement" aria-label="Rapprochement">🧾</a><a href="equipe.html" title="Équipe" aria-label="Équipe">👥</a><a href="facturation.html" title="Facturation" aria-label="Facturation">🏷️</a><a href="parametres.html" title="Paramètres" aria-label="Paramètres">⚙️</a><a href="securite.html" title="Sécurité" aria-label="Sécurité">🛡️</a><a href="#" data-logout title="Se déconnecter" aria-label="Se déconnecter">🚪</a><a href="../public/fonctionnalites.html" title="Découvrir ABVSPAIE" aria-label="Découvrir ABVSPAIE">📚</a></nav>
+</div>
+<script src="../assets/abvs-account-ui.js"></script>
 <script>
-(()=> {
-const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-window.toast=t=>{const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)};
-document.addEventListener('click',e=>{
- const c=e.target.closest('[data-copy]');if(c){try{navigator.clipboard.writeText(c.dataset.copy)}catch(_){}toast('Copié dans le presse-papiers')}
- const t=e.target.closest('[data-toast]');if(t)toast(t.dataset.toast);
- const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
- const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
-$$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
-
-})();
-(()=>{let z=10;
-document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
- const par=m.offsetParent||document.body,c=par.getBoundingClientRect(),dx=e.clientX-c.left-m.offsetLeft,dy=e.clientY-c.top-m.offsetTop;
- m.style.left=m.offsetLeft+"px";m.style.top=m.offsetTop+"px";m.style.right="auto";m.style.bottom="auto";
- m.classList.add("drag");m.style.zIndex=++z;m.setPointerCapture(e.pointerId);
- const mv=ev=>{const cc=par.getBoundingClientRect();m.style.left=(ev.clientX-cc.left-dx)+"px";m.style.top=(ev.clientY-cc.top-dy)+"px"};
- const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
- m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
-</script>
-<script>
-(()=>{const fl=document.getElementById("fl");if(!fl||!ABVS.ready)return;
-const sb=ABVS.client,tb=document.querySelector("#lk tbody");
+(()=>{const fl=document.getElementById("fl");if(!fl)return;
+const sb=ABVS.client,tb=document.querySelector("#lk tbody"),status=document.getElementById("link-status");
 const fmt=n=>n.toLocaleString("fr-FR").replace(/[\u202f\u00a0]/g," ")+" FCFA";
 const url=slug=>new URL("../public/paiement.html",location.href).href+"?l="+encodeURIComponent(slug);
-const row=l=>{const tr=document.createElement("tr");
- [l.title,fmt(l.amount)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td)});
- const td=document.createElement("td"),b=document.createElement("button");b.className="btn s";b.type="button";b.textContent="Copier le lien";b.dataset.copy=url(l.slug);td.appendChild(b);tr.appendChild(td);return tr};
+const showMessage=message=>{const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=4;td.textContent=message;tr.appendChild(td);tb.replaceChildren(tr)};
+const selectedMethods=()=>[...fl.querySelectorAll("[name=moyen]:checked")].map(input=>input.value);
+const row=(l,counts,canManage)=>{const tr=document.createElement("tr"),title=document.createElement("td"),amount=document.createElement("td"),state=document.createElement("td"),actions=document.createElement("td");
+ title.textContent=l.title+(l.order_reference?" · "+l.order_reference:"");
+ if(l.description){const note=document.createElement("small");note.textContent=l.description;title.appendChild(document.createElement("br"));title.appendChild(note)}
+ amount.textContent=fmt(l.amount);
+ const expired=l.expires_at&&new Date(l.expires_at)<=new Date(),count=counts.get(l.id)||{succeeded:0,pending:0};
+ const statusText=!l.active?"Désactivé":expired?"Expiré":!l.reusable&&count.succeeded?"Déjà payé":count.pending&&!l.reusable?"Paiement en traitement":"Actif";
+ state.textContent=`${l.mode==="test"?"Test · aucun fonds":"Live"} · ${statusText} · ${count.succeeded} paiement(s) Live réussi(s)${count.pending?` · ${count.pending} en attente`:""}`;
+ if(l.expires_at){const expiry=document.createElement("small");expiry.textContent="Expiration : "+new Date(l.expires_at).toLocaleString("fr-FR");state.appendChild(document.createElement("br"));state.appendChild(expiry)}
+ const copy=document.createElement("button");copy.className="btn s";copy.type="button";copy.textContent="Copier le lien";copy.dataset.copy=url(l.slug);actions.appendChild(copy);
+ if(l.active&&canManage){const deactivate=document.createElement("button");deactivate.className="btn s alt";deactivate.type="button";deactivate.textContent="Désactiver";deactivate.dataset.deactivate=l.id;actions.appendChild(deactivate)}
+ tr.append(title,amount,state,actions);return tr};
+if(!ABVS.ready){showMessage("Vos liens ne peuvent pas être chargés pour le moment.");fl.querySelector("button").disabled=true;toast("Le service des liens de paiement est indisponible.","error");return}
 async function load(){
- const {data,error}=await sb.from("payment_links").select("slug,title,amount").eq("active",true).order("created_at",{ascending:false});
- if(error)return toast("Impossible de charger vos liens.");
- tb.replaceChildren(...data.map(row));
- if(!data.length){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=3;td.textContent="Aucun lien pour le moment. Créez le premier.";tr.appendChild(td);tb.appendChild(tr)}}
+ showMessage("Chargement de vos liens…");
+ try{
+  const [{data,error},userResult]=await Promise.all([sb.from("payment_links").select("id,slug,title,amount,description,order_reference,expires_at,reusable,active,mode,created_at").order("created_at",{ascending:false}),sb.auth.getUser()]);
+  if(error)throw error;
+  if(!Array.isArray(data))throw new Error("Réponse de liens invalide.");
+  if(userResult.error||!userResult.data.user)throw new Error("Impossible de vérifier les droits du compte.");
+  const membership=await sb.from("merchant_members").select("member_role").eq("user_id",userResult.data.user.id).eq("status","active").maybeSingle();
+  if(membership.error)throw membership.error;
+  const canManage=!!membership.data&&["owner","admin"].includes(membership.data.member_role);
+  document.getElementById("link-permission-note").hidden=canManage;
+  const [{data:txData,error:txError}]=data.length?[await sb.from("transactions").select("link_id,status,mode").in("link_id",data.map(link=>link.id))]:[{data:[],error:null}];
+  if(txError)throw txError;
+  const counts=new Map();(txData||[]).forEach(tx=>{const count=counts.get(tx.link_id)||{succeeded:0,pending:0};if(tx.mode==="live"&&tx.status==="succeeded")count.succeeded++;if(tx.mode==="live"&&tx.status==="pending")count.pending++;counts.set(tx.link_id,count)});
+  fl.hidden=!canManage;
+  tb.replaceChildren(...data.map(link=>row(link,counts,canManage)));
+  if(!data.length)showMessage("Aucun lien. Créez-en un pour commencer.");
+ }catch(error){showMessage(error.message||"Impossible de charger vos liens.");toast(error.message||"Impossible de charger vos liens.","error")}
+}
 fl.addEventListener("submit",async e=>{e.preventDefault();
- const t=fl.elements.titre.value.trim(),a=Math.floor(+fl.elements.montant.value);
- if(t.length<2)return toast("Indiquez un titre.");
- if(!(a>=100))return toast("Montant minimum : 100 FCFA.");
+ status.textContent="";
+ const t=fl.elements.titre.value.trim(),a=Math.floor(+fl.elements.montant.value),description=fl.elements.description.value.trim()||null,reference=fl.elements.reference.value.trim()||null,expiration=fl.elements.expiration.value,methods=selectedMethods(),reusable=fl.elements.reutilisable.checked;
+ if(t.length<2)return status.textContent="Indiquez un nom de deux caractères minimum.";
+ if(!(a>=100&&a<=100000000))return status.textContent="Le montant doit être compris entre 100 et 100 000 000 XOF.";
+ if(reference&&reference.length>120)return status.textContent="La référence ne peut pas dépasser 120 caractères.";
+ if(!methods.length)return status.textContent="Sélectionnez au moins un moyen de paiement.";
+ let expiresAt=null;
+ if(expiration){const value=new Date(expiration);if(Number.isNaN(value.getTime())||value<=new Date())return status.textContent="La date d'expiration doit être dans le futur.";expiresAt=value.toISOString()}
  const btn=fl.querySelector("button");btn.disabled=true;
- const {error}=await sb.from("payment_links").insert({title:t,amount:a});
- btn.disabled=false;
- if(error)return toast("Création impossible. Réessayez.");
- toast("Lien créé");fl.reset();load()});
+ try{
+  const {error}=await sb.from("payment_links").insert({title:t,amount:a,description,order_reference:reference,expires_at:expiresAt,reusable,allowed_methods:methods});
+  if(error)throw error;
+  toast("Lien créé.");fl.reset();status.textContent="";await load();
+ }catch(error){status.textContent=error.message||"Création impossible.";toast(status.textContent,"error")}
+ finally{btn.disabled=false}});
+tb.addEventListener("click",async event=>{
+ const copy=event.target.closest("[data-copy]");if(copy){try{await navigator.clipboard.writeText(copy.dataset.copy);copy.textContent="Copié ✓"}catch(error){toast("Copie refusée par le navigateur.","error")}return}
+ const deactivate=event.target.closest("[data-deactivate]");if(!deactivate)return;
+ deactivate.disabled=true;
+ try{const {error}=await sb.from("payment_links").update({active:false}).eq("id",deactivate.dataset.deactivate).eq("active",true);if(error)throw error;toast("Lien désactivé.");await load()}
+ catch(error){deactivate.disabled=false;toast(error.message||"Désactivation impossible.","error")}
+});
 load()})();
 </script>
 <script>document.addEventListener("click",e=>{if(e.target.closest("[data-logout]")){e.preventDefault();ABVS.signOut()}});</script>

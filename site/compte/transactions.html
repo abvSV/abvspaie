@@ -74,48 +74,35 @@ code,pre{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}pre{backgroun
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.m{animation:none;transform:rotate(var(--r))}}
 </style>
 <link rel="stylesheet" href="../assets/warm-site-background.css">
+<link rel="stylesheet" href="../assets/abvs-account-pages.css">
 </head>
 <body>
 <a class="brand" href="../index.html" style="text-decoration:none">ᗩᗷᐯᔕ<span>ᑭᗩIᗴ</span></a>
-<div class="app"><main><div class="head l"><span class="pill">Transactions</span><h1>Transactions</h1><p class="sub">Consultez, filtrez et exportez vos paiements.</p></div><div class="card"><div class="bar"><input type="search" data-filter="tx" placeholder="Rechercher (référence, client, opérateur)" aria-label="Rechercher"><select data-filter="tx" aria-label="Statut"><option value="">Tous les statuts</option><option>Réussi</option><option>En attente</option><option>Échoué</option></select><button class="btn" id="csv" type="button">Exporter en CSV</button></div><div class="tw"><table id="tx"><thead><tr><th>Référence</th><th>Date</th><th>Montant</th><th>Opérateur</th><th>Client</th><th>Statut</th></tr></thead><tbody></tbody></table></div></div></main>
+<div class="app"><main><div class="head l"><span class="pill">Transactions</span><h1>Transactions</h1><p class="sub">Consultez, filtrez et exportez vos paiements.</p></div><div class="card"><div class="bar"><input type="search" data-filter="tx" placeholder="Rechercher (référence, client, opérateur)" aria-label="Rechercher"><select data-filter="tx" aria-label="Statut"><option value="">Tous les statuts</option><option>Réussi</option><option>En attente</option><option>Échoué</option></select><button class="btn" id="csv" type="button">Exporter en CSV</button></div><div class="tw"><table id="tx"><thead><tr><th>Référence</th><th>Date</th><th>Montant</th><th>Opérateur</th><th>Client</th><th>Statut</th></tr></thead><tbody aria-live="polite"></tbody></table></div></div></main>
 <style>.legal{margin:18px auto 90px;max-width:760px;padding:0 16px;text-align:center;font-size:12px;line-height:1.6;color:var(--mut,#6b7684)}.legal a{color:inherit;text-decoration:underline}</style>
 <p class="legal">🔒 Vos données sont chiffrées en transit et ne sont jamais revendues. <a href="../public/confidentialite.html">Confidentialité</a> · <a href="../public/cgu-cgv.html">CGU/CGV</a> · <a href="../public/mentions-legales.html">Mentions légales</a></p>
-</div><nav class="dock" aria-label="Navigation"><a href="tableau-de-bord.html" title="Tableau de bord" aria-label="Tableau de bord">🏠</a><a href="transactions.html" title="Transactions" aria-label="Transactions" class=on>↔️</a><a href="liens-de-paiement.html" title="Liens de paiement" aria-label="Liens de paiement">🔗</a><a href="decaissements.html" title="Décaissements" aria-label="Décaissements">💸</a><a href="developpeurs.html" title="Développeurs" aria-label="Développeurs">🔑</a><a href="rapprochement.html" title="Rapprochement" aria-label="Rapprochement">🧾</a><a href="equipe.html" title="Équipe" aria-label="Équipe">👥</a><a href="facturation.html" title="Facturation" aria-label="Facturation">🏷️</a><a href="parametres.html" title="Paramètres" aria-label="Paramètres">⚙️</a><a href="securite.html" title="Sécurité" aria-label="Sécurité">🛡️</a><a href="#" data-logout title="Se déconnecter" aria-label="Se déconnecter">🚪</a><a href="../public/fonctionnalites.html" title="Découvrir ABVSPAIE" aria-label="Découvrir ABVSPAIE">📚</a></nav>
-<script>
-(()=>{
-const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-window.toast=t=>{const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)};
-document.addEventListener('click',e=>{
- const c=e.target.closest('[data-copy]');if(c){try{navigator.clipboard.writeText(c.dataset.copy)}catch(_){}toast('Copié dans le presse-papiers')}
- const t=e.target.closest('[data-toast]');if(t)toast(t.dataset.toast);
- const r=e.target.closest('[data-rec]');if(r){r.closest('tr').querySelector('.st').innerHTML='<span class="tag">Rapproché</span>';r.remove();toast('Ligne rapprochée')}
- const k=e.target.closest('.chips button');if(k){$$('.chips button').forEach(b=>b.classList.toggle('on',b===k));$$('.post').forEach(p=>p.hidden=k.dataset.c!=='*'&&p.dataset.c!==k.dataset.c)}});
-$$('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const id=el.dataset.filter,q=($('input[data-filter="'+id+'"]')?.value||'').toLowerCase(),s=$('select[data-filter="'+id+'"]')?.value||'';$$('#'+id+' tbody tr').forEach(r=>r.hidden=!(r.textContent.toLowerCase().includes(q)&&(!s||r.dataset.s===s)))}));
-
-})();
-(()=>{let z=10;
-document.addEventListener("pointerdown",e=>{const m=e.target.closest(".m");if(!m||getComputedStyle(m).display==="none")return;
- const par=m.offsetParent||document.body,c=par.getBoundingClientRect(),dx=e.clientX-c.left-m.offsetLeft,dy=e.clientY-c.top-m.offsetTop;
- m.style.left=m.offsetLeft+"px";m.style.top=m.offsetTop+"px";m.style.right="auto";m.style.bottom="auto";
- m.classList.add("drag");m.style.zIndex=++z;m.setPointerCapture(e.pointerId);
- const mv=ev=>{const cc=par.getBoundingClientRect();m.style.left=(ev.clientX-cc.left-dx)+"px";m.style.top=(ev.clientY-cc.top-dy)+"px"};
- const up=()=>{m.classList.remove("drag");m.removeEventListener("pointermove",mv);m.removeEventListener("pointerup",up)};
- m.addEventListener("pointermove",mv);m.addEventListener("pointerup",up)})})();
-</script>
+</div>
+<script src="../assets/abvs-account-ui.js"></script>
 <script>document.addEventListener("click",e=>{if(e.target.closest("[data-logout]")){e.preventDefault();ABVS.signOut()}});</script>
 <script>
-(()=>{if(!ABVS.ready)return;
+(()=>{if(!ABVS.ready){toast("Le service de transactions est indisponible.","error");return}
 const sb=ABVS.client,tb=document.querySelector("#tx tbody"),LAB={succeeded:["Réussi",""],pending:["En attente","warn"],failed:["Échoué","err"]};
 const fmt=n=>n.toLocaleString("fr-FR").replace(/[\u202f\u00a0]/g," ")+" FCFA";
 const dt=s=>new Date(s).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}).replace(",","");
 let ROWS=[];
+function showMessage(message){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=6;td.textContent=message;tr.appendChild(td);tb.replaceChildren(tr)}
 function render(){
  tb.replaceChildren(...ROWS.map(t=>{const [lab,cls]=LAB[t.status]||[t.status,""],tr=document.createElement("tr");tr.dataset.s=lab;
   [t.reference,dt(t.created_at),fmt(t.amount),t.method,t.payer||"—"].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td)});
   const td=document.createElement("td"),sp=document.createElement("span");sp.className="tag "+cls;sp.textContent=lab;td.appendChild(sp);tr.appendChild(td);return tr}));
- if(!ROWS.length){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=6;td.textContent="Aucune transaction pour le moment.";tr.appendChild(td);tb.appendChild(tr)}}
-(async()=>{const {data,error}=await sb.from("transactions").select("reference,created_at,amount,method,payer,status").order("created_at",{ascending:false}).limit(200);
- if(error)return toast("Impossible de charger les transactions.");ROWS=data;render()})();
+ if(!ROWS.length)showMessage("Aucune transaction enregistrée.")};
+showMessage("Chargement des transactions…");
+(async()=>{try{
+ const {data,error}=await sb.from("transactions").select("reference,created_at,amount,method,payer,status").order("created_at",{ascending:false}).limit(200);
+ if(error)throw error;
+ if(!Array.isArray(data))throw new Error("Réponse de transactions invalide.");
+ ROWS=data;render();
+}catch(error){showMessage("Impossible de charger les transactions. Réessayez plus tard.");toast("Impossible de charger les transactions.","error")}})();
 // Export CSV (les cellules commençant par = + - @ sont neutralisées contre l'injection de formules)
 document.getElementById("csv").addEventListener("click",()=>{
  if(!ROWS.length)return toast("Rien à exporter.");

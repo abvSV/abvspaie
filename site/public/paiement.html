@@ -40,6 +40,8 @@
     <section id="summary" class="summary" hidden aria-live="polite">
       <small id="merchant"></small>
       <div id="title" class="muted"></div>
+      <p id="description" class="muted" hidden></p>
+      <small id="order-reference" class="muted" hidden></small>
       <div id="amount" class="amount"></div>
     </section>
     <p id="mode-note" class="muted" hidden></p>
@@ -117,8 +119,25 @@
 
         document.getElementById("merchant").textContent = data.merchant_name || "";
         document.getElementById("title").textContent = data.title;
+        const description = document.getElementById("description");
+        description.textContent = data.description || "";
+        description.hidden = !data.description;
+        const orderReference = document.getElementById("order-reference");
+        orderReference.textContent = data.order_reference ? "Référence : " + data.order_reference : "";
+        orderReference.hidden = !data.order_reference;
         document.getElementById("amount").textContent =
           Number(data.amount).toLocaleString("fr-FR") + " " + data.currency;
+        if (!Array.isArray(data.allowed_methods) || !data.allowed_methods.length) {
+          throw new Error("Aucun moyen de paiement n'est disponible pour ce lien.");
+        }
+        [...method.options].forEach(option => {
+          option.disabled = !data.allowed_methods.includes(option.value);
+        });
+        if (method.selectedOptions[0]?.disabled) {
+          const firstAllowed = [...method.options].find(option => !option.disabled);
+          if (!firstAllowed) throw new Error("Aucun moyen de paiement n'est disponible pour ce lien.");
+          method.value = firstAllowed.value;
+        }
         if (data.mode === "test") {
           const note = document.getElementById("mode-note");
           note.textContent = "Mode test : aucun paiement réel ni transfert de fonds ne sera effectué.";
