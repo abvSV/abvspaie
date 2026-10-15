@@ -1,0 +1,273 @@
+﻿
+require("dotenv").config();
+
+const express = require("express");
+const path = require("path");
+const crypto = require("crypto");
+const app = express();
+const PORT = 3000;
+
+app.use(express.json({ limit: "20kb" }));
+
+const db = require("./src/config/database");
+
+const publicFile = (filename) => path.join(__dirname, "public", filename);
+
+// Pages web
+app.get("/", (req, res) => {
+  res.json({
+    nom: "ABVSPAIE",
+    message: "Bienvenue sur notre API de paiement",
+    statut: "serveur actif",
+  });
+});
+
+app.get("/dashboard", (req, res) => {
+  res.sendFile(publicFile("dashboard.html"));
+});
+
+app.get("/create-payment", (req, res) => {
+  res.sendFile(publicFile("create-payment.html"));
+});
+
+app.get("/pay/:token", (req, res) => {
+  res.sendFile(publicFile("payment.html"));
+});
+
+// VÃ©rifier le serveur
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", service: "ABVSPAIE API" });
+});
+
+// VÃ©rifier PostgreSQL
+app.get("/api/db-health", async (req, res) => {
+  try {
+    const result = await db.query(
+      "SELECT current_database() AS database"
+    );
+
+    res.json({
+      status: "ok",
+      message: "Connexion Ã  PostgreSQL rÃ©ussie",
+      database: result.rows[0].database,
+    });
+  } catch (error) {
+    console.error("Erreur PostgreSQL :", error.message);
+    res.status(500).json({
+      status: "error",
+      message: "Connexion Ã  la base de donnÃ©es impossible",
+    });
+  }
+});
+
+// Lire les derniÃ¨res transactions
+app.get("/api/transactions", async (req, res) => {
+  try {
+    const result = await db.query(
+      "SELECT t.id, t.reference, t.amount, t.currency, " +
+      "t.mode, t.type, t.status, t.provider, t.created_at, " +
+      "m.name AS merchant_name " +
+      "FROM public.transactions t " +
+      "JOIN public.merchants m ON m.id = t.merchant_id " +
+      "ORDER BY t.created_at DESC LIMIT 200"
+    );
+
+    res.json({
+      status: "ok",
+      total: result.rows.length,
+      transactions: result.rows,
+    });
+  } catch (error) {
+    console.error("Erreur transactions :", error.message);
+    res.status(500).json({
+      status: "error",
+      message: "Impossible de rÃ©cupÃ©rer les transactions.",
+    });
+  }
+});
+
+// CrÃ©er un lien de paiement en mode test
+app.post("/api/payment-links", async (req, res) => {
+  try {
+    const title =
+      typeof req.body?.title === "string"
+        ? req.body.title.trim()
+        : "";
+
+    const description =
+      typeof req.body?.description === "string"
+        ? req.body.description.trim()
+        : "";
+
+    const amount = req.body?.amount;
+
+    if (title.length < 2 || title.length > 100) {
+      return res.status(400).json({
+        status: "error",
+        message: "Le titre doit contenir entre 2 et 100 caractÃ¨res.",
+      });
+    }
+
+    if (description.length > 500) {
+      return res.status(400).json({
+        status: "error",
+        message: "La description ne doit pas dÃ©passer 500 caractÃ¨res.",
+      });
+    }
+
+    if (!Number.isSafeInteger(amount) || amount < 100) {
+      return res.status(400).json({
+        status: "error",
+        message: "Le montant doit Ãªtre un nombre entier d'au moins 100 FCFA.",
+      });
+    }
+
+    // Marchand de dÃ©monstration
+    const merchantResult = await db.query(
+      "SELECT id FROM public.merchants WHERE email = $1 LIMIT 1",
+      ["tes@exemple.com"]
+    );
+
+    if (merchantResult.rows.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Marchand de dÃ©monstration introuvable.",
+      });
+    }
+
+    const merchantId = merchantResult.rows[0].id;
+    const token = crypto.randomBytes(24).toString("hex");
+
+    const result = await db.query(
+      "INSERT INTO public.payment_links " +
+      "(merchant_id, token, title, description, amount, currency, mode) " +
+      "VALUES ($1, $2, $3, $4, $5, 'XOF', 'test') " +
+      "RETURNING id, token, title, description, amount, currency, mode, status, created_at",
+      [merchantId, token, title, description || null, amount]
+    );
+
+    const link = result.rows[0];
+
+    return res.status(201).json({
+      status: "ok",
+      message: "Lien de paiement de test crÃ©Ã©.",
+      payment_link: {
+        ...link,
+        url: `${req.protocol}://${req.get("host")}/pay/${link.token}`,
+      },
+      note: "Ce lien ne dÃ©clenche aucun paiement rÃ©el.",
+    });
+  } catch (error) {
+    console.error("Erreur crÃ©ation du lien :", error.message);
+    return res.status(500).json({
+      status: "error",
+      message: "Impossible de crÃ©er le lien de paiement.",
+    });
+  }
+});
+
+// Consulter un lien de paiement
+app.get("/api/payment-links/:token", async (req, res) => {
+  try {
+    const token = req.params.token;
+
+    if (!/^[a-f0-9]{48}$/.test(token)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Le lien de paiement est invalide.",
+      });
+    }
+
+    const result = await db.query(
+      "SELECT pl.title, pl.description, pl.amount, pl.currency, " +
+      "pl.mode, pl.status, pl.created_at, pl.expires_at, " +
+      "m.name AS merchant_name " +
+      "FROM public.payment_links pl " +
+      "JOIN public.merchants m ON m.id = pl.merchant_id " +
+      "WHERE pl.token = $1 LIMIT 1",
+      [token]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Lien de paiement introuvable.",
+      });
+    }
+
+    const link = result.rows[0];
+
+    if (link.expires_at && new Date(link.expires_at) <= new Date()) {
+      return res.json({
+        status: "ok",
+        payment_link: { ...link, status: "expired" },
+      });
+    }
+
+    return res.json({
+      status: "ok",
+      payment_link: link,
+      note: "Consulter ce lien ne dÃ©clenche aucun paiement.",
+    });
+  } catch (error) {
+    console.error("Erreur consultation du lien :", error.message);
+    res.status(500).json({
+      status: "error",
+      message: "Impossible de consulter ce lien.",
+    });
+  }
+});
+
+// CrÃ©er une demande de paiement fictive (route dÃ©jÃ  existante)
+app.post("/api/test-payments", async (req, res) => {
+  try {
+    const amount = req.body?.amount;
+
+    if (!Number.isSafeInteger(amount) || amount < 100) {
+      return res.status(400).json({
+        status: "error",
+        message: "Le montant doit Ãªtre un nombre entier d'au moins 100 FCFA.",
+      });
+    }
+
+    const merchantResult = await db.query(
+      "SELECT id FROM public.merchants WHERE email = $1 LIMIT 1",
+      ["tes@exemple.com"]
+    );
+
+    if (merchantResult.rows.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "Marchand ABVS introuvable.",
+      });
+    }
+
+    const reference = "ABVSTEST-" + Date.now();
+
+    const result = await db.query(
+      "INSERT INTO public.transactions " +
+      "(merchant_id, mode, type, status, amount, fee, currency, method, provider, reference) " +
+      "VALUES ($1, 'test', 'payment', 'created', $2, 0, 'XOF', 'mobile_money', 'abvs_test', $3) " +
+      "RETURNING id, reference, amount, currency, mode, type, status, provider, created_at",
+      [merchantResult.rows[0].id, amount, reference]
+    );
+
+    return res.status(201).json({
+      message: "Demande de paiement test enregistrÃ©e.",
+      transaction: result.rows[0],
+      note: "Aucun argent rÃ©el n'a Ã©tÃ© transfÃ©rÃ©.",
+    });
+  } catch (error) {
+    console.error("Erreur paiement test :", error.message);
+    res.status(500).json({
+      status: "error",
+      message: "Impossible de crÃ©er la demande de paiement test.",
+    });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log("ABVSPAIE est actif sur http://localhost:" + PORT);
+});
+
+
